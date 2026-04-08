@@ -4310,6 +4310,23 @@ async function readStampaPortaleViaBrowser(options = {}) {
 
     pushDiag(trace, "stampa.browser.start", { stampaType, sessionIndex, candidateIndex });
 
+    // ── 0. FAST PATH: se il browser persistente è già sulla pagina dettaglio, salta direttamente allo step 5 ──
+    let fastPathToStampa = false;
+    if (isPersistent && persistentLastLoginAt > 0) {
+      try {
+        const currentUrl = await page.url();
+        // Se siamo già su Select_listCandidati (pagina dettaglio), possiamo stampare subito
+        if (currentUrl.includes("Select_listCandidati") || currentUrl.includes("listCandidati")) {
+          const hasDetailForm = await page.$('form#Select_listCandidati, form[name="Select_listCandidati"]');
+          if (hasDetailForm) {
+            fastPathToStampa = true;
+            pushDiag(trace, "stampa.fastpath", { url: currentUrl });
+            console.log(`[stampa] FAST PATH: browser già su dettaglio, salto a step 5`);
+          }
+        }
+      } catch { /* ignore */ }
+    }
+
     // ── 1. LOGIN (skip se sessione persistente attiva) ──
     let skipLogin = false;
     if (isPersistent && persistentLastLoginAt > 0) {
@@ -4347,6 +4364,8 @@ async function readStampaPortaleViaBrowser(options = {}) {
     } // fine if (!skipLogin)
     pushDiag(trace, "stampa.login.done", { url: page.url() });
 
+    // ── 2-4. RICERCA + SELEZIONE (skip se fast path) ──
+    if (!fastPathToStampa) {
     // ── 2. NAVIGA A RICERCA SESSIONI ──
     const searchUrl = "https://www.ilportaledellautomobilista.it/prenotazione/disponibilitaSessioneEsameEP/Read_initActionSessioniQuizInterne.action?pageStatus=SEARCH";
     const searchFormSelector = 'form#RicercaDisponibilitaSessioneEsameEP, form[name="RicercaDisponibilitaSessioneEsameEP"], form[name="RicercaDisponibilitaSessioneEsame"]';
@@ -4500,6 +4519,7 @@ async function readStampaPortaleViaBrowser(options = {}) {
       if (!fsDiag2.existsSync(dumpDir2)) fsDiag2.mkdirSync(dumpDir2, { recursive: true });
       fsDiag2.writeFileSync(pathDiag2.join(dumpDir2, "stampa-detail-page.html"), await page.content(), "utf8");
     } catch (_e) {}
+    } // fine if (!fastPathToStampa)
 
     // ── 5. STAMPA via fetch() nel contesto della pagina dettaglio ──
     //   Il portale restituisce PDF binari: usiamo arrayBuffer → base64.
@@ -4596,7 +4616,7 @@ async function readStampaPortaleViaBrowser(options = {}) {
       pdfBase64 = result?.pdfBase64 || "";
       html = result?.html || "";
     }
-    console.log(`[stampa] Step 5 completato: isPdf=${isPdf}, size=${isPdf ? pdfBase64.length : html.length}`);
+    console.log(`[stampa] Step 5 completato: isPdf=${isPdf}, size=${isPdf ? pdfBase64.length : html.length}, fastPath=${fastPathToStampa}`);
 
     pushDiag(trace, "stampa.result", { stampaType, isPdf, size: isPdf ? pdfBase64.length : html.length });
 
