@@ -43,6 +43,8 @@ const {
   loginAutoscuola,
   meAutoscuola,
   logoutAutoscuola,
+  requestPasswordReset,
+  resetPassword,
 } = require("./server/auth");
 const fs = require("fs");
 const path = require("path");
@@ -547,6 +549,8 @@ app.post("/api/auth/register", registerAutoscuola);
 app.post("/api/auth/login", loginAutoscuola);
 app.get("/api/auth/me", requireAuth, meAutoscuola);
 app.post("/api/auth/logout", requireAuth, logoutAutoscuola);
+app.post("/api/auth/request-reset", requestPasswordReset);
+app.post("/api/auth/reset-password", resetPassword);
 
 app.put("/api/auth/me", requireAuth, async (req, res) => {
   try {

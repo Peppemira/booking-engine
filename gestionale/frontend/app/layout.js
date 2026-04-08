@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SessionTopBar from "./SessionTopBar";
+import Providers from "./Providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,12 +20,14 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="it">
+    <html lang="it" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SessionTopBar />
-        {children}
+        <Providers>
+          <SessionTopBar />
+          {children}
+        </Providers>
       </body>
     </html>
   );

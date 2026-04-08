@@ -248,6 +248,98 @@ async function logoutAutoscuola(_req, res) {
   return res.json({ success: true, message: "Logout effettuato" });
 }
 
+// ── Reset password: genera token e permette cambio password ──
+async function requestPasswordReset(req, res) {
+  try {
+    const { email } = req.body || {};
+    if (!email) return res.status(400).json({ success: false, error: "Email obbligatoria" });
+
+    const normalizedEmail = String(email).trim().toLowerCase();
+
+    // Cerca autoscuola per email
+    const { data } = await supabase
+      .from("autoscuole")
+      .select("id, nome, email")
+      .eq("email", normalizedEmail)
+      .maybeSingle();
+
+    // Rispondi sempre con successo per non rivelare se l'email esiste
+    if (!data) {
+      return res.json({ success: true, message: "Se l'email è registrata, riceverai il link di reset." });
+    }
+
+    // Genera token temporaneo (valido 1 ora)
+    const resetToken = jwt.sign(
+      { autoscuolaId: data.id, purpose: "password-reset" },
+      JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    // Salva token nel DB (campo reset_token)
+    await supabase
+      .from("autoscuole")
+      .update({ reset_token: resetToken })
+      .eq("id", data.id);
+
+    // In un sistema locale, restituisci il token direttamente
+    // In produzione si invierebbe via email
+    console.log(`[auth] Reset password token generato per ${normalizedEmail}`);
+    return res.json({
+      success: true,
+      message: "Token di reset generato.",
+      resetToken, // In produzione rimuovere e inviare via email
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+}
+
+async function resetPassword(req, res) {
+  try {
+    const { token, newPassword } = req.body || {};
+    if (!token || !newPassword) {
+      return res.status(400).json({ success: false, error: "Token e nuova password obbligatori" });
+    }
+    if (String(newPassword).length < 6) {
+      return res.status(400).json({ success: false, error: "La password deve avere almeno 6 caratteri" });
+    }
+
+    // Verifica token JWT
+    let decoded;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET);
+    } catch {
+      return res.status(400).json({ success: false, error: "Token non valido o scaduto" });
+    }
+    if (decoded.purpose !== "password-reset") {
+      return res.status(400).json({ success: false, error: "Token non valido" });
+    }
+
+    // Verifica che il token sia ancora in DB
+    const { data: autoscuola } = await supabase
+      .from("autoscuole")
+      .select("id, reset_token")
+      .eq("id", decoded.autoscuolaId)
+      .maybeSingle();
+
+    if (!autoscuola || autoscuola.reset_token !== token) {
+      return res.status(400).json({ success: false, error: "Token già utilizzato o non valido" });
+    }
+
+    // Hash nuova password e aggiorna
+    const password_hash = await bcrypt.hash(String(newPassword), 10);
+    const { error } = await supabase
+      .from("autoscuole")
+      .update({ password_hash, reset_token: null })
+      .eq("id", decoded.autoscuolaId);
+
+    if (error) return res.status(500).json({ success: false, error: error.message });
+    return res.json({ success: true, message: "Password aggiornata con successo" });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+}
+
 module.exports = {
   MULTI_AUTOSCUOLA,
   AUTH_REQUIRED,
@@ -261,4 +353,6 @@ module.exports = {
   loginAutoscuola,
   meAutoscuola,
   logoutAutoscuola,
+  requestPasswordReset,
+  resetPassword,
 };

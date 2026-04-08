@@ -3,13 +3,29 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  /* Tema scuro gestionale (dashboard) */
-  --gestionale-bg: #0f172a;
+  /* Tema gestionale */
+  --gestionale-bg: #f8fafc;
   --gestionale-sidebar: #1e293b;
-  --gestionale-card: #334155;
+  --gestionale-card: #ffffff;
+  --gestionale-card-border: #e2e8f0;
   --gestionale-accent: #3b82f6;
   --gestionale-success: #22c55e;
   --gestionale-error: #ef4444;
+  --gestionale-muted: #64748b;
+}
+
+/* Dark mode — attivata dalla classe .dark su <html> */
+.dark {
+  --background: #0f172a;
+  --foreground: #e2e8f0;
+  --gestionale-bg: #0f172a;
+  --gestionale-sidebar: #1e293b;
+  --gestionale-card: #1e293b;
+  --gestionale-card-border: #334155;
+  --gestionale-accent: #60a5fa;
+  --gestionale-success: #34d399;
+  --gestionale-error: #f87171;
+  --gestionale-muted: #94a3b8;
 }
 
 @theme inline {
@@ -19,18 +35,42 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* ── Dark mode overrides per componenti Tailwind ──────────────────────── */
+.dark .bg-white { background-color: var(--gestionale-card) !important; }
+.dark .bg-slate-50 { background-color: #1e293b !important; }
+.dark .bg-slate-100 { background-color: #0f172a !important; }
+.dark .text-slate-800,
+.dark .text-slate-900 { color: #e2e8f0 !important; }
+.dark .text-slate-700 { color: #cbd5e1 !important; }
+.dark .text-slate-600 { color: #94a3b8 !important; }
+.dark .text-slate-500 { color: #64748b !important; }
+.dark .border-slate-200 { border-color: #334155 !important; }
+.dark .border-slate-300 { border-color: #475569 !important; }
+.dark .ring-slate-200 { --tw-ring-color: #334155 !important; }
+.dark .shadow-sm { box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important; }
+.dark .shadow-xl { box-shadow: 0 4px 20px rgba(0,0,0,0.5) !important; }
+
+/* Dark mode inputs */
+.dark input, .dark select, .dark textarea {
+  background-color: #334155 !important;
+  color: #e2e8f0 !important;
+  border-color: #475569 !important;
+}
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #64748b !important;
+}
+
+/* Dark mode tables */
+.dark table th { background-color: #1e293b !important; color: #cbd5e1 !important; }
+.dark table td { color: #e2e8f0 !important; }
+.dark table tr:hover td { background-color: rgba(51,65,85,0.5) !important; }
 
 @media (min-width: 1200px) {
   .desktop-fit {
@@ -117,4 +157,20 @@ table td {
 /* Grids: impedisci ai figli di espandere oltre il contenitore */
 .grid > * {
   min-width: 0;
+}
+
+/* ── Toast slide-in animation ──────────────────────────────────────────── */
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(100%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }

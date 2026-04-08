@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ThemeToggle } from "../lib/ThemeProvider";
 
 const NAV_ITEMS = [
   { href: "/", key: "dashboard", label: "Dashboard", icon: "⌂" },
@@ -121,10 +122,11 @@ export default function ModernAppShell({ title, subtitle, activeKey, onLogout, c
                     className="shell-sidebar-action w-full rounded-xl bg-white px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-50"
                     title={sidebarAction.title || sidebarAction.label}
                   >
-                    <span className="mr-2">{sidebarAction.icon || "💬"}</span>
+                    <span className="mr-2">{sidebarAction.icon || "\uD83D\uDCAC"}</span>
                     <span>{sidebarAction.label}</span>
                   </button>
                 )}
+                <ThemeToggle className="w-full bg-white/10 text-white hover:bg-white/20" />
               </div>
             </div>
           </aside>
