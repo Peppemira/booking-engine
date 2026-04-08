@@ -1,0 +1,130 @@
+{
+  "source_file": "C:\\AFSoft\\GeCAFuture\\data\\quizm.mdb",
+  "table": "ArgomD",
+  "count": 16,
+  "exported_at": "2026-03-25T14:50:26.468577",
+  "schema": [
+    {
+      "field": "idargom",
+      "type": "SMALLINT",
+      "size": 5,
+      "nullable": true
+    },
+    {
+      "field": "idced",
+      "type": "SMALLINT",
+      "size": 5,
+      "nullable": true
+    },
+    {
+      "field": "argomento",
+      "type": "LONGCHAR",
+      "size": 1073741823,
+      "nullable": true
+    },
+    {
+      "field": "img",
+      "type": "VARCHAR",
+      "size": 255,
+      "nullable": true
+    }
+  ],
+  "rows": [
+    {
+      "idargom": 1,
+      "idced": 1,
+      "argomento": "Disposizioni che regolano i periodi di guida e di riposo",
+      "img": null
+    },
+    {
+      "idargom": 2,
+      "idced": 2,
+      "argomento": "Impiego del cronotachigrafo",
+      "img": null
+    },
+    {
+      "idargom": 3,
+      "idced": 3,
+      "argomento": "Disposizioni che regolano il trasporto di: persone",
+      "img": null
+    },
+    {
+      "idargom": 4,
+      "idced": 4,
+      "argomento": "Documenti di circolazione e di trasporto necessari per il trasporto di cose e di persone sia a livello nazionale che internazionale",
+      "img": null
+    },
+    {
+      "idargom": 5,
+      "idced": 5,
+      "argomento": "Comportamento in caso di incidente; misure da adottare in caso di incidente o situazione assimilabile, compresi gli interventi di emergenza quali l'evacuazione dei passeggeri, nonché rudimenti di pronto soccorso",
+      "img": null
+    },
+    {
+      "idargom": 6,
+      "idced": 6,
+      "argomento": "Precauzioni da adottare in caso di rimozione e sostituzione delle ruote",
+      "img": null
+    },
+    {
+      "idargom": 7,
+      "idced": 7,
+      "argomento": "Disposizioni che regolano dimensione e massa dei veicoli; disposizioni che regolano i dispositivi di limitazione della velocità",
+      "img": null
+    },
+    {
+      "idargom": 8,
+      "idced": 8,
+      "argomento": "Limitazione del campo visivo legata alle caratteristiche del veicolo",
+      "img": null
+    },
+    {
+      "idargom": 9,
+      "idced": 9,
+      "argomento": "Responsabilità del conducente nei confronti delle persone trasportate",
+      "img": null
+    },
+    {
+      "idargom": 10,
+      "idced": 10,
+      "argomento": "Sistemi di aggancio alla motrice di rimorchi e semirimorchi e relativi sistemi di frenatura",
+      "img": null
+    },
+    {
+      "idargom": 11,
+      "idced": 11,
+      "argomento": "Nozioni sulla costruzione ed il funzionamento dei motori a combustione interna, dei liquidi (olio motore, liquido di raffreddamento, liquido lavavetri, ecc.), del sistema di alimentazione del carburante, di quello elettrico, di quello di accensione e di quello di trasmissione (frizione, cambio, ecc.)",
+      "img": null
+    },
+    {
+      "idargom": 12,
+      "idced": 12,
+      "argomento": "Lubrificazione e protezione dal gelo",
+      "img": null
+    },
+    {
+      "idargom": 13,
+      "idced": 13,
+      "argomento": "Nozioni su costruzione, montaggio e corretto impiego e manutenzione degli pneumatici",
+      "img": null
+    },
+    {
+      "idargom": 14,
+      "idced": 14,
+      "argomento": "Freno e acceleratore: nozioni sui tipi esistenti, funzionamento, componenti principali, collegamenti, impiego e manutenzione ordinaria, compreso l'ABS",
+      "img": null
+    },
+    {
+      "idargom": 15,
+      "idced": 15,
+      "argomento": "Metodi per individuare le cause dei guasti  - Organi di direzione  - Sospensioni e ammortizzatori",
+      "img": null
+    },
+    {
+      "idargom": 16,
+      "idced": 16,
+      "argomento": "Manutenzione dei veicoli a scopo preventivo e effettuazione delle opportune riparazioni ordinarie",
+      "img": null
+    }
+  ]
+}

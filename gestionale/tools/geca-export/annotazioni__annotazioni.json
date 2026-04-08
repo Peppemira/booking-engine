@@ -1,0 +1,138 @@
+{
+  "source_file": "C:\\AFSoft\\GeCAFuture\\data\\annotazioni.mdb",
+  "table": "annotazioni",
+  "count": 22,
+  "exported_at": "2026-03-25T14:50:28.633385",
+  "schema": [
+    {
+      "field": "codice",
+      "type": "VARCHAR",
+      "size": 10,
+      "nullable": true
+    },
+    {
+      "field": "descrizione",
+      "type": "VARCHAR",
+      "size": 255,
+      "nullable": true
+    },
+    {
+      "field": "idprogr",
+      "type": "COUNTER",
+      "size": 10,
+      "nullable": false
+    }
+  ],
+  "rows": [
+    {
+      "codice": "05",
+      "descrizione": "USI LIMITATI",
+      "idprogr": 1
+    },
+    {
+      "codice": "78",
+      "descrizione": "LIMITATA AI VEICOLI MUNITI DI CAMBIO DI VELOCITA' AUTOMATICO",
+      "idprogr": 2
+    },
+    {
+      "codice": "7901",
+      "descrizione": "LIMITATA A VEICOLI A DUE RUOTE CON O SENZA SIDE-CAR",
+      "idprogr": 3
+    },
+    {
+      "codice": "7902",
+      "descrizione": "LIMITATA A VEICOLI DI CATEGORIA AM DEL TIPO A TRE RUOTE O QUADRICICLO LEGGERO",
+      "idprogr": 4
+    },
+    {
+      "codice": "7903",
+      "descrizione": "LIMITATA A TRICICLI",
+      "idprogr": 5
+    },
+    {
+      "codice": "7904",
+      "descrizione": "LIMITATA A TRICICLI AI QUALI È AGGANCIATO UN RIMORCHIO LA CUI MASSA LIMITE NON SUPERA 750 KG",
+      "idprogr": 6
+    },
+    {
+      "codice": "7905",
+      "descrizione": "MOTOCICLO DI CATEGORIA A1 CON UN RAPPORTO POTENZA/PESO SUPERIORE A 0,1 KW/KG",
+      "idprogr": 7
+    },
+    {
+      "codice": "7906",
+      "descrizione": "VEICOLO DI CATEGORIA BE NEL QUALE LA MASSA LIMITE DEL RIMORCHIO SUPERA 3500 KG",
+      "idprogr": 8
+    },
+    {
+      "codice": "80",
+      "descrizione": "LIMITATA A TITOLARI DI PATENTE DI GUIDA PER VEICOLI DI CATEGORIA A DEL TIPO TRICICLO A MOTORE DI ETÀ INFERIORE A 24 ANNI",
+      "idprogr": 9
+    },
+    {
+      "codice": "81",
+      "descrizione": "LIMITATA A TITOLARI DI PATENTE DI GUIDA PER VEICOLI DI CATEGORIA A DEL TIPO MOTOCICLO A DUE RUOTE DI ETÀ INFERIORE A 21 ANNI",
+      "idprogr": 10
+    },
+    {
+      "codice": "96",
+      "descrizione": "VEICOLI DI CATEGORIA B A CUI E' AGGANCIATO UN RIMORCHIO CON UNA MASSA LIMITE SUPERIORE A 750kG QUANDO LA MASSA LIMITE TOTALE SUPERA 3500KG MA NON SUPERA 4250KG (B+)",
+      "idprogr": 11
+    },
+    {
+      "codice": "97",
+      "descrizione": "NON AUTORIZZATO ALLA GUIDA DI UN VEICOLO DI CATEGORIA C1 CHE RIENTRA NEL CAMPO DI APPLICAZIONE DEL REGOLAMENTO (CEE) N. 3821/85 DEL CONSIGLIO, DEL 20 DICEMBRE 1985, RELATIVO ALL'APPARECCHIO DI CONTROLLO NEL SETTORE DEI TRASPORTI SU STRADA",
+      "idprogr": 12
+    },
+    {
+      "codice": "110",
+      "descrizione": "ABILITAZIONE B CON AM SENZA A1",
+      "idprogr": 13
+    },
+    {
+      "codice": "111",
+      "descrizione": "ABILITAZIONE B SENZA A1 E AM",
+      "idprogr": 14
+    },
+    {
+      "codice": "101",
+      "descrizione": "MANUBRIO E VOLANTE",
+      "idprogr": 15
+    },
+    {
+      "codice": "102",
+      "descrizione": "VOLANTE",
+      "idprogr": 16
+    },
+    {
+      "codice": "103",
+      "descrizione": "MANUBRIO",
+      "idprogr": 17
+    },
+    {
+      "codice": "104",
+      "descrizione": "SENSORI POSTERIORI PER LA RILEVAZIONE DI OSTACOLI",
+      "idprogr": 18
+    },
+    {
+      "codice": "105",
+      "descrizione": "MOTOCICLI CON DUE RUOTE ANTERIORI",
+      "idprogr": 19
+    },
+    {
+      "codice": "106",
+      "descrizione": "AGGANCIO PROTESI SU VEICOLI CON COMANDO AL MANUBRIO",
+      "idprogr": 20
+    },
+    {
+      "codice": "108",
+      "descrizione": "DISPOSITVO DI GUIDA 108",
+      "idprogr": 21
+    },
+    {
+      "codice": "109",
+      "descrizione": "DISPOSITVO DI GUIDA 109",
+      "idprogr": 22
+    }
+  ]
+}

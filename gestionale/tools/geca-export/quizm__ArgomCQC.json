@@ -1,0 +1,130 @@
+{
+  "source_file": "C:\\AFSoft\\GeCAFuture\\data\\quizm.mdb",
+  "table": "ArgomCQC",
+  "count": 16,
+  "exported_at": "2026-03-25T14:50:26.463741",
+  "schema": [
+    {
+      "field": "idargom",
+      "type": "SMALLINT",
+      "size": 5,
+      "nullable": true
+    },
+    {
+      "field": "idced",
+      "type": "SMALLINT",
+      "size": 5,
+      "nullable": true
+    },
+    {
+      "field": "argomento",
+      "type": "LONGCHAR",
+      "size": 1073741823,
+      "nullable": true
+    },
+    {
+      "field": "img",
+      "type": "VARCHAR",
+      "size": 255,
+      "nullable": true
+    }
+  ],
+  "rows": [
+    {
+      "idargom": 1,
+      "idced": 1,
+      "argomento": "Capitolo 1- Obiettivo 1.1",
+      "img": "cqc1"
+    },
+    {
+      "idargom": 2,
+      "idced": 2,
+      "argomento": "Capitolo 2- Obiettivo 1.2",
+      "img": "cqc2"
+    },
+    {
+      "idargom": 3,
+      "idced": 3,
+      "argomento": "Capitolo 3- Obiettivo 1.3",
+      "img": "cqc3"
+    },
+    {
+      "idargom": 4,
+      "idced": 4,
+      "argomento": "Capitolo 4 - Obiettivo 1.3 bis e 3.5",
+      "img": "cqc4"
+    },
+    {
+      "idargom": 5,
+      "idced": 5,
+      "argomento": "Capitolo 5 - Obiettivo 3.1",
+      "img": "cqc5"
+    },
+    {
+      "idargom": 6,
+      "idced": 6,
+      "argomento": "Capitolo 6 - Obiettivo 2.1",
+      "img": "cqc6"
+    },
+    {
+      "idargom": 7,
+      "idced": 7,
+      "argomento": "Capitolo 7- Obiettivo 3.2",
+      "img": "cqc7"
+    },
+    {
+      "idargom": 8,
+      "idced": 8,
+      "argomento": "Capitolo 8 - Obiettivo 3.6 +  Fondamenti di logistica sostenibile",
+      "img": "cqc8"
+    },
+    {
+      "idargom": 9,
+      "idced": 9,
+      "argomento": "Capitolo 9 - Obiettivo 3.3",
+      "img": "cqc9"
+    },
+    {
+      "idargom": 10,
+      "idced": 10,
+      "argomento": "Capitolo 10 - Obiettivo 3.4",
+      "img": "cqc10"
+    },
+    {
+      "idargom": 11,
+      "idced": 11,
+      "argomento": "Capitolo 11 - Obiettivo 1.4",
+      "img": "cqc11"
+    },
+    {
+      "idargom": 12,
+      "idced": 12,
+      "argomento": "Capitolo 12 - Obiettivo 2.2",
+      "img": "cqc12"
+    },
+    {
+      "idargom": 13,
+      "idced": 13,
+      "argomento": "Capitolo 13 - Obiettivo 3.7 e prospettive di sviluppo del settore nella transazione ecologica",
+      "img": "cqc13"
+    },
+    {
+      "idargom": 14,
+      "idced": 14,
+      "argomento": "Capitolo 14 - Obiettivo 1.5",
+      "img": "cqc14"
+    },
+    {
+      "idargom": 15,
+      "idced": 15,
+      "argomento": "Capitolo 15 - Obiettivo 1.6",
+      "img": "cqc15"
+    },
+    {
+      "idargom": 16,
+      "idced": 16,
+      "argomento": "Capitolo 16 - Obiettivi 2.3 e 3.8",
+      "img": "cqc16"
+    }
+  ]
+}

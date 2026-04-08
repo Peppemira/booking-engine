@@ -1,0 +1,1440 @@
+{
+  "exported_at": "2026-03-25T14:50:28.698424",
+  "geca_dir": "C:\\AFSoft\\GeCAFuture",
+  "databases": {
+    "quizm": {
+      "schema": {
+        "ArgomAB": [
+          {
+            "field": "idargom",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "argomento",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "ArgomABRev": [
+          {
+            "field": "idargom",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "argomento",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "ArgomADR": [
+          {
+            "field": "idargom",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "argomento",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "ArgomAM": [
+          {
+            "field": "idargom",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "argomento",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "ArgomAMRev": [
+          {
+            "field": "idargom",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "argomento",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "ArgomC": [
+          {
+            "field": "idargom",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "argomento",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "ArgomC197": [
+          {
+            "field": "idargom",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "argomento",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "ArgomC197Rev": [
+          {
+            "field": "idargom",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "argomento",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "ArgomCQC": [
+          {
+            "field": "idargom",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "argomento",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "ArgomCRev": [
+          {
+            "field": "idargom",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "argomento",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "ArgomD": [
+          {
+            "field": "idargom",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "argomento",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "ArgomDRev": [
+          {
+            "field": "idargom",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "argomento",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "ArgomKB": [
+          {
+            "field": "idargom",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "argomento",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "Quizab": [
+          {
+            "field": "ID",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "riferimento",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "sequenza",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "quesito",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "vf",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "comm",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "Quizabrev": [
+          {
+            "field": "ID",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "riferimento",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "sequenza",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "quesito",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "vf",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "comm",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "Quizadr": [
+          {
+            "field": "ID",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "riferimento",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "quesito",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          }
+        ],
+        "Quizam": [
+          {
+            "field": "ID",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "riferimento",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "sequenza",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "quesito",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "vf",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "comm",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "Quizamrev": [
+          {
+            "field": "ID",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "riferimento",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "sequenza",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "quesito",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "vf",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "comm",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "Quizc": [
+          {
+            "field": "ID",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "riferimento",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "sequenza",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "quesito",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "vf",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "comm",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "Quizc1": [
+          {
+            "field": "ID",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "riferimento",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "sequenza",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "quesito",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "vf",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "comm",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "Quizc197": [
+          {
+            "field": "ID",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "riferimento",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "sequenza",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "quesito",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "vf",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "comm",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "Quizcqc": [
+          {
+            "field": "ID",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "riferimento",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "sequenza",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "quesito",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "vf",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "comm",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "Quizd": [
+          {
+            "field": "ID",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "riferimento",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "sequenza",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "quesito",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "vf",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "comm",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "Quizd1": [
+          {
+            "field": "ID",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "riferimento",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "sequenza",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "quesito",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "vf",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "comm",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "Quizec": [
+          {
+            "field": "ID",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "riferimento",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "sequenza",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "quesito",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "vf",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "comm",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "Quized": [
+          {
+            "field": "ID",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "riferimento",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "sequenza",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "quesito",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "vf",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "comm",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "Quizkb": [
+          {
+            "field": "ID",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "riferimento",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "quesito",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          }
+        ],
+        "Quizsuprev": [
+          {
+            "field": "ID",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "riferimento",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "sequenza",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "quesito",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "vf",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "comm",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "Risposteadr": [
+          {
+            "field": "ID",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "idquesito",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "risposte",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "vf",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "Rispostekb": [
+          {
+            "field": "ID",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "idquesito",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "risposte",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "vf",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "Tipiquiz": [
+          {
+            "field": "idprogr",
+            "type": "SMALLINT",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "tipoquiz",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          },
+          {
+            "field": "schemascheda",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          },
+          {
+            "field": "argomentischeda",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          },
+          {
+            "field": "totdomande",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "errorimax",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "nometab",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          },
+          {
+            "field": "maxtime",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "tabargomenti",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "argomPN": [
+          {
+            "field": "idagrom",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "argomento",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "capitolo",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "quizPN": [
+          {
+            "field": "id",
+            "type": "COUNTER",
+            "size": 10,
+            "nullable": false
+          },
+          {
+            "field": "riferimento",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "idced",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "quesito",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "img",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ],
+        "rispostePN": [
+          {
+            "field": "ID",
+            "type": "COUNTER",
+            "size": 10,
+            "nullable": false
+          },
+          {
+            "field": "idquesito",
+            "type": "INTEGER",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "risposte",
+            "type": "LONGCHAR",
+            "size": 1073741823,
+            "nullable": true
+          },
+          {
+            "field": "vf",
+            "type": "VARCHAR",
+            "size": 1,
+            "nullable": true
+          }
+        ]
+      },
+      "counts": {
+        "ArgomAB": 25,
+        "ArgomABRev": 10,
+        "ArgomADR": 35,
+        "ArgomAM": 10,
+        "ArgomAMRev": 10,
+        "ArgomC": 18,
+        "ArgomC197": 6,
+        "ArgomC197Rev": 12,
+        "ArgomCQC": 16,
+        "ArgomCRev": 13,
+        "ArgomD": 16,
+        "ArgomDRev": 13,
+        "ArgomKB": 19,
+        "Quizab": 7218,
+        "Quizabrev": 1826,
+        "Quizadr": 922,
+        "Quizam": 2050,
+        "Quizamrev": 1593,
+        "Quizc": 3196,
+        "Quizc1": 1296,
+        "Quizc197": 663,
+        "Quizcqc": 5440,
+        "Quizd": 2958,
+        "Quizd1": 1125,
+        "Quizec": 1900,
+        "Quized": 1833,
+        "Quizkb": 515,
+        "Quizsuprev": 2731,
+        "Risposteadr": 5154,
+        "Rispostekb": 1545,
+        "Tipiquiz": 42,
+        "argomPN": 19,
+        "quizPN": 2514,
+        "rispostePN": 7292
+      }
+    },
+    "citta": {
+      "schema": {
+        "cittaecod": [
+          {
+            "field": "comune",
+            "type": "VARCHAR",
+            "size": 35,
+            "nullable": true
+          },
+          {
+            "field": "codprov",
+            "type": "VARCHAR",
+            "size": 3,
+            "nullable": true
+          },
+          {
+            "field": "codced",
+            "type": "VARCHAR",
+            "size": 8,
+            "nullable": true
+          },
+          {
+            "field": "codf",
+            "type": "VARCHAR",
+            "size": 4,
+            "nullable": true
+          },
+          {
+            "field": "cap",
+            "type": "VARCHAR",
+            "size": 5,
+            "nullable": true
+          },
+          {
+            "field": "comesteso",
+            "type": "VARCHAR",
+            "size": 45,
+            "nullable": true
+          },
+          {
+            "field": "dal",
+            "type": "DATETIME",
+            "size": 19,
+            "nullable": true
+          },
+          {
+            "field": "al",
+            "type": "DATETIME",
+            "size": 19,
+            "nullable": true
+          }
+        ],
+        "esteri": [
+          {
+            "field": "statoestero",
+            "type": "VARCHAR",
+            "size": 45,
+            "nullable": true
+          },
+          {
+            "field": "sigla",
+            "type": "VARCHAR",
+            "size": 3,
+            "nullable": true
+          },
+          {
+            "field": "codf",
+            "type": "VARCHAR",
+            "size": 4,
+            "nullable": true
+          },
+          {
+            "field": "sInt",
+            "type": "VARCHAR",
+            "size": 3,
+            "nullable": true
+          },
+          {
+            "field": "codsta",
+            "type": "VARCHAR",
+            "size": 3,
+            "nullable": true
+          }
+        ],
+        "province": [
+          {
+            "field": "idprov",
+            "type": "COUNTER",
+            "size": 10,
+            "nullable": false
+          },
+          {
+            "field": "provincia",
+            "type": "VARCHAR",
+            "size": 35,
+            "nullable": true
+          },
+          {
+            "field": "codprov",
+            "type": "VARCHAR",
+            "size": 4,
+            "nullable": true
+          },
+          {
+            "field": "sigla",
+            "type": "VARCHAR",
+            "size": 2,
+            "nullable": true
+          },
+          {
+            "field": "codtar",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          },
+          {
+            "field": "nomtar",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          }
+        ]
+      },
+      "counts": {
+        "cittaecod": 9712,
+        "esteri": 289,
+        "province": 114
+      }
+    },
+    "annotazioni": {
+      "schema": {
+        "annotazioni": [
+          {
+            "field": "codice",
+            "type": "VARCHAR",
+            "size": 10,
+            "nullable": true
+          },
+          {
+            "field": "descrizione",
+            "type": "VARCHAR",
+            "size": 255,
+            "nullable": true
+          },
+          {
+            "field": "idprogr",
+            "type": "COUNTER",
+            "size": 10,
+            "nullable": false
+          }
+        ]
+      },
+      "counts": {
+        "annotazioni": 22
+      }
+    }
+  }
+}

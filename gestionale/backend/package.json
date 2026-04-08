@@ -1,0 +1,33 @@
+{
+  "name": "autoscuola-backend",
+  "version": "1.0.0",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "engine": "node src/engine.js",
+    "smoke:payment-actions": "node src/smokePaymentActions.js",
+    "smoke:payment-history:readonly": "node src/smokePaymentHistoryReadOnly.js",
+    "sync:archivio:autoscuole": "node src/syncArchivioAutoscuole.js",
+    "sync:archivio:autoscuole:dry": "node src/syncArchivioAutoscuole.js --dry-run",
+    "backfill:codice-autoscuola": "node src/backfillCandidateCodiceAutoscuola.js --apply",
+    "backfill:codice-autoscuola:dry": "node src/backfillCandidateCodiceAutoscuola.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.7",
+    "axios": "^1.13.5",
+    "axios-cookiejar-support": "^6.0.5",
+    "bcryptjs": "^2.4.3",
+    "cheerio": "^1.2.0",
+    "cors": "^2.8.5",
+    "csv-parser": "^3.2.0",
+    "dotenv": "^17.3.1",
+    "express": "^4.18.2",
+    "form-data": "^4.0.0",
+    "googleapis": "^171.4.0",
+    "jsonwebtoken": "^9.0.2",
+    "node-cron": "^4.2.1",
+    "pg": "^8.19.0",
+    "puppeteer": "^24.37.5",
+    "tough-cookie": "^6.0.0"
+  }
+}

@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>GECA Intel</title>
+<hta:application
+  id="gecaLauncher"
+  applicationname="GECA Intel"
+  caption="GECA Intel — Pannello di Controllo"
+  showintaskbar="yes"
+  singleinstance="yes"
+  windowstate="normal"
+  maximizebutton="no"
+  minimizebutton="yes"
+  scroll="no"
+  innerborder="no"
+  border="thin"
+/>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #0d1117;
+  color: #f0f6fc;
+  width: 680px;
+  overflow: hidden;
+}
+
+/* HEADER */
+.hdr {
+  background: linear-gradient(135deg, #1c3461 0%, #0d1b2e 100%);
+  padding: 20px 28px 16px;
+  border-bottom: 3px solid #2563eb;
+}
+.hdr-title {
+  font-size: 26px;
+  font-weight: 900;
+  color: #60a5fa;
+  letter-spacing: 2px;
+}
+.hdr-sub {
+  font-size: 14px;
+  color: #8b9ab5;
+  margin-top: 4px;
+}
+
+/* STATUS ROW */
+.status-row {
+  display: flex;
+  background: #161c28;
+  border-bottom: 1px solid #21293b;
+  padding: 0;
+}
+.sitem {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 20px;
+  border-right: 1px solid #21293b;
+  font-size: 14px;
+  font-weight: 700;
+  color: #8b9ab5;
+}
+.sitem:last-child { border-right: none; flex: 0 0 auto; padding-right: 20px; }
+.dot {
+  width: 13px; height: 13px;
+  border-radius: 50%;
+  background: #374151;
+  flex-shrink: 0;
+}
+.dot.on  { background: #22c55e; box-shadow: 0 0 10px #22c55e88; }
+.dot.off { background: #ef4444; box-shadow: 0 0 6px #ef444466; }
+.dot.wait{ background: #f59e0b; }
+
+/* MAIN CONTENT */
+.body { padding: 22px 28px 18px; }
+
+/* SECTION LABEL */
+.slabel {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  color: #2563eb;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.slabel::after { content:''; flex:1; height:1px; background:#1e293b; }
+
+/* BIG LAUNCH BUTTON */
+.btn-main {
+  width: 100%;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #166534, #14532d);
+  border: 2px solid #22c55e;
+  border-radius: 14px;
+  color: #f0fdf4;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 14px;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  transition: all 0.15s;
+}
+.btn-main:hover  { background: linear-gradient(135deg, #15803d, #166534); box-shadow: 0 0 24px #22c55e44; transform: translateY(-1px); }
+.btn-main:active { transform: translateY(0); }
+.btn-main .ico  { font-size: 36px; flex-shrink: 0; }
+.btn-main .ttl  { font-size: 20px; font-weight: 900; letter-spacing: 0.5px; }
+.btn-main .sub  { font-size: 13px; color: #86efac; margin-top: 3px; }
+
+/* GRID BUTTONS */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+.btn {
+  padding: 16px 16px;
+  border-radius: 12px;
+  border: 2px solid #1e293b;
+  background: #161c28;
+  color: #e2e8f0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  transition: all 0.12s;
+}
+.btn:hover  { background: #1e2d47; transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn .ico   { font-size: 26px; flex-shrink: 0; }
+.btn .ttl   { font-size: 15px; font-weight: 800; display: block; }
+.btn .sub   { font-size: 11px; color: #64748b; display: block; margin-top: 2px; }
+
+.btn.blue  { border-color: #2563eb; background: #0f1e42; }
+.btn.blue:hover  { background: #1d3a6e; border-color: #60a5fa; }
+.btn.amber { border-color: #d97706; background: #1c0f00; }
+.btn.amber:hover { background: #451a03; border-color: #fbbf24; }
+.btn.red   { border-color: #dc2626; background: #1c0505; }
+.btn.red:hover   { background: #450a0a; border-color: #f87171; }
+
+/* DASHBOARD BUTTON */
+.btn-dash {
+  width: 100%;
+  padding: 17px;
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  border: 2px solid #3b82f6;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 900;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: all 0.12s;
+  margin-bottom: 14px;
+}
+.btn-dash:hover { background: linear-gradient(135deg, #2563eb,#1d4ed8); box-shadow: 0 0 20px #1d4ed866; }
+
+/* PROXY LOG */
+.plog-wrap {
+  background: #080d14;
+  border: 2px solid #1e3a5f;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+.plog-head {
+  background: #0f1e35;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #1e3a5f;
+}
+.plog-head span { font-size: 13px; font-weight: 800; color: #3b82f6; letter-spacing: 1px; }
+.ep-badge {
+  background: #1d4ed8;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 900;
+  padding: 3px 12px;
+  border-radius: 20px;
+  min-width: 36px;
+  text-align: center;
+}
+.plog-body {
+  padding: 10px 14px;
+  height: 110px;
+  overflow-y: auto;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.8;
+  color: #4b5563;
+}
+.plog-body .ep-http  { color: #22c55e; }
+.plog-body .ep-https { color: #60a5fa; }
+.plog-body .ep-wait  { color: #4b5563; font-style: italic; }
+
+/* STATUS BAR */
+.statusbar {
+  background: #0d1117;
+  border-top: 1px solid #1e293b;
+  padding: 10px 28px;
+  font-size: 13px;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.statusbar .ok   { color: #22c55e; }
+.statusbar .err  { color: #ef4444; }
+.statusbar .info { color: #60a5fa; }
+
+hr.div { border: none; border-top: 1px solid #1e293b; margin: 16px 0; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-title">🛰&nbsp; GECA Intel</div>
+  <div class="hdr-sub">Pannello di Controllo — Analisi GeCA &amp; Portale Automobilista</div>
+</div>
+
+<!-- STATUS ROW -->
+<div class="status-row">
+  <div class="sitem">
+    <div class="dot wait" id="dot-server"></div>
+    <span id="lbl-server">Server :8090</span>
+  </div>
+  <div class="sitem">
+    <div class="dot wait" id="dot-proxy"></div>
+    <span id="lbl-proxy">Proxy :8888</span>
+  </div>
+  <div class="sitem">
+    <div class="dot wait" id="dot-geca"></div>
+    <span id="lbl-geca">GeCA</span>
+  </div>
+  <div class="sitem">
+    <span id="lbl-time" style="font-size:12px;color:#374151;"></span>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="body">
+
+  <!-- AVVIO -->
+  <div class="slabel">▶ Avvio</div>
+
+  <button class="btn-main" onclick="avviaTutto()">
+    <span class="ico">🚀</span>
+    <span>
+      <span class="ttl">AVVIA GECA INTEL</span>
+      <span class="sub">Dashboard :8090 + Proxy :8888 — internet rimane libero</span>
+    </span>
+  </button>
+
+  <div class="grid2">
+    <button class="btn blue" onclick="configuraProxy()">
+      <span class="ico">🔗</span>
+      <span>
+        <span class="ttl">Configura Proxy</span>
+        <span class="sub">GeCA → 127.0.0.1:8888 (1 volta)</span>
+      </span>
+    </button>
+    <button class="btn amber" onclick="avviaGeca()">
+      <span class="ico">🖥</span>
+      <span>
+        <span class="ttl">Apri GeCA</span>
+        <span class="sub">GecaFuture.exe</span>
+      </span>
+    </button>
+  </div>
+
+  <hr class="div">
+
+  <!-- DASHBOARD -->
+  <button class="btn-dash" onclick="apriDashboard()">
+    🌐&nbsp;&nbsp; Apri GECA Intel Dashboard
+  </button>
+
+  <!-- PROXY LOG -->
+  <div class="plog-wrap">
+    <div class="plog-head">
+      <span>📡 ENDPOINT CATTURATI</span>
+      <span class="ep-badge" id="epCount">0</span>
+    </div>
+    <div class="plog-body" id="proxyLog">
+      <span class="ep-wait">In attesa... avvia GECA Intel poi usa GeCA.</span>
+    </div>
+  </div>
+
+  <hr class="div">
+
+  <!-- PORTALE AUTOMOBILISTA -->
+  <div class="slabel">🏛 Portale Automobilista</div>
+
+  <div class="grid2">
+    <button class="btn" style="border-color:#7c3aed;background:#1a0938;" onclick="leggiCandidati()">
+      <span class="ico">👥</span>
+      <span>
+        <span class="ttl" style="color:#c4b5fd;">Leggi Candidati</span>
+        <span class="sub">Situazione da prenotare</span>
+      </span>
+    </button>
+    <button class="btn" style="border-color:#0891b2;background:#082030;" onclick="apriPortale()">
+      <span class="ico">🌐</span>
+      <span>
+        <span class="ttl" style="color:#67e8f9;">Portale Web</span>
+        <span class="sub">Apri nel browser</span>
+      </span>
+    </button>
+  </div>
+
+  <hr class="div">
+
+  <!-- UTILITÀ -->
+  <div class="slabel">⚙ Utilità</div>
+  <div class="grid3">
+    <button class="btn red" onclick="ripristinaInternet()">
+      <span class="ico">🌐</span>
+      <span>
+        <span class="ttl">Ripristina</span>
+        <span class="sub">Internet + tutti i proxy</span>
+      </span>
+    </button>
+    <button class="btn red" onclick="ripristinaGeca()">
+      <span class="ico">↩</span>
+      <span>
+        <span class="ttl">Ripristina GeCA</span>
+        <span class="sub">Rimuovi proxy GeCA</span>
+      </span>
+    </button>
+    <button class="btn" onclick="apriCatture()">
+      <span class="ico">📂</span>
+      <span>
+        <span class="ttl">Dati JSON</span>
+        <span class="sub">Cartella catture</span>
+      </span>
+    </button>
+  </div>
+
+</div><!-- /body -->
+
+<!-- STATUS BAR -->
+<div class="statusbar" id="statusbar">
+  <span class="info">Pannello pronto — clicca AVVIA GECA INTEL per iniziare.</span>
+</div>
+
+<script language="JavaScript">
+  var oShell  = new ActiveXObject("WScript.Shell");
+  var TOOLS   = "C:\\Users\\bluef\\booking-engine\\gestionale\\tools";
+  var BAT_ALL = TOOLS + "\\AVVIA_GECA_INTEL.bat";
+  var GECA    = "C:\\AFSoft\\GeCAFuture\\GecaFuture.exe";
+  var DASH    = "http://localhost:8090/dashboard.html";
+  var EP_FILE = "C:\\analisi-geca\\catture\\geca\\endpoint_map.json";
+  var CAT_DIR = "C:\\analisi-geca\\catture\\geca";
+
+  function slog(msg, cls) {
+    var t = new Date().toLocaleTimeString("it-IT");
+    document.getElementById("statusbar").innerHTML =
+      '<span class="' + (cls||"info") + '">[' + t + ']&nbsp; ' + msg + '</span>';
+  }
+
+  function avviaTutto() {
+    try {
+      oShell.Run('"' + BAT_ALL + '"', 1, false);
+      slog("GECA Intel avviato — aspetta 3 sec poi usa GeCA", "ok");
+      setTimeout(checkStatus, 3500);
+    } catch(e) { slog("Errore: " + e.message, "err"); }
+  }
+
+  function configuraProxy() {
+    try {
+      oShell.Run('cmd /c cd /d "' + TOOLS + '" && python configura_geca_fiddler.py 8888', 1, true);
+      slog("Proxy configurato: GeCA → 127.0.0.1:8888", "ok");
+    } catch(e) { slog("Errore: " + e.message, "err"); }
+  }
+
+  function avviaGeca() {
+    try {
+      oShell.Run('"' + GECA + '"', 1, false);
+      slog("GeCA aperto — usa il Portale normalmente", "ok");
+      setTimeout(checkStatus, 2000);
+    } catch(e) { slog("Errore: " + e.message, "err"); }
+  }
+
+  function apriDashboard() {
+    try {
+      oShell.Run(DASH);
+      slog("Dashboard aperta nel browser", "ok");
+    } catch(e) { slog("Errore: " + e.message, "err"); }
+  }
+
+  function ripristinaInternet() {
+    try {
+      oShell.Run('"' + TOOLS + '\\RIPRISTINA_INTERNET.bat"', 1, true);
+      slog("Internet ripristinato — tutti i proxy rimossi", "ok");
+    } catch(e) { slog("Errore: " + e.message, "err"); }
+  }
+
+  function ripristinaGeca() {
+    try {
+      oShell.Run('cmd /c cd /d "' + TOOLS + '" && python ripristina_geca.py', 1, true);
+      slog("GeCA ripristinato — proxy rimosso", "ok");
+    } catch(e) { slog("Errore: " + e.message, "err"); }
+  }
+
+  function apriCatture() {
+    try { oShell.Run('explorer "' + CAT_DIR + '"'); }
+    catch(e) { slog("Errore: " + e.message, "err"); }
+  }
+
+  function leggiCandidati() {
+    try {
+      oShell.Run('"' + TOOLS + '\\LEGGI_CANDIDATI_PORTALE.bat"', 1, false);
+      slog("Lettura candidati Portale avviata...", "ok");
+    } catch(e) { slog("Errore: " + e.message, "err"); }
+  }
+
+  function apriPortale() {
+    try {
+      oShell.Run("https://www.ilportaledellautomobilista.it/prenotazione/richiestaEmissioneDocumentoAbilitazioneEP/Read_initActionSituazioneCandidati.action?pageStatus=SEARCH");
+      slog("Portale Automobilista aperto nel browser", "ok");
+    } catch(e) { slog("Errore: " + e.message, "err"); }
+  }
+
+  // ── Leggi endpoint JSON e aggiorna log proxy ──
+  function refreshEndpoints() {
+    try {
+      var fso = new ActiveXObject("Scripting.FileSystemObject");
+      if (!fso.FileExists(EP_FILE)) {
+        document.getElementById("proxyLog").innerHTML =
+          '<span class="ep-wait">Nessun dato — avvia GECA Intel poi usa GeCA sul Portale.</span>';
+        document.getElementById("epCount").textContent = "0";
+        return;
+      }
+      var f   = fso.OpenTextFile(EP_FILE, 1, false, -1);
+      var txt = f.ReadAll(); f.Close();
+      var data = eval("(" + txt + ")");
+      var keys = [];
+      for (var k in data) { if (data.hasOwnProperty(k)) keys.push(k); }
+      document.getElementById("epCount").textContent = keys.length;
+      if (!keys.length) {
+        document.getElementById("proxyLog").innerHTML =
+          '<span class="ep-wait">File vuoto — usa GeCA per generare chiamate.</span>';
+        return;
+      }
+      var html = "";
+      for (var i = 0; i < keys.length; i++) {
+        var ep  = data[keys[i]];
+        var cls = (ep.proto === "HTTPS" || keys[i].indexOf("CONNECT") === 0) ? "ep-https" : "ep-http";
+        var cnt = ep.calls > 1 ? ' <span style="color:#f59e0b">(×' + ep.calls + ')</span>' : '';
+        html += '<div class="' + cls + '">' + ep.method + '&nbsp;&nbsp;' + ep.host + ep.path + cnt + '</div>';
+      }
+      var lb = document.getElementById("proxyLog");
+      lb.innerHTML = html;
+      lb.scrollTop = lb.scrollHeight;
+    } catch(ex) {}
+  }
+
+  // ── Stato processi ──
+  function checkStatus() {
+    // Server :8090
+    try {
+      var x = new ActiveXObject("Microsoft.XMLHTTP");
+      x.open("GET","http://localhost:8090/dashboard.html",false);
+      x.send();
+      setDot("server", x.status===200 ? "on" : "off");
+    } catch(e) { setDot("server","off"); }
+
+    // Proxy :8888
+    try {
+      var x2 = new ActiveXObject("Microsoft.XMLHTTP");
+      x2.open("HEAD","http://127.0.0.1:8888/",false);
+      x2.send();
+      setDot("proxy","on");
+    } catch(ep) {
+      var m = (ep.message||"").toLowerCase();
+      setDot("proxy", (m.indexOf("refused")>=0||m.indexOf("rifiut")>=0) ? "off" : "on");
+    }
+
+    // Processi
+    try {
+      var wmi = GetObject("winmgmts:");
+      var ps  = wmi.ExecQuery("SELECT Name FROM Win32_Process");
+      var hasGeca=false, hasPy=false;
+      var en = new Enumerator(ps);
+      for(;!en.atEnd();en.moveNext()) {
+        var n = en.item().Name.toLowerCase();
+        if (n.indexOf("gecafuture")>=0) hasGeca=true;
+        if (n.indexOf("python")>=0)     hasPy=true;
+      }
+      setDot("geca", hasGeca ? "on" : "off");
+      if (hasPy) setDot("proxy","on");
+    } catch(e2) { setDot("geca","wait"); }
+
+    document.getElementById("lbl-time").textContent = new Date().toLocaleTimeString("it-IT");
+  }
+
+  function setDot(id, s) {
+    var d = document.getElementById("dot-"+id);
+    if (d) d.className = "dot " + s;
+  }
+
+  // ── Init ──
+  window.resizeTo(700, 920);
+  checkStatus();
+  refreshEndpoints();
+  setInterval(checkStatus,      5000);
+  setInterval(refreshEndpoints, 3000);
+</script>
+</body>
+</html>

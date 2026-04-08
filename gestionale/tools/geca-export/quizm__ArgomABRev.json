@@ -1,0 +1,94 @@
+{
+  "source_file": "C:\\AFSoft\\GeCAFuture\\data\\quizm.mdb",
+  "table": "ArgomABRev",
+  "count": 10,
+  "exported_at": "2026-03-25T14:50:26.446210",
+  "schema": [
+    {
+      "field": "idargom",
+      "type": "SMALLINT",
+      "size": 5,
+      "nullable": true
+    },
+    {
+      "field": "idced",
+      "type": "SMALLINT",
+      "size": 5,
+      "nullable": true
+    },
+    {
+      "field": "argomento",
+      "type": "LONGCHAR",
+      "size": 1073741823,
+      "nullable": true
+    },
+    {
+      "field": "img",
+      "type": "VARCHAR",
+      "size": 255,
+      "nullable": true
+    }
+  ],
+  "rows": [
+    {
+      "idargom": 1,
+      "idced": 1,
+      "argomento": "Segnali di pericolo",
+      "img": "ab12"
+    },
+    {
+      "idargom": 2,
+      "idced": 2,
+      "argomento": "Segnali di divieto - Segnali di obbligo",
+      "img": "abrev2"
+    },
+    {
+      "idargom": 3,
+      "idced": 3,
+      "argomento": "Segnali di precedenza",
+      "img": "ab15"
+    },
+    {
+      "idargom": 4,
+      "idced": 4,
+      "argomento": "Segnali orizzontali - Segnali luminosi - Segnali degli agenti del traffico - Velocità - Distanza di sicurezza",
+      "img": "abrev4"
+    },
+    {
+      "idargom": 5,
+      "idced": 5,
+      "argomento": "Norme di circolazione dei veicoli - Posizione dei veicoli sulla careggiata - Cambio di direzione e corsia",
+      "img": "abrev5"
+    },
+    {
+      "idargom": 6,
+      "idced": 6,
+      "argomento": "Dispositivi di equipaggiamento : funzioni ed uso - Cinture di sicurezza e sistemi di ritenuta - Casco protettivo -abbigliamento di sicurezza",
+      "img": "ab29"
+    },
+    {
+      "idargom": 7,
+      "idced": 7,
+      "argomento": "Sorpasso - Comportamenti per prevenire incidenti stradali",
+      "img": "abrev7"
+    },
+    {
+      "idargom": 8,
+      "idced": 8,
+      "argomento": "Fermata, sosta, arresto e partenza - Circolazione sulle autostrade - Traino dei rimorchi - Limitazione dei consumi - Rispetto dell'ambiente",
+      "img": "abrev8"
+    },
+    {
+      "idargom": 9,
+      "idced": 9,
+      "argomento": "Guida in relazione alle condizioni fisiche e psichiche - Alcol - Sostanze stupefacenti - Omissione di soccorso - Uso degli occhiali",
+      "img": "ab32"
+    },
+    {
+      "idargom": 10,
+      "idced": 10,
+      "argomento": "Elementi costitutivi del veicolo importanti per la sicurezza - Manutenzione ed uso - Stabilità e tenuta di strada del veicolo - Comportamenti e cautele di guida",
+      "img": "ab35"
+    }
+  ]
+}

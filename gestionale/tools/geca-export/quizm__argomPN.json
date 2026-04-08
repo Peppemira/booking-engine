@@ -1,0 +1,173 @@
+{
+  "source_file": "C:\\AFSoft\\GeCAFuture\\data\\quizm.mdb",
+  "table": "argomPN",
+  "count": 19,
+  "exported_at": "2026-03-25T14:50:27.425068",
+  "schema": [
+    {
+      "field": "idagrom",
+      "type": "INTEGER",
+      "size": 10,
+      "nullable": true
+    },
+    {
+      "field": "idced",
+      "type": "INTEGER",
+      "size": 10,
+      "nullable": true
+    },
+    {
+      "field": "argomento",
+      "type": "VARCHAR",
+      "size": 255,
+      "nullable": true
+    },
+    {
+      "field": "img",
+      "type": "INTEGER",
+      "size": 10,
+      "nullable": true
+    },
+    {
+      "field": "capitolo",
+      "type": "VARCHAR",
+      "size": 255,
+      "nullable": true
+    }
+  ],
+  "rows": [
+    {
+      "idagrom": 1,
+      "idced": 11,
+      "argomento": "TEORIA DELLO SCAFO",
+      "img": 0,
+      "capitolo": "BASE"
+    },
+    {
+      "idagrom": 2,
+      "idced": 12,
+      "argomento": "MOTORI",
+      "img": 0,
+      "capitolo": "BASE"
+    },
+    {
+      "idagrom": 4,
+      "idced": 14,
+      "argomento": "MANOVRA E CONDOTTA",
+      "img": 0,
+      "capitolo": "BASE"
+    },
+    {
+      "idagrom": 5,
+      "idced": 15,
+      "argomento": "COLREG E SEGNALAMENTO MARITTIMO",
+      "img": 0,
+      "capitolo": "BASE"
+    },
+    {
+      "idagrom": 6,
+      "idced": 16,
+      "argomento": "METEOROLOGIA",
+      "img": 0,
+      "capitolo": "BASE"
+    },
+    {
+      "idagrom": 7,
+      "idced": 17,
+      "argomento": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+      "img": 0,
+      "capitolo": "BASE"
+    },
+    {
+      "idagrom": 8,
+      "idced": 18,
+      "argomento": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+      "img": 0,
+      "capitolo": "BASE"
+    },
+    {
+      "idagrom": 9,
+      "idced": 21,
+      "argomento": "TEORIA",
+      "img": 0,
+      "capitolo": "VELA"
+    },
+    {
+      "idagrom": 10,
+      "idced": 22,
+      "argomento": "ATTREZZATURA",
+      "img": 0,
+      "capitolo": "VELA"
+    },
+    {
+      "idagrom": 11,
+      "idced": 23,
+      "argomento": "MANOVRE",
+      "img": 0,
+      "capitolo": "VELA"
+    },
+    {
+      "idagrom": 12,
+      "idced": 61,
+      "argomento": "TEORIA DELLO SCAFO",
+      "img": 0,
+      "capitolo": "D1"
+    },
+    {
+      "idagrom": 13,
+      "idced": 62,
+      "argomento": "MOTORI",
+      "img": 0,
+      "capitolo": "D1"
+    },
+    {
+      "idagrom": 14,
+      "idced": 63,
+      "argomento": "SICUREZZA DELLA NAVIGAZIONE",
+      "img": 0,
+      "capitolo": "D1"
+    },
+    {
+      "idagrom": 15,
+      "idced": 64,
+      "argomento": "MANOVRA E CONDOTTA",
+      "img": 0,
+      "capitolo": "D1"
+    },
+    {
+      "idagrom": 16,
+      "idced": 65,
+      "argomento": "COLREG",
+      "img": 0,
+      "capitolo": "D1"
+    },
+    {
+      "idagrom": 17,
+      "idced": 66,
+      "argomento": "METEOROLOGIA",
+      "img": 0,
+      "capitolo": "D1"
+    },
+    {
+      "idagrom": 18,
+      "idced": 67,
+      "argomento": "NAVIGAZIONE",
+      "img": 0,
+      "capitolo": "D1"
+    },
+    {
+      "idagrom": 19,
+      "idced": 68,
+      "argomento": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+      "img": 0,
+      "capitolo": "D1"
+    },
+    {
+      "idagrom": 3,
+      "idced": 13,
+      "argomento": "SICUREZZA DELLA NAVIGAZIONE",
+      "img": 0,
+      "capitolo": "BASE"
+    }
+  ]
+}

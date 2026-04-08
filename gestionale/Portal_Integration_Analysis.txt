@@ -1,0 +1,331 @@
+ANALYSIS OF ITALIAN DRIVING SCHOOL (AUTOSCUOLA) PORTAL INTEGRATION DOCUMENTS
+
+Document 1: MIT-EP06-MUT-RichiestaPatenti_SpecificheWebServices.1.1
+Document 2: GRPW_SpecificheWebServices_GestioneRichiestePatenti_Appendice_7.25
+
+=== KEY FINDINGS ===
+
+1. WEB SERVICE OPERATIONS - Document 1 contains specifications for 70+ services across multiple categories:
+
+PRENOTAZIONE (BOOKING):
+- cancellazionePrenotazione (Cancellation)
+- facsimilePrenotazione (Facsimile preview)
+- dettaglioPrenotazioneConversione (Conversion detail)
+- dettaglioPrenotazioneDuplicato (Duplicate detail)
+- inserimentoPrenotazioneConversione* (Conversion insertion - multiple payment methods)
+  - inserimentoPrenotazioneConversioneBollettino (Bollettino payment)
+  - inserimentoPrenotazioneConversioneDecurtazione (Credit deduction)
+  - inserimentoPrenotazioneConversionePagoPA (PagoPA payment)
+- inserimentoPrenotazioneDuplicato* (Duplicate insertion - multiple payment methods)
+  - inserimentoPrenotazioneDuplicatoBollettino
+  - inserimentoPrenotazioneDuplicatoDecurtazione
+  - inserimentoPrenotazioneDuplicatoPagoPA
+- modificaPrenotazioneConversione/Duplicato (Modification)
+- ricercaPrenotazione (Search)
+- modificaFotoFirmaPrenotazione (Photo/Signature modification)
+- stampaModelloTT2112PerPrenotazioni (Form TT2112 printing)
+
+RICHIESTA ESAME (EXAM REQUEST):
+- visualizzazioneDettaglioRichiestaEsame (Detail view)
+- inserimentoRichiestaEsame* (Exam booking - multiple variants)
+  - Con certificato medico (with medical certificate)
+  - Con bollettino/Decurtazione/PagoPA
+- modificaRichiestaEsame (Modification)
+- ricercaRichiestaEsame (Search)
+- cancellazioneRichiestaEsame (Cancellation)
+- foglioRosa (Provisional license):
+  - ricercaFoglioRosaPerPrimaStampa (Search for first print)
+  - stampaFoglioRosa (Print)
+  - ricercaFoglioRosaPerRistampa (Search for reprint)
+  - ristampaFoglioRosa (Reprint)
+
+PRENOTAZIONE CQC (PROFESSIONAL QUALIFICATION):
+- inserimentoPrenotazioneCQC* (multiple payment methods)
+- modificaPrenotazioneCQC
+- dettaglioPrenotazioneCQC
+- ricercaPrenotazioneCQC
+- cancellazionePrenotazioneCQC
+- facsimilePrenotazioneCQC
+- modificaFotoPrenotazioneCQC
+
+PRENOTAZIONE PATENTI CQC (CQC LICENSE BOOKING):
+- inserimentoPrenotazionePatentiCQC* (multiple payment methods)
+- modificaPrenotazionePatentiCQC
+- eliminaPrenotazionePatentiCQC
+- ricercaPrenotazionePatentiCQC
+- dettaglioPrenotazionePatentiCQC
+- facsimilePrenotazionePatentiCQC
+
+RINNOVO (LICENSE RENEWAL):
+- inserimentoRinnovoPatente (Simple renewal)
+- inserimentoRinnovoPatenteMedico (Medical renewal)
+- modificaRinnovoPatente/PatenteMedico
+- ricercaGestioneRinnovoPatente
+- dettaglioRinnovoPatente
+- stampaModelloTT2112PerRinnovi
+- (Two-phase process for medical/CML structures)
+
+CERTIFICATO MEDICO (MEDICAL CERTIFICATE):
+- inserimentoCertificatoMedico*
+- modificaCertificatoMedico
+- ricercaCertificatoMedico
+- dettaglioCertificatoMedico
+- stampaTT2112CertificatoMedico
+
+PERMESSO PROVVISORIO (PROVISIONAL LICENSE):
+- inserimentoPermessoProvvisorio
+- modificaPermessoProvvisorio
+- dettaglioPermessoProvvisorio
+- ricercaPermessoProvvisorio
+- stampaPermessoProvvisorio
+- (CML variants available)
+
+ESERCITAZIONI GUIDA (DRIVING EXERCISES):
+- dettaglioEsercitazioniGuida
+- modificaEsercitazioniGuida
+- inserimentoEsercitazioniGuida
+- cancellazioneEsercitazioniGuida
+- stampaEsercitazioniGuida
+
+
+2. KEY DATA TYPES & FIELD NAMES - Document 2 (Appendice with XSD):
+
+AnagraficaRichiedenteType (Applicant Demographics):
+- nome (First name) - VarCharTrentacinqueMinLenghtZero, optional
+- cognome (Surname) - VarCharTrentacinque, required
+- tipoAnagraficaSpeciale (Special name type) - string, optional
+- dataNascita (Birth date) - date, required
+- codiceFiscale (Tax code/SSN) - CharSedici (16 chars), optional
+- foto (Photo) - FileType, optional, nullable
+- codiceFotoDigitale (Digital photo code) - CharSei, optional
+- firma (Signature) - FileType, optional, nullable
+- sesso (Gender) - SessoType, required
+- luogoNascita (Birth place) - LuogoNascitaType, required
+
+IdentificativoRichiestaEsameType (Exam Request Identifier):
+- login - LoginType (codicePin)
+- marcaOperativa (Operative mark/code) - MarcaOperativaRichiestaEsameType
+- codiceOperatore (Operator code) - CharQuattro (4 digits)
+- uffOperativo (Operating office) - CharDue (2 digits)
+
+DatiRichiestaEsameType (Exam Request Data - for modifications):
+- tipologiaPagamento (Payment type) - required, values: BOLLETTINO, DECURTAZIONE, PAGOPA
+- codicePagamento (Payment code) - optional
+- marcaOperativaPrecedente (Previous operative mark) - optional
+- ufficioOperativo (Operating office) - CharDue, required
+- codiceOperatore (Operator code) - CharQuattro, required
+- provinciaCIA (CIA province) - optional
+- codiceCIA (CIA code) - optional
+- dataIscrizione (Enrollment date) - optional
+- protocolloRichiesta (Request protocol) - optional
+- datiAnagrafici (Demographics) - AnagraficaRichiedenteType, required
+- datiResidenza (Residence data) - LuogoResidenzaType, required
+- datiMedici (Medical data) - DatiMediciType, required
+- categoriaDisponibile (Available category) - required
+- categoriaRichiesta (Requested category) - required
+- validitaPatenteRichiestaMM (License validity months) - integer, required
+- validitaPatenteRichiestaAA (License validity years) - integer, required
+- cambioAutomatico (Automatic transmission) - SiNoType, required
+- abilitazioneCategoriaA (Category A qualification) - optional
+- elencoPrescrizioniTecniche (Technical prescriptions list) - optional
+- patenteItalianaPrecedente (Previous Italian license) - optional
+- cqcPosseduta (CQC held) - optional
+- dataInizioCorsoCqc (CQC course start date) - optional
+- categoriaPossedutaEstesa (Extended held category) - optional
+- categoriaPosseduta (Held category) - optional
+
+DatiRichiestaEsameInserimentoType (For new exam requests - insertion):
+- Includes all fields from DatiRichiestaEsameType plus:
+- marcaOperativa (Current operative mark) - required
+- datiAbilitazione (Qualification data) - ElencoCategorieInputType
+- elencoTarghePatenteSpeciale (Special license plates list)
+- certificatoMedico flags
+- prescrizioni tecniche (Technical restrictions)
+- descrizioniAbilitazioniPossedute (Held qualifications descriptions)
+- and others
+
+DettaglioPrenotazioneCQCType (CQC Booking Details):
+- marcaOperativa (Operative mark/code) - required
+- statoPrenotazione (Booking state) - StatoPrenotazioneCQCType
+- tipologiaPagamento (Payment type)
+- codicePagamento (Payment code)
+- dataInserimento (Insertion date)
+- dataVariazioneStato (State change date)
+- ufficioOperativo (Operating office)
+- codiceOperatore (Operator code)
+- cognome (Surname) - required
+- nome (Name)
+- datiAnagrafici (Demographics) - AnagraficaRichiedenteCQCType
+- datiResidenza (Residence)
+- datiPatenteCQC (CQC license data) - DatiPatenteCQCType
+- datiCorso (Course data) - DatiCorsoType
+- datiCQCEstera (Foreign CQC data) - optional
+- esenteVisitaCML (CML medical visit exemption)
+- dataScadenzaCQC (CQC expiration date)
+
+InserimentoPrenotazioneCQCType (For creating CQC bookings):
+- marcaOperativa - required
+- ufficioOperativo - required
+- codiceOperatore - required
+- datiAnagrafici (AnagraficaRichiedenteCQCType) - required
+- datiResidenza (LuogoResidenzaEsteraType or LuogoResidenzaType) - required
+- datiPatenteCQC (DatiPatenteCQCType) - required
+  - numeroPatenteCQC
+  - dataRilascio
+  - dataScadenza
+  - categorieAbilitate
+  - tipoPatente (A1, A2, A, B, BE, C1, C1E, C, CE, D1, D1E, D, DE)
+- datiCorso (DatiCorsoType) - required
+  - tipoCorso
+  - centroFormazioneCMN
+  - dataInizioCorso
+- datiCQCEstera (DatiCQCEsteraType) - optional
+  - tipoPatenteCQC
+  - nazioneRilascio
+  - dataRilascio
+  - dataScadenza
+  - categoriePossedute
+- tipologiaPagamento - required
+- codicePagamento - optional
+
+
+3. RECOMMENDED FIELD MAPPING FOR HTML PORTAL SCRAPING:
+
+ESSENTIAL FIELDS TO SCRAPE FOR EXAM BOOKING (Richiesta Esame):
+- Applicant name & surname
+- Birth date
+- Tax code (codice fiscale)
+- Gender
+- Birth place (province, municipality)
+- Residence (address, province, municipality, postal code)
+- Requested license category
+- Available categories
+- Payment method (dropdown: Bollettino/Decurtazione/PagoPA)
+- Payment code (if payment method selected)
+- Auto transmission flag (yes/no)
+- Medical certificate protocol (if applicable)
+- Technical prescriptions checklist
+- Special license plates section
+- Validity period (months/years)
+
+ESSENTIAL FIELDS FOR CQC BOOKING (Prenotazione CQC):
+- Operative mark/code
+- Applicant demographics (full: AnagraficaRichiedenteCQCType)
+- Residence data
+- Existing Italian CQC license data:
+  - CQC license number
+  - Release date
+  - Expiration date
+  - Enabled categories (A1, A2, A, B, BE, C1, C1E, C, CE, D1, D1E, D, DE)
+- Course data:
+  - Course type
+  - Training center
+  - Course start date
+- Foreign CQC (if applicable):
+  - CQC type
+  - Issuing nation
+  - Release/expiration dates
+  - Held categories
+- Payment method
+- Payment code
+- CML medical visit exemption flag
+- Booking state
+- Insertion/modification dates
+
+CRITICAL OPERATIONAL FIELDS:
+- marcaOperativa (operator/school code) - appears in almost every operation
+- codiceOperatore (operator PIN code) - 4 digits
+- uffOperativo (office code) - 2 digits
+- Payment method (tipologiaPagamento) - controls which WS to call
+- Booking state (statoPrenotazione) - determines available actions
+- Medical certificate protocol - optional but important for some flows
+
+PAYMENT-RELATED FIELDS:
+- tipologiaPagamento: BOLLETTINO, DECURTAZIONE, PAGOPA, ASSENTE (if free)
+- codicePagamento: varies by payment type
+- datiBollo: (stamp/tax info when applicable)
+
+TECHNICAL/RESTRICTIONS (Prescrizioni):
+- cambioAutomatico (automatic transmission only)
+- elencoPrescrizioniTecniche (list of technical restrictions)
+- esenteVisitaCML (medical exam exemption)
+- obbligoVisitaCML (medical exam required)
+- tempoEstesoProvaTeoria (extended theory test time)
+- svolteProveTempiDiReazione (reaction time test)
+- obbligoEsperimentoGuida (driving experiment required)
+
+
+4. HTML FORM FIELD MAPPING STRATEGY:
+
+The documents use a SOAP/XML WebService approach, but the Portale dell'Automobilista 
+likely presents these as HTML forms. Key mapping points:
+
+Input Fields (from HTML forms):
+1. Demographics section:
+   - <input name="nome"> → nome
+   - <input name="cognome"> → cognome
+   - <input name="dataNascita"> → dataNascita (format: YYYY-MM-DD)
+   - <input name="codiceFiscale"> → codiceFiscale
+   - <input name="sesso"> → sesso (F/M)
+   - <select name="provincia">/@luogo_nascita_provincia → luogoNascita/provinciaNascita
+   - <input type="file" name="foto"> → foto (base64 encoded)
+   - <input type="file" name="firma"> → firma (base64 encoded)
+
+2. Residence section:
+   - <input name="provincia_residenza"> → provinciaResidenza
+   - <input name="comune_residenza"> → comuneResidenza
+   - <input name="toponimo"> → toponimoResidenza (VIA, PIAZZA, etc.)
+   - <input name="indirizzo"> → indirizzoResidenza
+   - <input name="civico"> → civicoResidenza
+   - <input name="cap"> → capResidenza
+
+3. License/Category section:
+   - <select name="categoria_richiesta"> → categoriaRichiesta
+   - <select name="categoria_disponibile"> → categoriaDisponibile
+   - <input type="checkbox" name="cambio_automatico"> → cambioAutomatico
+
+4. Payment section:
+   - <select name="tipo_pagamento"> → tipologiaPagamento
+   - <input name="codice_pagamento"> → codicePagamento
+   - <input name="bollettino"> or <input name="cig"> (depending on tipo)
+
+5. Medical section (if applicable):
+   - <input name="protocollo_certificato"> → protocolloCertificatoMedico
+   - <select name="medico"> → codiceIscrizioneAlboMedici
+   - <input name="data_visita_medica"> → dataVisitaMedica
+
+6. Operational/Admin:
+   - <input type="hidden" name="marca_operativa"> → marcaOperativa
+   - <input type="hidden" name="codice_operatore"> → codiceOperatore
+   - <input type="hidden" name="uff_operativo"> → uffOperativo
+
+
+5. SCRAPING PRIORITIES FOR GESTIONALE:
+
+HIGH PRIORITY (Core booking functionality):
+1. marcaOperativa, codiceOperatore, uffOperativo (authentication/context)
+2. Applicant full demographics (AnagraficaRichiedenteType)
+3. Residence/recapito (delivery address)
+4. Requested category and available categories
+5. Payment method and code
+6. Medical certificate info (if in path)
+7. Booking state and dates
+8. Technical prescriptions list
+
+MEDIUM PRIORITY (Useful for management):
+1. Digital photo code
+2. CQC/previous license info
+3. Course data (for CQC)
+4. Validity periods
+5. Annotations/restrictions list
+6. Special license plates
+7. Medical visit dates
+8. CML medical visit flags
+
+LOW PRIORITY (Optional/Reference):
+1. Timbro (stamp info)
+2. Anomalies list
+3. Document output references
+4. Detailed audit dates/operators
+5. Recovery credit info
+

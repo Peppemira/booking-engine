@@ -1,0 +1,44 @@
+{
+  "timestamp": "2026-03-25T14:36:56.949986",
+  "geca_dir": "C:\\AFSoft\\GeCAFuture",
+  "database_type": "Microsoft Access",
+  "mysql_services": [],
+  "sqlite_files": [],
+  "access_files": [
+    {
+      "path": "C:\\AFSoft\\GeCAFuture\\data\\annotazioni.mdb",
+      "size_kb": 308
+    },
+    {
+      "path": "C:\\AFSoft\\GeCAFuture\\data\\citta.mdb",
+      "size_kb": 1328
+    },
+    {
+      "path": "C:\\AFSoft\\GeCAFuture\\data\\quizm.mdb",
+      "size_kb": 14492
+    },
+    {
+      "path": "C:\\AFSoft\\GeCAFuture\\data\\quizpatente.mdb",
+      "size_kb": 11488
+    }
+  ],
+  "mysql_data_dirs": [
+    "C:\\AFSoft\\GeCAFuture\\data"
+  ],
+  "config_parsed": {
+    "RETE": {
+      "lan": "off",
+      "locale": "on"
+    },
+    "TYPE": {
+      "server": "off",
+      "client": "on"
+    },
+    "LINK": {
+      "posiz": ""
+    }
+  },
+  "open_ports": [],
+  "xampp_found": null,
+  "recommendation": ""
+}

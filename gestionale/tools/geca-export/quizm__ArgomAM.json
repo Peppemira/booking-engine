@@ -1,0 +1,94 @@
+{
+  "source_file": "C:\\AFSoft\\GeCAFuture\\data\\quizm.mdb",
+  "table": "ArgomAM",
+  "count": 10,
+  "exported_at": "2026-03-25T14:50:26.450756",
+  "schema": [
+    {
+      "field": "idargom",
+      "type": "SMALLINT",
+      "size": 5,
+      "nullable": true
+    },
+    {
+      "field": "idced",
+      "type": "SMALLINT",
+      "size": 5,
+      "nullable": true
+    },
+    {
+      "field": "argomento",
+      "type": "LONGCHAR",
+      "size": 1073741823,
+      "nullable": true
+    },
+    {
+      "field": "img",
+      "type": "VARCHAR",
+      "size": 255,
+      "nullable": true
+    }
+  ],
+  "rows": [
+    {
+      "idargom": 1,
+      "idced": 1,
+      "argomento": "Segnali di pericolo",
+      "img": "ab12"
+    },
+    {
+      "idargom": 2,
+      "idced": 2,
+      "argomento": "Segnali di divieto, obbligo e precedenza",
+      "img": "am2"
+    },
+    {
+      "idargom": 3,
+      "idced": 3,
+      "argomento": "Pannelli integrativi, segnali di indicazione, segnali luminosi, segnali orizzontali",
+      "img": "am3"
+    },
+    {
+      "idargom": 4,
+      "idced": 4,
+      "argomento": "Norme sulla precedenza",
+      "img": "ab24"
+    },
+    {
+      "idargom": 5,
+      "idced": 5,
+      "argomento": "Velocità, distanza di sicurezza, sorpasso, svolta, cambio di corsia, cambio di direzione",
+      "img": "am5"
+    },
+    {
+      "idargom": 6,
+      "idced": 6,
+      "argomento": "Fermata, sosta, definizioni stradali",
+      "img": "am6"
+    },
+    {
+      "idargom": 7,
+      "idced": 7,
+      "argomento": "Causa di incidenti, assicurazione",
+      "img": "am7"
+    },
+    {
+      "idargom": 8,
+      "idced": 8,
+      "argomento": "Elementi del ciclomotore e loro uso, casco",
+      "img": "am8"
+    },
+    {
+      "idargom": 9,
+      "idced": 9,
+      "argomento": "Comportamento alla guida del ciclomotore",
+      "img": "am9"
+    },
+    {
+      "idargom": 10,
+      "idced": 10,
+      "argomento": "Educazione alla legalità",
+      "img": "am10"
+    }
+  ]
+}

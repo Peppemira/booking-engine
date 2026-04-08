@@ -1,0 +1,2063 @@
+{
+  "source_file": "C:\\AFSoft\\GeCAFuture\\data\\citta.mdb",
+  "table": "esteri",
+  "count": 289,
+  "exported_at": "2026-03-25T14:50:28.316929",
+  "schema": [
+    {
+      "field": "statoestero",
+      "type": "VARCHAR",
+      "size": 45,
+      "nullable": true
+    },
+    {
+      "field": "sigla",
+      "type": "VARCHAR",
+      "size": 3,
+      "nullable": true
+    },
+    {
+      "field": "codf",
+      "type": "VARCHAR",
+      "size": 4,
+      "nullable": true
+    },
+    {
+      "field": "sInt",
+      "type": "VARCHAR",
+      "size": 3,
+      "nullable": true
+    },
+    {
+      "field": "codsta",
+      "type": "VARCHAR",
+      "size": 3,
+      "nullable": true
+    }
+  ],
+  "rows": [
+    {
+      "statoestero": "AFAR E ISS",
+      "sigla": "SOF",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "AFGHANISTAN",
+      "sigla": "AFG",
+      "codf": "Z200",
+      "sInt": "AFG",
+      "codsta": "301"
+    },
+    {
+      "statoestero": "AFRICA S-W",
+      "sigla": "SWA",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "ALBANIA",
+      "sigla": "ALB",
+      "codf": "Z100",
+      "sInt": "ALB",
+      "codsta": "201"
+    },
+    {
+      "statoestero": "ALGERIA",
+      "sigla": "DZZ",
+      "codf": "Z301",
+      "sInt": "DZA",
+      "codsta": "401"
+    },
+    {
+      "statoestero": "ANDORRA",
+      "sigla": "AND",
+      "codf": "Z101",
+      "sInt": "AND",
+      "codsta": "202"
+    },
+    {
+      "statoestero": "ANGOLA",
+      "sigla": "ANG",
+      "codf": "Z302",
+      "sInt": "AGO",
+      "codsta": "402"
+    },
+    {
+      "statoestero": "ANGUILLA",
+      "sigla": "ANL",
+      "codf": "Z529",
+      "sInt": "AIA",
+      "codsta": "502"
+    },
+    {
+      "statoestero": "ANTIGUA E BARBUDA",
+      "sigla": "ATG",
+      "codf": "Z532",
+      "sInt": "ATG",
+      "codsta": "503"
+    },
+    {
+      "statoestero": "ANTILLE OL.",
+      "sigla": "NAD",
+      "codf": "Z501",
+      "sInt": "ANT",
+      "codsta": "907"
+    },
+    {
+      "statoestero": "ARABIA SAUD.",
+      "sigla": "ARS",
+      "codf": "Z203",
+      "sInt": "SAU",
+      "codsta": "302"
+    },
+    {
+      "statoestero": "ARGENTINA",
+      "sigla": "RAG",
+      "codf": "Z600",
+      "sInt": "ARG",
+      "codsta": "602"
+    },
+    {
+      "statoestero": "ARMENIA",
+      "sigla": "ARM",
+      "codf": "Z137",
+      "sInt": "ARM",
+      "codsta": ""
+    },
+    {
+      "statoestero": "ARMENIA",
+      "sigla": "ARN",
+      "codf": "Z252",
+      "sInt": "ARM",
+      "codsta": "358"
+    },
+    {
+      "statoestero": "AURIGNY",
+      "sigla": "GBA",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "AUSTRALIA",
+      "sigla": "AUL",
+      "codf": "Z700",
+      "sInt": "AUS",
+      "codsta": "701"
+    },
+    {
+      "statoestero": "AUSTRIA",
+      "sigla": "AAA",
+      "codf": "Z102",
+      "sInt": "AUT",
+      "codsta": "203"
+    },
+    {
+      "statoestero": "AZERBAIJAN",
+      "sigla": "AZE",
+      "codf": "Z141",
+      "sInt": "AZE",
+      "codsta": "359"
+    },
+    {
+      "statoestero": "AZERBAIJAN",
+      "sigla": "AZJ",
+      "codf": "Z253",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "B.E. INVEST.",
+      "sigla": "BEI",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "BAHAMAS",
+      "sigla": "BSH",
+      "codf": "Z502",
+      "sInt": "BHS",
+      "codsta": "505"
+    },
+    {
+      "statoestero": "BAHREIN",
+      "sigla": "BRN",
+      "codf": "Z204",
+      "sInt": "BHR",
+      "codsta": "304"
+    },
+    {
+      "statoestero": "BANGLADESH",
+      "sigla": "BDH",
+      "codf": "Z249",
+      "sInt": "BGD",
+      "codsta": "305"
+    },
+    {
+      "statoestero": "BARBADOS",
+      "sigla": "BDS",
+      "codf": "Z522",
+      "sInt": "BRB",
+      "codsta": "506"
+    },
+    {
+      "statoestero": "BELGIO",
+      "sigla": "BBB",
+      "codf": "Z103",
+      "sInt": "BEL",
+      "codsta": "206"
+    },
+    {
+      "statoestero": "BELIZE",
+      "sigla": "BHZ",
+      "codf": "Z512",
+      "sInt": "BLZ",
+      "codsta": "507"
+    },
+    {
+      "statoestero": "BENIN",
+      "sigla": "BEN",
+      "codf": "Z314",
+      "sInt": "DHY",
+      "codsta": "406"
+    },
+    {
+      "statoestero": "BERMUDE",
+      "sigla": "BER",
+      "codf": "Z400",
+      "sInt": "BMU",
+      "codsta": "508"
+    },
+    {
+      "statoestero": "BHUTAN",
+      "sigla": "BHU",
+      "codf": "Z205",
+      "sInt": "BTN",
+      "codsta": "306"
+    },
+    {
+      "statoestero": "BIELORUSSIA",
+      "sigla": "BYY",
+      "codf": "Z139",
+      "sInt": "BLR",
+      "codsta": "256"
+    },
+    {
+      "statoestero": "BOLIVIA",
+      "sigla": "RBL",
+      "codf": "Z601",
+      "sInt": "BOL",
+      "codsta": "604"
+    },
+    {
+      "statoestero": "BOSNIA-ERZEG",
+      "sigla": "BIH",
+      "codf": "Z153",
+      "sInt": "BIH",
+      "codsta": "252"
+    },
+    {
+      "statoestero": "BOTSWANA",
+      "sigla": "RBT",
+      "codf": "Z358",
+      "sInt": "BWA",
+      "codsta": "408"
+    },
+    {
+      "statoestero": "BRASILE",
+      "sigla": "BRS",
+      "codf": "Z602",
+      "sInt": "BRA",
+      "codsta": "605"
+    },
+    {
+      "statoestero": "BRUNEI",
+      "sigla": "BRU",
+      "codf": "Z207",
+      "sInt": "BRN",
+      "codsta": "309"
+    },
+    {
+      "statoestero": "BULGARIA",
+      "sigla": "BGA",
+      "codf": "Z104",
+      "sInt": "BGR",
+      "codsta": "209"
+    },
+    {
+      "statoestero": "BURKINA FASO",
+      "sigla": "AVT",
+      "codf": "Z354",
+      "sInt": "BFA",
+      "codsta": "409"
+    },
+    {
+      "statoestero": "BURUNDI",
+      "sigla": "RUD",
+      "codf": "Z305",
+      "sInt": "BDI",
+      "codsta": "410"
+    },
+    {
+      "statoestero": "C.I.P.P.T.",
+      "sigla": "OIT",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "CAMBOGIA",
+      "sigla": "KKK",
+      "codf": "Z208",
+      "sInt": "KHM",
+      "codsta": "310"
+    },
+    {
+      "statoestero": "CAMERUN",
+      "sigla": "CAM",
+      "codf": "Z306",
+      "sInt": "CMR",
+      "codsta": "411"
+    },
+    {
+      "statoestero": "CANADA",
+      "sigla": "CDN",
+      "codf": "Z401",
+      "sInt": "CAN",
+      "codsta": "509"
+    },
+    {
+      "statoestero": "CECOSLOVACCHIA",
+      "sigla": "CSV",
+      "codf": "Z105",
+      "sInt": "CSK",
+      "codsta": "801"
+    },
+    {
+      "statoestero": "CIAD",
+      "sigla": "CIA",
+      "codf": "Z309",
+      "sInt": "TCD",
+      "codsta": "415"
+    },
+    {
+      "statoestero": "CILE",
+      "sigla": "RCH",
+      "codf": "Z603",
+      "sInt": "CHL",
+      "codsta": "606"
+    },
+    {
+      "statoestero": "CIPRO",
+      "sigla": "CYD",
+      "codf": "Z211",
+      "sInt": "CYP",
+      "codsta": "315"
+    },
+    {
+      "statoestero": "COLOMBIA",
+      "sigla": "COL",
+      "codf": "Z604",
+      "sInt": "COL",
+      "codsta": "608"
+    },
+    {
+      "statoestero": "COMORE",
+      "sigla": "COM",
+      "codf": "Z310",
+      "sInt": "COM",
+      "codsta": "417"
+    },
+    {
+      "statoestero": "CONCESSIONI",
+      "sigla": "CCS",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "CONGO BELGA",
+      "sigla": "CBE",
+      "codf": "Z370",
+      "sInt": "",
+      "codsta": "418"
+    },
+    {
+      "statoestero": "CONGO BRAZZ.",
+      "sigla": "RCB",
+      "codf": "Z311",
+      "sInt": "",
+      "codsta": "418"
+    },
+    {
+      "statoestero": "COOK NIUE U.",
+      "sigla": "COK",
+      "codf": "Z703",
+      "sInt": "",
+      "codsta": "469"
+    },
+    {
+      "statoestero": "COREA NORD",
+      "sigla": "RPK",
+      "codf": "Z214",
+      "sInt": "PRK",
+      "codsta": "319"
+    },
+    {
+      "statoestero": "COREA SUD",
+      "sigla": "ROK",
+      "codf": "Z213",
+      "sInt": "KOR",
+      "codsta": "320"
+    },
+    {
+      "statoestero": "COSTA D'AV.",
+      "sigla": "CIV",
+      "codf": "Z313",
+      "sInt": "CIV",
+      "codsta": "404"
+    },
+    {
+      "statoestero": "COSTA RICA",
+      "sigla": "CRC",
+      "codf": "Z503",
+      "sInt": "CRI",
+      "codsta": "513"
+    },
+    {
+      "statoestero": "CROAZIA",
+      "sigla": "HRV",
+      "codf": "Z149",
+      "sInt": "HRV",
+      "codsta": "250"
+    },
+    {
+      "statoestero": "CUBA",
+      "sigla": "CCC",
+      "codf": "Z504",
+      "sInt": "CUB",
+      "codsta": "514"
+    },
+    {
+      "statoestero": "DAHOMEY",
+      "sigla": "DYM",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "DANIMARCA",
+      "sigla": "DKK",
+      "codf": "Z107",
+      "sInt": "DNK",
+      "codsta": "212"
+    },
+    {
+      "statoestero": "DOMINICA",
+      "sigla": "WDM",
+      "codf": "Z526",
+      "sInt": "DMA",
+      "codsta": "515"
+    },
+    {
+      "statoestero": "ECUADOR",
+      "sigla": "ECD",
+      "codf": "Z605",
+      "sInt": "ECU",
+      "codsta": "609"
+    },
+    {
+      "statoestero": "EGITTO",
+      "sigla": "ETT",
+      "codf": "Z336",
+      "sInt": "EGY",
+      "codsta": "419"
+    },
+    {
+      "statoestero": "EL SALVADOR",
+      "sigla": "SAL",
+      "codf": "Z506",
+      "sInt": "SLV",
+      "codsta": "517"
+    },
+    {
+      "statoestero": "EMIRATI A.U.",
+      "sigla": "UAE",
+      "codf": "Z215",
+      "sInt": "ARE",
+      "codsta": "322"
+    },
+    {
+      "statoestero": "ERITREA",
+      "sigla": "EAS",
+      "codf": "Z368",
+      "sInt": "ERI",
+      "codsta": "466"
+    },
+    {
+      "statoestero": "ESTONIA",
+      "sigla": "EST",
+      "codf": "Z144",
+      "sInt": "EST",
+      "codsta": "247"
+    },
+    {
+      "statoestero": "ETIOPIA",
+      "sigla": "ETH",
+      "codf": "Z315",
+      "sInt": "ETH",
+      "codsta": "420"
+    },
+    {
+      "statoestero": "F.A.O.",
+      "sigla": "FAO",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "FAER OER",
+      "sigla": "FRR",
+      "codf": "Z108",
+      "sInt": "",
+      "codsta": "213"
+    },
+    {
+      "statoestero": "FALKLAND",
+      "sigla": "FAL",
+      "codf": "Z609",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "FEDER. RUSSA",
+      "sigla": "URS",
+      "codf": "Z154",
+      "sInt": "RUS",
+      "codsta": "245"
+    },
+    {
+      "statoestero": "FIGI",
+      "sigla": "FJI",
+      "codf": "Z704",
+      "sInt": "FJI",
+      "codsta": "703"
+    },
+    {
+      "statoestero": "FILIPPINE",
+      "sigla": "RPP",
+      "codf": "Z216",
+      "sInt": "PHL",
+      "codsta": "323"
+    },
+    {
+      "statoestero": "FINLANDIA",
+      "sigla": "SFN",
+      "codf": "Z109",
+      "sInt": "FIN",
+      "codsta": "214"
+    },
+    {
+      "statoestero": "FRANCIA",
+      "sigla": "FFF",
+      "codf": "Z110",
+      "sInt": "FRA",
+      "codsta": "215"
+    },
+    {
+      "statoestero": "GABON",
+      "sigla": "GAB",
+      "codf": "Z316",
+      "sInt": "GAB",
+      "codsta": "421"
+    },
+    {
+      "statoestero": "GAMBIA",
+      "sigla": "WAG",
+      "codf": "Z317",
+      "sInt": "GMB",
+      "codsta": "422"
+    },
+    {
+      "statoestero": "GEORGIA",
+      "sigla": "GEA",
+      "codf": "Z136",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "GEORGIA",
+      "sigla": "GEO",
+      "codf": "Z254",
+      "sInt": "GEO",
+      "codsta": "360"
+    },
+    {
+      "statoestero": "GERMANIA",
+      "sigla": "DDD",
+      "codf": "Z112",
+      "sInt": "DEU",
+      "codsta": "216"
+    },
+    {
+      "statoestero": "GHANA",
+      "sigla": "GHN",
+      "codf": "Z318",
+      "sInt": "GHA",
+      "codsta": "423"
+    },
+    {
+      "statoestero": "GIAMAICA",
+      "sigla": "JAM",
+      "codf": "Z507",
+      "sInt": "JAM",
+      "codsta": "518"
+    },
+    {
+      "statoestero": "GIAPPONE",
+      "sigla": "JJJ",
+      "codf": "Z219",
+      "sInt": "JPN",
+      "codsta": "326"
+    },
+    {
+      "statoestero": "CAPO VERDE",
+      "sigla": "ICV",
+      "codf": "Z307",
+      "sInt": "CPV",
+      "codsta": null
+    },
+    {
+      "statoestero": "GIBILTERRA",
+      "sigla": "GBZ",
+      "codf": "Z113",
+      "sInt": "GIB",
+      "codsta": "218"
+    },
+    {
+      "statoestero": "GILBERT ELL.",
+      "sigla": "GIL",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "GIORDANIA",
+      "sigla": "JOR",
+      "codf": "Z220",
+      "sInt": "JOR",
+      "codsta": "327"
+    },
+    {
+      "statoestero": "GRECIA",
+      "sigla": "GRK",
+      "codf": "Z115",
+      "sInt": "GRC",
+      "codsta": "220"
+    },
+    {
+      "statoestero": "GRENADA",
+      "sigla": "WGN",
+      "codf": "Z524",
+      "sInt": "GRD",
+      "codsta": "519"
+    },
+    {
+      "statoestero": "GUADALUPA",
+      "sigla": "GUD",
+      "codf": "Z508",
+      "sInt": "GLP",
+      "codsta": "521"
+    },
+    {
+      "statoestero": "GUAM",
+      "sigla": "GUA",
+      "codf": "Z706",
+      "sInt": "GUM",
+      "codsta": ""
+    },
+    {
+      "statoestero": "GUATEMALA",
+      "sigla": "GCA",
+      "codf": "Z509",
+      "sInt": "GTM",
+      "codsta": "523"
+    },
+    {
+      "statoestero": "GUERSENEY",
+      "sigla": "GBG",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "GUINEA",
+      "sigla": "GUI",
+      "codf": "Z319",
+      "sInt": "GIN",
+      "codsta": "425"
+    },
+    {
+      "statoestero": "GUINEA BISSAU",
+      "sigla": "GNB",
+      "codf": "Z320",
+      "sInt": "GNB",
+      "codsta": "426"
+    },
+    {
+      "statoestero": "GUINEA EQUATORIALE",
+      "sigla": "EQG",
+      "codf": "Z321",
+      "sInt": "GNQ",
+      "codsta": "427"
+    },
+    {
+      "statoestero": "GUINEA PORT.",
+      "sigla": "GUP",
+      "codf": "",
+      "sInt": "GNQ",
+      "codsta": "427"
+    },
+    {
+      "statoestero": "GUINEA SP.",
+      "sigla": "GUS",
+      "codf": "",
+      "sInt": "GNB",
+      "codsta": "426"
+    },
+    {
+      "statoestero": "GUYANA",
+      "sigla": "GUY",
+      "codf": "",
+      "sInt": "GUY",
+      "codsta": "612"
+    },
+    {
+      "statoestero": "GUYANA FR.",
+      "sigla": "GYF",
+      "codf": "",
+      "sInt": "GUF",
+      "codsta": "613"
+    },
+    {
+      "statoestero": "HAITI",
+      "sigla": "RHT",
+      "codf": "Z510",
+      "sInt": "HTI",
+      "codsta": "524"
+    },
+    {
+      "statoestero": "HONDURAS",
+      "sigla": "HON",
+      "codf": "Z511",
+      "sInt": "HND",
+      "codsta": "525"
+    },
+    {
+      "statoestero": "HONG KONG",
+      "sigla": "HKG",
+      "codf": "Z221",
+      "sInt": "HKG",
+      "codsta": ""
+    },
+    {
+      "statoestero": "IFNI",
+      "sigla": "IFN",
+      "codf": "Z323",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "INDIA",
+      "sigla": "IND",
+      "codf": "Z222",
+      "sInt": "IND",
+      "codsta": "330"
+    },
+    {
+      "statoestero": "INDONESIA",
+      "sigla": "RIN",
+      "codf": "Z223",
+      "sInt": "IDN",
+      "codsta": "331"
+    },
+    {
+      "statoestero": "IRAN",
+      "sigla": "IRN",
+      "codf": "Z224",
+      "sInt": "IRN",
+      "codsta": "332"
+    },
+    {
+      "statoestero": "IRAQ",
+      "sigla": "IRQ",
+      "codf": "Z225",
+      "sInt": "IRQ",
+      "codsta": "333"
+    },
+    {
+      "statoestero": "IRIAN OCC.",
+      "sigla": "IRI",
+      "codf": "Z707",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "IRLANDA",
+      "sigla": "EIR",
+      "codf": "Z116",
+      "sInt": "IRL",
+      "codsta": "221"
+    },
+    {
+      "statoestero": "IRLANDA DEL NORD",
+      "sigla": "NIR",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "IS.CAPO V.",
+      "sigla": "ICV",
+      "codf": "Z307",
+      "sInt": "CPV",
+      "codsta": "413"
+    },
+    {
+      "statoestero": "IS. JERSEY",
+      "sigla": "GBJ",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "IS. MARCUS",
+      "sigla": "MAR",
+      "codf": "Z709",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "IS. VERGINI",
+      "sigla": "VER",
+      "codf": "Z520",
+      "sInt": "VGB",
+      "codsta": "539"
+    },
+    {
+      "statoestero": "ISLANDA",
+      "sigla": "ISL",
+      "codf": "Z117",
+      "sInt": "ISL",
+      "codsta": "223"
+    },
+    {
+      "statoestero": "ISOLA DI MAN",
+      "sigla": "GBM",
+      "codf": "Z122",
+      "sInt": "IMN",
+      "codsta": "959"
+    },
+    {
+      "statoestero": "ISOLE TONGA",
+      "sigla": "TON",
+      "codf": "Z728",
+      "sInt": "TON",
+      "codsta": "730"
+    },
+    {
+      "statoestero": "ISRAELE",
+      "sigla": "ILE",
+      "codf": "Z226",
+      "sInt": "ISR",
+      "codsta": "334"
+    },
+    {
+      "statoestero": "KAZAKHSTAN",
+      "sigla": "KAZ",
+      "codf": "Z255",
+      "sInt": "KAZ",
+      "codsta": "356"
+    },
+    {
+      "statoestero": "KAZAKHSTAN",
+      "sigla": "KAS",
+      "codf": "Z152",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "KENYA",
+      "sigla": "EAK",
+      "codf": "Z322",
+      "sInt": "KEN",
+      "codsta": "428"
+    },
+    {
+      "statoestero": "KIRGHIZISTAN",
+      "sigla": "KSS",
+      "codf": "Z142",
+      "sInt": "KGZ",
+      "codsta": "361"
+    },
+    {
+      "statoestero": "KIRGHIZISTAN",
+      "sigla": "KRS",
+      "codf": "Z256",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "KUWAIT",
+      "sigla": "KWT",
+      "codf": "Z227",
+      "sInt": "KWT",
+      "codsta": "335"
+    },
+    {
+      "statoestero": "LAOS",
+      "sigla": "LAO",
+      "codf": "Z228",
+      "sInt": "LAO",
+      "codsta": "336"
+    },
+    {
+      "statoestero": "LEGAZIONI P.",
+      "sigla": "LZP",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "LESOTHO",
+      "sigla": "LST",
+      "codf": "Z359",
+      "sInt": "LSO",
+      "codsta": "429"
+    },
+    {
+      "statoestero": "LETTONIA",
+      "sigla": "LVA",
+      "codf": "Z145",
+      "sInt": "LVA",
+      "codsta": "248"
+    },
+    {
+      "statoestero": "LIBANO",
+      "sigla": "RLB",
+      "codf": "Z229",
+      "sInt": "LBN",
+      "codsta": "337"
+    },
+    {
+      "statoestero": "LIBERIA",
+      "sigla": "LBR",
+      "codf": "Z325",
+      "sInt": "LBR",
+      "codsta": "430"
+    },
+    {
+      "statoestero": "LIBIA",
+      "sigla": "LAR",
+      "codf": "Z326",
+      "sInt": "LBY",
+      "codsta": "431"
+    },
+    {
+      "statoestero": "LIECHTENSTEIN",
+      "sigla": "FLT",
+      "codf": "Z119",
+      "sInt": "LIE",
+      "codsta": "225"
+    },
+    {
+      "statoestero": "LITUANIA",
+      "sigla": "LTU",
+      "codf": "Z146",
+      "sInt": "LTU",
+      "codsta": "249"
+    },
+    {
+      "statoestero": "LUSSEMBURGO",
+      "sigla": "LLL",
+      "codf": "Z120",
+      "sInt": "LUX",
+      "codsta": "226"
+    },
+    {
+      "statoestero": "M. SANTO",
+      "sigla": "MST",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "M.AFF.ESTERI",
+      "sigla": "MAE",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "MACAO",
+      "sigla": "MAC",
+      "codf": "Z231",
+      "sInt": "MAC",
+      "codsta": ""
+    },
+    {
+      "statoestero": "MADAGASCAR",
+      "sigla": "RMG",
+      "codf": "Z327",
+      "sInt": "MDG",
+      "codsta": "432"
+    },
+    {
+      "statoestero": "MALAWI",
+      "sigla": "MWI",
+      "codf": "Z328",
+      "sInt": "MWI",
+      "codsta": "434"
+    },
+    {
+      "statoestero": "MALDIVE",
+      "sigla": "IMV",
+      "codf": "Z232",
+      "sInt": "MDV",
+      "codsta": "339"
+    },
+    {
+      "statoestero": "MALESIA",
+      "sigla": "MAS",
+      "codf": "Z247",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "MALESIA",
+      "sigla": "MAL",
+      "codf": "Z230",
+      "sInt": "MYS",
+      "codsta": "340"
+    },
+    {
+      "statoestero": "MALI",
+      "sigla": "RMM",
+      "codf": "Z329",
+      "sInt": "MLI",
+      "codsta": "435"
+    },
+    {
+      "statoestero": "MALTA",
+      "sigla": "MMM",
+      "codf": "Z121",
+      "sInt": "MLT",
+      "codsta": "227"
+    },
+    {
+      "statoestero": "MARIANNE",
+      "sigla": "MCM",
+      "codf": "Z710",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "MAROCCO",
+      "sigla": "MAX",
+      "codf": "Z330",
+      "sInt": "MAR",
+      "codsta": "436"
+    },
+    {
+      "statoestero": "MARTINICA",
+      "sigla": "MRT",
+      "codf": "Z513",
+      "sInt": "MTQ",
+      "codsta": "526"
+    },
+    {
+      "statoestero": "MAURITANIA",
+      "sigla": "RIM",
+      "codf": "Z331",
+      "sInt": "MRT",
+      "codsta": "437"
+    },
+    {
+      "statoestero": "MAURITIUS",
+      "sigla": "MSZ",
+      "codf": "Z332",
+      "sInt": "MUS",
+      "codsta": "438"
+    },
+    {
+      "statoestero": "MESSICO",
+      "sigla": "MEX",
+      "codf": "Z514",
+      "sInt": "MEX",
+      "codsta": "527"
+    },
+    {
+      "statoestero": "MOLDOVA",
+      "sigla": "MDA",
+      "codf": "Z140",
+      "sInt": "MDA",
+      "codsta": "254"
+    },
+    {
+      "statoestero": "MONGOLIA",
+      "sigla": "MGL",
+      "codf": "Z233",
+      "sInt": "MNG",
+      "codsta": "341"
+    },
+    {
+      "statoestero": "MONTENEGRO",
+      "sigla": "MNE",
+      "codf": "Z159",
+      "sInt": "MNE",
+      "codsta": "270"
+    },
+    {
+      "statoestero": "MOZAMBICO",
+      "sigla": "MOZ",
+      "codf": "Z333",
+      "sInt": "MOZ",
+      "codsta": "440"
+    },
+    {
+      "statoestero": "MYANMAR",
+      "sigla": "BUR",
+      "codf": "Z206",
+      "sInt": "MMR",
+      "codsta": "307"
+    },
+    {
+      "statoestero": "N. CALEDONIA",
+      "sigla": "NCD",
+      "codf": "Z716",
+      "sInt": "NCL",
+      "codsta": "718"
+    },
+    {
+      "statoestero": "N. EBRIDI",
+      "sigla": "NEB",
+      "codf": "Z717",
+      "sInt": "NHB",
+      "codsta": ""
+    },
+    {
+      "statoestero": "N. GUINEA NE",
+      "sigla": "NGN",
+      "codf": "Z718",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "N. ZELANDA",
+      "sigla": "NZL",
+      "codf": "Z719",
+      "sInt": "NZL",
+      "codsta": "719"
+    },
+    {
+      "statoestero": "NAMIBIA",
+      "sigla": "NAM",
+      "codf": "Z300",
+      "sInt": "NAM",
+      "codsta": "441"
+    },
+    {
+      "statoestero": "NATO D.C.",
+      "sigla": "NDC",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "NAURU",
+      "sigla": "NAU",
+      "codf": "Z713",
+      "sInt": "",
+      "codsta": "715"
+    },
+    {
+      "statoestero": "NEPAL",
+      "sigla": "NEP",
+      "codf": "Z234",
+      "sInt": "NPL",
+      "codsta": "342"
+    },
+    {
+      "statoestero": "NIASSA",
+      "sigla": "NPP",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "NICARAGUA",
+      "sigla": "NIC",
+      "codf": "Z515",
+      "sInt": "NIC",
+      "codsta": "529"
+    },
+    {
+      "statoestero": "NIGER",
+      "sigla": "NIG",
+      "codf": "Z334",
+      "sInt": "NER",
+      "codsta": "442"
+    },
+    {
+      "statoestero": "NIGERIA",
+      "sigla": "WAN",
+      "codf": "Z335",
+      "sInt": "NGA",
+      "codsta": "443"
+    },
+    {
+      "statoestero": "NOR.",
+      "sigla": "NOR",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "NORVEGIA",
+      "sigla": "NNN",
+      "codf": "Z125",
+      "sInt": "NOR",
+      "codsta": "231"
+    },
+    {
+      "statoestero": "OMAN",
+      "sigla": "OMN",
+      "codf": "Z235",
+      "sInt": "OMN",
+      "codsta": "343"
+    },
+    {
+      "statoestero": "ORGAN. INT.",
+      "sigla": "ORG",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "PAESI BASSI",
+      "sigla": "NLD",
+      "codf": "Z126",
+      "sInt": "NLD",
+      "codsta": "232"
+    },
+    {
+      "statoestero": "PAKISTAN",
+      "sigla": "PAK",
+      "codf": "Z236",
+      "sInt": "PAK",
+      "codsta": "344"
+    },
+    {
+      "statoestero": "PANAMA",
+      "sigla": "PAN",
+      "codf": "Z516",
+      "sInt": "PAN",
+      "codsta": "530"
+    },
+    {
+      "statoestero": "PANAMA CAN.",
+      "sigla": "PAC",
+      "codf": "Z517",
+      "sInt": "PCZ",
+      "codsta": ""
+    },
+    {
+      "statoestero": "PAPUA NUOVA GUINEA",
+      "sigla": "PNG",
+      "codf": "Z730",
+      "sInt": "PNG",
+      "codsta": "721"
+    },
+    {
+      "statoestero": "PARAGUAY",
+      "sigla": "PYG",
+      "codf": "Z610",
+      "sInt": "PRY",
+      "codsta": "614"
+    },
+    {
+      "statoestero": "PEN. ISTRIA",
+      "sigla": "YUI",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "PERU'",
+      "sigla": "PER",
+      "codf": "Z611",
+      "sInt": "PER",
+      "codsta": "615"
+    },
+    {
+      "statoestero": "PITCAIRN DIP",
+      "sigla": "PIT",
+      "codf": "Z722",
+      "sInt": "PCN",
+      "codsta": "723"
+    },
+    {
+      "statoestero": "POLINESIA",
+      "sigla": "POL",
+      "codf": "Z723",
+      "sInt": "PYF",
+      "codsta": "724"
+    },
+    {
+      "statoestero": "POLONIA",
+      "sigla": "PLN",
+      "codf": "Z127",
+      "sInt": "POL",
+      "codsta": "233"
+    },
+    {
+      "statoestero": "PORTOGALLO",
+      "sigla": "PPP",
+      "codf": "Z128",
+      "sInt": "PRT",
+      "codsta": "234"
+    },
+    {
+      "statoestero": "PORTORICO",
+      "sigla": "PRI",
+      "codf": "Z518",
+      "sInt": "PRI",
+      "codsta": ""
+    },
+    {
+      "statoestero": "PRINC.MONACO",
+      "sigla": "MCP",
+      "codf": "Z123",
+      "sInt": "MCO",
+      "codsta": "229"
+    },
+    {
+      "statoestero": "QATAR",
+      "sigla": "QQQ",
+      "codf": "Z237",
+      "sInt": "QAT",
+      "codsta": "345"
+    },
+    {
+      "statoestero": "R. MACEDONIA DEL NORD",
+      "sigla": "MKD",
+      "codf": "Z148",
+      "sInt": "MKD",
+      "codsta": "253"
+    },
+    {
+      "statoestero": "R.CENTROAFR.",
+      "sigla": "RCA",
+      "codf": "Z308",
+      "sInt": "CAF",
+      "codsta": "414"
+    },
+    {
+      "statoestero": "R.D.TEDESCA",
+      "sigla": "DDR",
+      "codf": "Z111",
+      "sInt": "DDR",
+      "codsta": "805"
+    },
+    {
+      "statoestero": "R.DEM. CONGO",
+      "sigla": "RDC",
+      "codf": "Z312",
+      "sInt": "COD",
+      "codsta": "463"
+    },
+    {
+      "statoestero": "R.DOMINICANA",
+      "sigla": "DOM",
+      "codf": "Z505",
+      "sInt": "DOM",
+      "codsta": "516"
+    },
+    {
+      "statoestero": "R.POP.CINESE",
+      "sigla": "RPC",
+      "codf": "Z210",
+      "sInt": "CHN",
+      "codsta": "314"
+    },
+    {
+      "statoestero": "REGNO UNITO",
+      "sigla": "GBR",
+      "codf": "Z114",
+      "sInt": "GBR",
+      "codsta": "219"
+    },
+    {
+      "statoestero": "REPUBBLICA CECA",
+      "sigla": "CZE",
+      "codf": "Z156",
+      "sInt": "CZE",
+      "codsta": "257"
+    },
+    {
+      "statoestero": "REPUBBLICA DEL KOSOVO",
+      "sigla": "RKS",
+      "codf": "Z160",
+      "sInt": "KOS",
+      "codsta": "272"
+    },
+    {
+      "statoestero": "REPUBBLICA DI GIBUTI",
+      "sigla": "DJJ",
+      "codf": "Z361",
+      "sInt": "DJI",
+      "codsta": "424"
+    },
+    {
+      "statoestero": "REPUBBLICA DI VANUATU",
+      "sigla": "VAN",
+      "codf": "",
+      "sInt": "VUT",
+      "codsta": "732"
+    },
+    {
+      "statoestero": "RIUNIONE",
+      "sigla": "RIU",
+      "codf": "",
+      "sInt": "REU",
+      "codsta": "445"
+    },
+    {
+      "statoestero": "ROMANIA",
+      "sigla": "RRR",
+      "codf": "Z129",
+      "sInt": "ROU",
+      "codsta": "235"
+    },
+    {
+      "statoestero": "RUANDA",
+      "sigla": "RWA",
+      "codf": "Z338",
+      "sInt": "RWA",
+      "codsta": "446"
+    },
+    {
+      "statoestero": "RYU KYU",
+      "sigla": "RYU",
+      "codf": "Z238",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "S. LUCIA",
+      "sigla": "WLL",
+      "codf": "Z527",
+      "sInt": "LCA",
+      "codsta": "532"
+    },
+    {
+      "statoestero": "S.M.O.M.",
+      "sigla": "OMM",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "S.MARINO",
+      "sigla": "RSM",
+      "codf": "Z130",
+      "sInt": "SMR",
+      "codsta": "236"
+    },
+    {
+      "statoestero": "S.PIERRE MIQ",
+      "sigla": "SPM",
+      "codf": "",
+      "sInt": "SPM",
+      "codsta": "535"
+    },
+    {
+      "statoestero": "S.TOME'E PR.",
+      "sigla": "STP",
+      "codf": "Z341",
+      "sInt": "STP",
+      "codsta": "448"
+    },
+    {
+      "statoestero": "S.VINCENT",
+      "sigla": "WVC",
+      "codf": "",
+      "sInt": "VCT",
+      "codsta": "533"
+    },
+    {
+      "statoestero": "SABAH",
+      "sigla": "SAB",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "SAHARA SP.",
+      "sigla": "SAS",
+      "codf": "Z339",
+      "sInt": "ESH",
+      "codsta": "905"
+    },
+    {
+      "statoestero": "SAINT KITTS E NEVIS",
+      "sigla": "SCN",
+      "codf": "Z533",
+      "sInt": "KAN",
+      "codsta": "534"
+    },
+    {
+      "statoestero": "SALOMONE BR.",
+      "sigla": "ISB",
+      "codf": "Z724",
+      "sInt": "SLB",
+      "codsta": "725"
+    },
+    {
+      "statoestero": "SAMOA OCC.",
+      "sigla": "WSO",
+      "codf": "Z725",
+      "sInt": "WSM",
+      "codsta": "727"
+    },
+    {
+      "statoestero": "SAMOA SWAIN",
+      "sigla": "SAW",
+      "codf": "Z726",
+      "sInt": "ASM",
+      "codsta": ""
+    },
+    {
+      "statoestero": "SANT'ELENA",
+      "sigla": "SEL",
+      "codf": "Z340",
+      "sInt": "SHN",
+      "codsta": "447"
+    },
+    {
+      "statoestero": "SANTA SEDE",
+      "sigla": "SCV",
+      "codf": "Z106",
+      "sInt": "VAT",
+      "codsta": "246"
+    },
+    {
+      "statoestero": "SARAWAK",
+      "sigla": "SAR",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "SEICELLES",
+      "sigla": "SYC",
+      "codf": "Z342",
+      "sInt": "SYC",
+      "codsta": "449"
+    },
+    {
+      "statoestero": "SENEGAL",
+      "sigla": "SNG",
+      "codf": "Z343",
+      "sInt": "SEN",
+      "codsta": "450"
+    },
+    {
+      "statoestero": "SERBIA",
+      "sigla": "YUG",
+      "codf": "Z118",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "SERBIA",
+      "sigla": "SRB",
+      "codf": "Z158",
+      "sInt": "SRB",
+      "codsta": "271"
+    },
+    {
+      "statoestero": "SERBIA E MONTENEGRO",
+      "sigla": "SCG",
+      "codf": "Z157",
+      "sInt": "SCG",
+      "codsta": "224"
+    },
+    {
+      "statoestero": "SERBIA/MONTENEGRO",
+      "sigla": "SEM",
+      "codf": "Z157",
+      "sInt": "SEM",
+      "codsta": ""
+    },
+    {
+      "statoestero": "SF049SH000SL",
+      "sigla": "US2",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "SIERRA LEONE",
+      "sigla": "WAL",
+      "codf": "Z344",
+      "sInt": "SLE",
+      "codsta": "451"
+    },
+    {
+      "statoestero": "SIKKIM",
+      "sigla": "SIK",
+      "codf": "Z239",
+      "sInt": "SKM",
+      "codsta": ""
+    },
+    {
+      "statoestero": "SINGAPORE",
+      "sigla": "SGP",
+      "codf": "Z248",
+      "sInt": "SGP",
+      "codsta": "346"
+    },
+    {
+      "statoestero": "SIRIA",
+      "sigla": "SYR",
+      "codf": "Z240",
+      "sInt": "SYR",
+      "codsta": "348"
+    },
+    {
+      "statoestero": "SLOVACCHIA",
+      "sigla": "SKV",
+      "codf": "Z155",
+      "sInt": "SVK",
+      "codsta": "255"
+    },
+    {
+      "statoestero": "SLOVENIA",
+      "sigla": "SLO",
+      "codf": "Z150",
+      "sInt": "SVN",
+      "codsta": "251"
+    },
+    {
+      "statoestero": "SOMALIA",
+      "sigla": "SOM",
+      "codf": "Z345",
+      "sInt": "SOM",
+      "codsta": "453"
+    },
+    {
+      "statoestero": "SPAGNA",
+      "sigla": "EEE",
+      "codf": "Z131",
+      "sInt": "ESP",
+      "codsta": "239"
+    },
+    {
+      "statoestero": "SRI LANKA",
+      "sigla": "CLM",
+      "codf": "Z209",
+      "sInt": "LKA",
+      "codsta": "311"
+    },
+    {
+      "statoestero": "STATI TREGUA",
+      "sigla": "SDT",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "STATO ESTERO NON DEFINITO",
+      "sigla": "XXX",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "SUD AFRICA",
+      "sigla": "ZAF",
+      "codf": "Z347",
+      "sInt": "ZAF",
+      "codsta": "454"
+    },
+    {
+      "statoestero": "SUDAN",
+      "sigla": "SUD",
+      "codf": "Z348",
+      "sInt": "SDN",
+      "codsta": "455"
+    },
+    {
+      "statoestero": "SUDAN DEL SUD",
+      "sigla": "SSD",
+      "codf": "Z907",
+      "sInt": "SSD",
+      "codsta": "467"
+    },
+    {
+      "statoestero": "SURINAME",
+      "sigla": "SME",
+      "codf": "Z608",
+      "sInt": "SUR",
+      "codsta": "616"
+    },
+    {
+      "statoestero": "SVEZIA",
+      "sigla": "SSS",
+      "codf": "Z132",
+      "sInt": "SWE",
+      "codsta": "240"
+    },
+    {
+      "statoestero": "SVIZZERA",
+      "sigla": "CHZ",
+      "codf": "Z133",
+      "sInt": "CHE",
+      "codsta": "241"
+    },
+    {
+      "statoestero": "SWAZILAND",
+      "sigla": "SDZ",
+      "codf": "Z349",
+      "sInt": "SWZ",
+      "codsta": "456"
+    },
+    {
+      "statoestero": "T.BR.OC.IND.",
+      "sigla": "TOI",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "TAIWAN",
+      "sigla": "RCW",
+      "codf": "Z217",
+      "sInt": "",
+      "codsta": "363"
+    },
+    {
+      "statoestero": "TAJIKISTAN",
+      "sigla": "TJK",
+      "codf": "Z257",
+      "sInt": "TJK",
+      "codsta": "362"
+    },
+    {
+      "statoestero": "TANGANIKA",
+      "sigla": "EAW",
+      "codf": "Z350",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "TANZANIA",
+      "sigla": "EAT",
+      "codf": "Z357",
+      "sInt": "TZA",
+      "codsta": "457"
+    },
+    {
+      "statoestero": "THAILANDIA",
+      "sigla": "TTT",
+      "codf": "Z241",
+      "sInt": "THA",
+      "codsta": "349"
+    },
+    {
+      "statoestero": "TIMOR EST",
+      "sigla": "TIM",
+      "codf": "Z242",
+      "sInt": "TMP",
+      "codsta": "338"
+    },
+    {
+      "statoestero": "TOGO",
+      "sigla": "TGO",
+      "codf": "Z351",
+      "sInt": "TGO",
+      "codsta": "458"
+    },
+    {
+      "statoestero": "TRANSKEI",
+      "sigla": "TRA",
+      "codf": "Z365",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "TRINIDAD",
+      "sigla": "TTG",
+      "codf": "Z612",
+      "sInt": "TTO",
+      "codsta": "617"
+    },
+    {
+      "statoestero": "TUNISIA",
+      "sigla": "TNS",
+      "codf": "Z352",
+      "sInt": "TUN",
+      "codsta": "460"
+    },
+    {
+      "statoestero": "TURCHIA",
+      "sigla": "TRC",
+      "codf": "Z243",
+      "sInt": "TUR",
+      "codsta": "351"
+    },
+    {
+      "statoestero": "TURKMENISTAN",
+      "sigla": "TKM",
+      "codf": "Z258",
+      "sInt": "TKM",
+      "codsta": "364"
+    },
+    {
+      "statoestero": "U.I. INF.",
+      "sigla": "IBI",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "U.I. LAVORO",
+      "sigla": "BIT",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "U.N.H.C.R.",
+      "sigla": "HCR",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "U.N.I.C.",
+      "sigla": "CIN",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "U.N.S.D.",
+      "sigla": "UND",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "U.N.S.D.R.I.",
+      "sigla": "SDR",
+      "codf": "",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "U.S.A.",
+      "sigla": "USA",
+      "codf": "Z404",
+      "sInt": "USA",
+      "codsta": "536"
+    },
+    {
+      "statoestero": "UCRAINA",
+      "sigla": "UKR",
+      "codf": "Z138",
+      "sInt": "UKR",
+      "codsta": "243"
+    },
+    {
+      "statoestero": "UGANDA",
+      "sigla": "EAU",
+      "codf": "Z353",
+      "sInt": "UGA",
+      "codsta": "461"
+    },
+    {
+      "statoestero": "UNGHERIA",
+      "sigla": "HHH",
+      "codf": "Z134",
+      "sInt": "HUN",
+      "codsta": "244"
+    },
+    {
+      "statoestero": "URUGUAY",
+      "sigla": "UUU",
+      "codf": "Z613",
+      "sInt": "URY",
+      "codsta": "618"
+    },
+    {
+      "statoestero": "UZBEKISTAN",
+      "sigla": "UZB",
+      "codf": "Z259",
+      "sInt": "UZB",
+      "codsta": "357"
+    },
+    {
+      "statoestero": "VENEZUELA",
+      "sigla": "YVZ",
+      "codf": "Z614",
+      "sInt": "VEN",
+      "codsta": "619"
+    },
+    {
+      "statoestero": "VIETNAM",
+      "sigla": "VNM",
+      "codf": "Z251",
+      "sInt": "VNM",
+      "codsta": "353"
+    },
+    {
+      "statoestero": "VIETNAM DEL NORD",
+      "sigla": "RPV",
+      "codf": "Z245",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "VIETNAM DEL SUD",
+      "sigla": "RVS",
+      "codf": "Z244",
+      "sInt": "",
+      "codsta": "353"
+    },
+    {
+      "statoestero": "WALLIS FUT.",
+      "sigla": "WFT",
+      "codf": "Z729",
+      "sInt": "WLF",
+      "codsta": "734"
+    },
+    {
+      "statoestero": "YEMEN NORD",
+      "sigla": "YEM",
+      "codf": "Z246",
+      "sInt": "YEM",
+      "codsta": "354"
+    },
+    {
+      "statoestero": "YEMEN SUD",
+      "sigla": "ADN",
+      "codf": "Z250",
+      "sInt": "",
+      "codsta": ""
+    },
+    {
+      "statoestero": "YUGOSLAVIA",
+      "sigla": "JUG",
+      "codf": "Z118",
+      "sInt": "YUG",
+      "codsta": "820"
+    },
+    {
+      "statoestero": "ZAIRE",
+      "sigla": "ZRE",
+      "codf": "Z312",
+      "sInt": "ZRE",
+      "codsta": ""
+    },
+    {
+      "statoestero": "ZAMBIA",
+      "sigla": "ZZZ",
+      "codf": "Z355",
+      "sInt": "ZMB",
+      "codsta": "464"
+    },
+    {
+      "statoestero": "ZIMBABWE",
+      "sigla": "ZIM",
+      "codf": "Z337",
+      "sInt": "ZW",
+      "codsta": "465"
+    },
+    {
+      "statoestero": "REP. DI CINA",
+      "sigla": "RCW",
+      "codf": "Z217",
+      "sInt": "RCW",
+      "codsta": null
+    },
+    {
+      "statoestero": "UNIONE REPUBBLICHE SOCIALISTE SOVIETICHE",
+      "sigla": "SUN",
+      "codf": "Z135",
+      "sInt": "SU",
+      "codsta": "802"
+    },
+    {
+      "statoestero": "STATO DI PALESTINA",
+      "sigla": "PSE",
+      "codf": "Z161",
+      "sInt": "SP",
+      "codsta": "324"
+    },
+    {
+      "statoestero": "ISL.",
+      "sigla": "ISD",
+      "codf": null,
+      "sInt": null,
+      "codsta": null
+    },
+    {
+      "statoestero": "ISOLE MARSHALL",
+      "sigla": "MHL",
+      "codf": "Z711",
+      "sInt": "MHL",
+      "codsta": null
+    },
+    {
+      "statoestero": "LIECH.",
+      "sigla": "LIC",
+      "codf": null,
+      "sInt": "LIC",
+      "codsta": null
+    },
+    {
+      "statoestero": "MALAYSIA",
+      "sigla": "MAS",
+      "codf": "Z247",
+      "sInt": "MAS",
+      "codsta": null
+    },
+    {
+      "statoestero": "SAO TOME' E PRINCIPE",
+      "sigla": "STP",
+      "codf": "Z341",
+      "sInt": "STP",
+      "codsta": null
+    },
+    {
+      "statoestero": "TURKMENISTAN",
+      "sigla": "TKS",
+      "codf": "Z151",
+      "sInt": "TKS",
+      "codsta": null
+    },
+    {
+      "statoestero": "UZBEKISTAN",
+      "sigla": "UZK",
+      "codf": "Z143",
+      "sInt": "UZK",
+      "codsta": null
+    }
+  ]
+}

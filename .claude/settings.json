@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \":*)",
+      "Bash(echo \"export default function CalendarPageWrapper\\(\\) { return <Suspense fallback={null}><CalendarPage /></Suspense>; }\")",
+      "Bash(echo \"export default function CandidatiPageWrapper\\(\\) { return <Suspense fallback={null}><CandidatiPage /></Suspense>; }\")",
+      "Bash(echo \"export default function StatistichePageWrapper\\(\\) { return <Suspense fallback={null}><StatistichePage /></Suspense>; }\")",
+      "Bash(npm run:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}

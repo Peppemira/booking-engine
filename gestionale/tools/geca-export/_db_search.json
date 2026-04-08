@@ -1,0 +1,46 @@
+{
+  "searched_at": "2026-03-25T14:54:13.109817",
+  "username": "bluef",
+  "dirs_searched": [
+    "C:\\AFSoft",
+    "C:\\Program Files (x86)\\AFSoft",
+    "C:\\Program Files\\AFSoft",
+    "C:\\Users\\bluef\\AppData\\Local\\AFSoft",
+    "C:\\Users\\bluef\\AppData\\Roaming\\AFSoft",
+    "C:\\ProgramData\\AFSoft",
+    "C:\\Users\\bluef\\Documents\\AFSoft",
+    "C:\\Users\\bluef\\Documents\\GeCA",
+    "C:\\Users\\bluef\\Desktop",
+    "C:\\GeCA",
+    "C:\\GecaFuture",
+    "C:\\Autoscuola",
+    "D:\\AFSoft",
+    "D:\\GeCA"
+  ],
+  "files_found": [
+    {
+      "path": "C:\\AFSoft\\GeCAFuture\\data\\quizm.mdb",
+      "name": "quizm.mdb",
+      "size_kb": 14492,
+      "is_main": false
+    },
+    {
+      "path": "C:\\AFSoft\\GeCAFuture\\data\\quizpatente.mdb",
+      "name": "quizpatente.mdb",
+      "size_kb": 11488,
+      "is_main": false
+    },
+    {
+      "path": "C:\\AFSoft\\GeCAFuture\\data\\citta.mdb",
+      "name": "citta.mdb",
+      "size_kb": 1328,
+      "is_main": false
+    },
+    {
+      "path": "C:\\AFSoft\\GeCAFuture\\data\\annotazioni.mdb",
+      "name": "annotazioni.mdb",
+      "size_kb": 308,
+      "is_main": false
+    }
+  ]
+}

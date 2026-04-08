@@ -1,0 +1,17 @@
+{
+  "name": "scanner-service",
+  "version": "1.0.0",
+  "description": "Servizio locale acquisizione scanner per gestionale autoscuola (flusso GeCA)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["scanner", "twain", "acquisizione", "autoscuola"],
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
+    "multer": "^1.4.5-lts.1"
+  }
+}

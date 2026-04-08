@@ -1,0 +1,120 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  /* Tema scuro gestionale (dashboard) */
+  --gestionale-bg: #0f172a;
+  --gestionale-sidebar: #1e293b;
+  --gestionale-card: #334155;
+  --gestionale-accent: #3b82f6;
+  --gestionale-success: #22c55e;
+  --gestionale-error: #ef4444;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@media (min-width: 1200px) {
+  .desktop-fit {
+    zoom: 0.88;
+  }
+}
+
+@media (max-width: 1366px) {
+  .anagrafica-fit-1366 {
+    zoom: 0.9;
+  }
+}
+
+.fields-large input,
+.fields-large select,
+.fields-large textarea {
+  font-size: 1.08rem !important;
+  line-height: 1.4 !important;
+}
+
+.fields-large th,
+.fields-large td {
+  font-size: 1.04rem !important;
+}
+
+.fields-xlarge input,
+.fields-xlarge select,
+.fields-xlarge textarea {
+  font-size: 1.16rem !important;
+  line-height: 1.45 !important;
+}
+
+.fields-xlarge th,
+.fields-xlarge td {
+  font-size: 1.1rem !important;
+}
+
+.ui-font-large .shell-brand {
+  font-size: 0.9rem !important;
+}
+
+.ui-font-large .shell-title {
+  font-size: 1.85rem !important;
+}
+
+.ui-font-large .shell-subtitle,
+.ui-font-large .shell-nav-link,
+.ui-font-large .shell-logout,
+.ui-font-large .shell-sidebar-action {
+  font-size: 0.98rem !important;
+}
+
+.ui-font-xlarge .shell-brand {
+  font-size: 0.98rem !important;
+}
+
+.ui-font-xlarge .shell-title {
+  font-size: 2rem !important;
+}
+
+.ui-font-xlarge .shell-subtitle,
+.ui-font-xlarge .shell-nav-link,
+.ui-font-xlarge .shell-logout,
+.ui-font-xlarge .shell-sidebar-action {
+  font-size: 1.08rem !important;
+}
+
+/* ── Contenimento larghezza globale ──────────────────────────────────── */
+/* La section nel grid layout ha min-w-0 per permettere il restringimento.
+   Qui forziamo tutti i figli diretti ad avere max-width: 100% */
+section > div > div {
+  max-width: 100%;
+}
+
+/* Tabelle: il contenitore con overflow-x: auto gestisce lo scroll.
+   Le celle lunghe vengono troncate per evitare che la tabella esploda. */
+table td {
+  max-width: 350px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Grids: impedisci ai figli di espandere oltre il contenitore */
+.grid > * {
+  min-width: 0;
+}

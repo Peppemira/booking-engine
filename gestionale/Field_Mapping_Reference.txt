@@ -1,0 +1,332 @@
+================================================================================
+FIELD MAPPING REFERENCE FOR ITALIAN DRIVING SCHOOL PORTAL INTEGRATION
+================================================================================
+
+COMPLETE FIELD LISTS FOR KEY DATA TYPES
+(For use in HTML scraping and gestionale implementation)
+
+================================================================================
+1. AnagraficaRichiedenteType - APPLICANT DEMOGRAPHICS
+================================================================================
+
+Field Name                    | XML Tag              | Type           | Required | Notes
+--------------------------------------------------------------------------------------------------
+First Name                    | nome                 | VarChar(35)    | Optional | Can be empty
+Surname                       | cognome              | VarChar(35)    | YES      | Must always be present
+Birth Date                    | dataNascita          | date (YYYY-MM-DD) | YES  | Format: YYYY-MM-DD
+Special Name Type             | tipoAnagraficaSpeciale | string       | Optional | For special characters
+Tax/Fiscal Code               | codiceFiscale        | Char(16)       | Optional | Italian CF or passport
+Gender                        | sesso                | Char(1)        | YES      | F=Female, M=Male
+Birth Place                   | luogoNascita         | LuogoNascitaType | YES  | Complex type (see below)
+Photo                         | foto                 | FileType       | Optional | Base64 JPEG image
+Digital Photo Code            | codiceFotoDigitale   | Char(6)        | Optional | System-generated reference
+Signature                     | firma                | FileType       | Optional | Base64 JPEG image
+
+LuogoNascitaType (Birth Place - nested):
+- If Italian birth:
+  - provinciaNascita (Province)  | String | YES
+  - comuneNascita (Municipality) | String | YES
+- If Foreign birth:
+  - nazioneNascita (Nation)      | String | YES
+  - comuneEsteroNascita (Foreign city) | String | Optional
+
+================================================================================
+2. LuogoResidenzaType - RESIDENCE ADDRESS
+================================================================================
+
+Field Name                    | XML Tag              | Type           | Required | Notes
+--------------------------------------------------------------------------------------------------
+Province                      | provinciaResidenza   | String         | YES      | 2-letter code (e.g., RM, MI)
+Municipality                  | comuneResidenza      | String         | YES      | City name
+Address Type                  | toponimoResidenza    | String         | YES      | VIA, PIAZZA, CORSO, etc.
+Address                       | indirizzoResidenza   | String         | YES      | Street name
+Civic Number                  | civicoResidenza      | String         | Optional | House/building number
+Postal Code                   | capResidenza         | Char(5)        | YES      | 5-digit ZIP code
+Country (if foreign)          | nazioneResidenza     | String         | Optional | For foreign residents
+
+
+================================================================================
+3. DatiMediciType - MEDICAL INFORMATION
+================================================================================
+
+Field Name                    | XML Tag                      | Type           | Required | Notes
+--------------------------------------------------------------------------------------------------
+Medical Visit Date            | dataVisitaMedica             | date (YYYY-MM-DD) | YES  | Exam date
+Medical Registry Code         | codiceIscrizioneAlboMedici   | String         | YES      | Doctor ID
+Medical Visit Place           | luogoVisita                  | LuogoVisitaType | YES   | Where exam conducted
+Doctor's Name                 | nomeMedico                   | String         | Optional | Doctor's full name
+Doctor's Surname              | cognomeMedico                | String         | Optional |
+Medical Specialization        | specializzazione             | String         | Optional |
+
+================================================================================
+4. DatiRichiestaEsameType - EXAM REQUEST (Modification/Existing Record)
+================================================================================
+
+IDENTIFICATION FIELDS:
+Field Name                    | XML Tag              | Type           | Required | Notes
+--------------------------------------------------------------------------------------------------
+Current Operative Mark        | marcaOperativa       | String(11)     | YES      | School/operator code (camelCase pattern)
+Previous Operative Mark       | marcaOperativaPrecedente | String     | Optional | If transferring schools
+Operator Code                 | codiceOperatore      | Char(4)        | YES      | PIN, 4 digits
+Operating Office              | ufficioOperativo     | Char(2)        | YES      | Office code
+
+ENROLLMENT INFORMATION:
+Enrollment Date               | dataIscrizione       | date           | Optional | When student enrolled
+School of Enrollment Province | provinciaCIA         | String         | Optional | CIA province
+School Code (CIA)             | codiceCIA            | String         | Optional | School identifier
+Request Protocol              | protocolloRichiesta  | String         | Optional | Government protocol number
+
+APPLICANT INFORMATION:
+Demographics                  | datiAnagrafici       | AnagraficaRichiedenteType | YES | Full data (see section 1)
+Residence                     | datiResidenza        | LuogoResidenzaType | YES    | Full address (see section 2)
+Medical Data                  | datiMedici           | DatiMediciType | YES       | Exam info (see section 3)
+
+LICENSE/CATEGORY INFORMATION:
+Available Category            | categoriaDisponibile | String         | YES      | Categories applicant can take (A, B, C, D, etc.)
+Requested Category            | categoriaRichiesta   | String         | YES      | Category being tested for
+Category A Qualification      | abilitazioneCategoriaA | String       | Optional | Sub-category (A1, A2, A, etc.)
+Held Category                 | categoriaPosseduta   | String         | Optional | Existing license category
+Extended Held Category        | categoriaPossedutaEstesa | String    | Optional | Full extended category list
+
+VALIDITY & RESTRICTIONS:
+License Validity (Months)     | validitaPatenteRichiestaMM | Integer  | YES      | 0-12 months
+License Validity (Years)      | validitaPatenteRichiestaAA | Integer  | YES      | 1-50 years
+Automatic Transmission        | cambioAutomatico     | S/N            | YES      | S=automatic only, N=manual ok
+Technical Restrictions        | elencoPrescrizioniTecniche | List    | Optional | Medical/physical restrictions
+
+PREVIOUS LICENSES:
+Previous Italian License      | patenteItalianaPrecedente | Complex  | Optional | Old license details
+Foreign License               | patenteEstera        | PatenteEsteraType | Optional | Non-Italian license
+Foreign License Expiry        | dataScadenzaPatDaConvertire | date   | Optional | When foreign license expires
+
+CQC INFORMATION:
+CQC Held                      | cqcPosseduta         | String         | Optional | Y/N or CQC number
+CQC Course Start Date         | dataInizioCorsoCqc   | date           | Optional | Course start date
+
+PAYMENT:
+Payment Type                  | tipologiaPagamento   | Enum           | YES      | BOLLETTINO, DECURTAZIONE, PAGOPA
+Payment Code                  | codicePagamento      | String         | Optional | Code/reference for payment
+
+
+================================================================================
+5. DatiRichiestaEsameInserimentoType - EXAM REQUEST (New Insertion)
+================================================================================
+Includes ALL fields from DatiRichiestaEsameType PLUS:
+
+NEW/MODIFIED FIELDS:
+Medical Certificate Protocol  | protocolloCertificatoMedico | String | Optional | If using medical certificate
+CML Medical Exam Required     | obbligoVisitaCML     | S/N            | Optional | S=required, N=not required
+CML Medical Exam Exempt       | esenteVisitaCML      | S/N            | Optional | S=exempt, N=must attend
+Extended Theory Test Time     | tempoEstesoProvaTeoria | S/N          | Optional | S=extended time permitted
+Reaction Time Tests           | svolteProveTempiDiReazione | S/N      | Optional | S=must do reaction tests
+Driving Experiment Mandatory  | obbligoEsperimentoGuida | S/N         | Optional | S=required, N=optional
+
+QUALIFICATIONS DATA:
+Qualifications List           | datiAbilitazione     | ElencoCategorieInputType | Optional | All categories with dates/annotations
+Special License Plates        | elencoTarghePatenteSpeciale | List   | Optional | Vehicles for which license valid
+Descriptions of Held Quals    | descrizioniAbilitazioniPossedute | String | Optional | Text description
+
+
+================================================================================
+6. IdentificativoRichiestaEsameType - EXAM REQUEST IDENTIFIER
+================================================================================
+
+Field Name                    | XML Tag              | Type           | Required | Notes
+--------------------------------------------------------------------------------------------------
+PIN Code                      | login/codicePin      | Char(8)        | YES      | User password
+Operative Mark                | marcaOperativa       | String(11)     | YES      | School code
+Operator Code                 | codiceOperatore      | Char(4)        | YES      | Operator PIN (4 digits)
+Operating Office              | uffOperativo         | Char(2)        | YES      | Office identifier
+
+
+================================================================================
+7. DettaglioPrenotazioneCQCType - CQC BOOKING DETAILS
+================================================================================
+
+BASIC IDENTIFICATION:
+Operative Mark                | marcaOperativa       | String(11)     | YES      | School/operator code
+Operating Office              | ufficioOperativo     | Char(2)        | YES      | Office code
+Operator Code                 | codiceOperatore      | Char(4)        | YES      | Operator PIN
+
+APPLICANT INFORMATION:
+Surname                       | cognome              | String         | YES      | Required for CQC
+Name                          | nome                 | String         | Optional |
+Demographics                  | datiAnagrafici       | AnagraficaRichiedenteCQCType | YES | CQC-specific demographics
+Residence                     | datiResidenza        | LuogoResidenzaType | YES    | Address
+
+CQC LICENSE DATA:
+CQC License Data              | datiPatenteCQC       | DatiPatenteCQCType | YES   | Nested type (see below)
+  - CQC License Number        | numeroPatenteCQC     | String         | Required |
+  - Release Date              | dataRilascio         | date           | Required |
+  - Expiration Date           | dataScadenza         | date           | Required |
+  - Enabled Categories        | categorieAbilitate   | String         | Required | C1E, C, CE, D1E, D, DE, etc.
+  - License Type              | tipoPatente          | Enum           | Required | ITALIANA, ESTERA
+
+COURSE DATA:
+Course Data                   | datiCorso            | DatiCorsoType | Required   | Nested type (see below)
+  - Course Type               | tipoCorso            | Enum           | Required | ORDINARIO, CONTINUATIVO, etc.
+  - Training Center           | centroFormazioneCMN  | String         | Required | Center code
+  - Course Start Date         | dataInizioCorso      | date           | Required |
+
+FOREIGN CQC (if applicable):
+Foreign CQC Data              | datiCQCEstera        | DatiCQCEsteraType | Optional | Nested type
+  - CQC Type                  | tipoPatenteCQC       | String         | Optional |
+  - Issuing Nation            | nazioneRilascio      | String         | Optional |
+  - Release Date              | dataRilascio         | date           | Optional |
+  - Expiration Date           | dataScadenza         | date           | Optional |
+  - Held Categories           | categoriePossedute   | String         | Optional |
+
+PAYMENT & STATUS:
+Payment Type                  | tipologiaPagamento   | Enum           | YES      | BOLLETTINO, DECURTAZIONE, PAGOPA
+Payment Code                  | codicePagamento      | String         | Optional |
+Booking State                 | statoPrenotazione    | Enum           | Optional | ACQUISITA, RIFIUTATA, etc.
+State Change Date             | dataVariazioneStato  | date           | Optional | When status last changed
+Insertion Date                | dataInserimento      | date           | Optional | When created
+
+MEDICAL:
+CML Medical Exam Exempt       | esenteVisitaCML      | S/N            | Optional | S=exempt, N=required
+CQC Expiration Date           | dataScadenzaCQC      | date           | Optional | Current CQC valid until
+
+
+================================================================================
+8. InserimentoPrenotazioneCQCType - CREATE CQC BOOKING
+================================================================================
+Required fields MUST be present:
+
+Field Name                    | XML Tag              | Type           | Required | Notes
+--------------------------------------------------------------------------------------------------
+Operative Mark                | marcaOperativa       | String(11)     | YES      | School code
+Operating Office              | ufficioOperativo     | Char(2)        | YES      | Office ID
+Operator Code                 | codiceOperatore      | Char(4)        | YES      | Operator PIN
+Demographics                  | datiAnagrafici       | AnagraficaRichiedenteCQCType | YES |
+Residence                     | datiResidenza        | LuogoResidenzaEsteraType | YES | Address (can be foreign)
+CQC License Data              | datiPatenteCQC       | DatiPatenteCQCType | YES   | Must include:
+                              |                      |                |          | - numeroPatenteCQC
+                              |                      |                |          | - dataRilascio
+                              |                      |                |          | - dataScadenza
+                              |                      |                |          | - categorieAbilitate
+                              |                      |                |          | - tipoPatente
+Course Data                   | datiCorso            | DatiCorsoType  | YES      | Must include:
+                              |                      |                |          | - tipoCorso
+                              |                      |                |          | - centroFormazioneCMN
+                              |                      |                |          | - dataInizioCorso
+Foreign CQC Data              | datiCQCEstera        | DatiCQCEsteraType | Optional | If applicable
+Payment Type                  | tipologiaPagamento   | Enum           | YES      | Determines which WS called
+Payment Code                  | codicePagamento      | String         | Optional | If payment method requires
+
+
+================================================================================
+9. PAYMENT TYPES - tipologiaPagamento
+================================================================================
+
+Enum Value          | Service Suffix           | Description
+--------------------------------------------------------------------------------------------------
+BOLLETTINO          | Bollettino               | Bank transfer form payment
+DECURTAZIONE        | Decurtazione             | Credit/account deduction
+PAGOPA              | PagoPA                   | National digital payment gateway
+ASSENTE/FREE        | (none - free service)    | No payment required
+
+
+================================================================================
+10. LICENSE CATEGORIES - categoriaRichiesta / categoriaDisponibile
+================================================================================
+
+Code | Name               | Description
+--------------------------------------------------------------------------------------------------
+A1   | Categoria A1       | Motorcycles (under 11kW/125cc)
+A2   | Categoria A2       | Motorcycles (under 35kW/250cc)
+A    | Categoria A        | Motorcycles (all)
+B    | Categoria B        | Cars (up to 3500kg)
+BE   | Categoria BE       | Cars with trailer
+C1   | Categoria C1       | Buses (up to 7500kg)
+C1E  | Categoria C1E      | Buses with trailer
+C    | Categoria C        | Trucks (all)
+CE   | Categoria CE       | Trucks with trailer
+D1   | Categoria D1       | Mini-buses (8-16 passengers)
+D1E  | Categoria D1E      | Mini-buses with trailer
+D    | Categoria D        | Buses (all)
+DE   | Categoria DE       | Buses with trailer
+AM   | Categoria AM       | Mopeds/Scooters
+
+
+================================================================================
+11. BOOKING STATES - statoPrenotazione / statoPagamento
+================================================================================
+
+State Code          | Description              | Notes
+--------------------------------------------------------------------------------------------------
+ACQUISITA           | Acquired/Accepted        | Booking successfully created
+RIFIUTATA           | Rejected                 | Application rejected
+PAGAMENTO_DA_RIPETERE | Payment to Retry       | Payment failed, must retry
+PAGAMENTO_COMPLETATO | Payment Complete        | Payment successful
+IN_LAVORAZIONE      | Processing               | Being processed
+ANNULLATA           | Cancelled                | Booking cancelled
+COMPLETATA          | Completed                | Exam completed
+
+
+================================================================================
+12. TECHNICAL RESTRICTIONS - elencoPrescrizioniTecniche
+================================================================================
+
+Common prescriptions (by category):
+
+General Restrictions:
+- CAMBIO_AUTOMATICO    | Automatic transmission only
+- OCCHIALI_DA_VISTA    | Corrective lenses required
+- PROTESI_ACUSTICA     | Hearing aid required
+- PACEMAKER            | Pacemaker present
+- LIMITAZIONI_FISICHE  | Physical limitations (detailed)
+
+Category-specific (e.g., for trucks C/D):
+- VELOCIMETRO          | Speed limiter required (often for C/D)
+- TACHIGRAFO           | Tachograph required
+- RIMORCHIO_LIMITATO   | Trailer restrictions
+
+
+================================================================================
+SCRAPING IMPLEMENTATION NOTES
+================================================================================
+
+1. CASCADING FIELD DEPENDENCIES:
+   - Payment Type (tipologiaPagamento) → determines which WS to call
+   - Medical Data presence → determines if medical certificate WS variants used
+   - Category selection → determines available date slots for exam
+   - Birth date + category → determines validity period calculation
+
+2. DATE FORMATS:
+   - All dates must be YYYY-MM-DD format (ISO 8601)
+   - Extract from HTML <input type="date"> or parse text inputs
+
+3. SPECIAL CHARACTERS & ENCODING:
+   - Italian characters (accents, umlauts) must be properly encoded
+   - Use UTF-8 encoding for all text fields
+   - File uploads (photo/signature) → Base64 encode to XML
+
+4. FILE UPLOADS (foto, firma):
+   - Must be JPEG format
+   - Dimensions per ICAO guidelines
+   - File size limits typically 100-500KB
+   - Convert to Base64 string in XML
+
+5. VALIDATION BEFORE SCRAPING:
+   - Codice Fiscale: exactly 16 chars
+   - Phone: various formats, extract digits
+   - Postal code: exactly 5 digits
+   - Birth date: validate against current date
+   - Categories: validate against allowed list
+
+6. STATE MACHINE FOR BOOKING FLOW:
+   New Request → Demographics → Residence → Payment → Submit → Payment Processing
+   → ACQUISITA (success) or RIFIUTATA/PAGAMENTO_DA_RIPETERE (failure)
+   → Modification possible in certain states
+   → Cancellation possible before PAGAMENTO_COMPLETATO
+
+7. CRITICAL FIELDS NEVER OMIT:
+   - marcaOperativa (identifies operator/school)
+   - codiceOperatore (authentication)
+   - uffOperativo (office context)
+   - cognome (surname - required by Italian law)
+   - dataNascita (birthdate)
+   - datiResidenza (residence address)
+   - tipologiaPagamento (payment method)
+

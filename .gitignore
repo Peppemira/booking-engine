@@ -1,0 +1,17 @@
+node_modules/
+.env
+.env.*
+dist/
+data/
+*.log
+login_debug.html
+login_debug.png
+sessioni_*.html
+step2*.html
+after-login.png
+vault/
+.DS_Store
+.next/
+diagnostica-dump/
+*.pdf
+Thumbs.db

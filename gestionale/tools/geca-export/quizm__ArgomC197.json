@@ -1,0 +1,70 @@
+{
+  "source_file": "C:\\AFSoft\\GeCAFuture\\data\\quizm.mdb",
+  "table": "ArgomC197",
+  "count": 6,
+  "exported_at": "2026-03-25T14:50:26.458744",
+  "schema": [
+    {
+      "field": "idargom",
+      "type": "SMALLINT",
+      "size": 5,
+      "nullable": true
+    },
+    {
+      "field": "idced",
+      "type": "SMALLINT",
+      "size": 5,
+      "nullable": true
+    },
+    {
+      "field": "argomento",
+      "type": "LONGCHAR",
+      "size": 1073741823,
+      "nullable": true
+    },
+    {
+      "field": "img",
+      "type": "VARCHAR",
+      "size": 255,
+      "nullable": true
+    }
+  ],
+  "rows": [
+    {
+      "idargom": 1,
+      "idced": 5,
+      "argomento": "Comportamento in caso di incidente; misure da adottare in caso di incidente o situazione assimilabile, compresi gli interventi di emergenza quali l'evacuazione dei passeggeri, nonché rudimenti di pronto soccorso",
+      "img": null
+    },
+    {
+      "idargom": 2,
+      "idced": 6,
+      "argomento": "Precauzioni da adottare in caso di rimozione e sostituzione delle ruote",
+      "img": null
+    },
+    {
+      "idargom": 3,
+      "idced": 7,
+      "argomento": "Disposizioni che regolano dimensione e massa dei veicoli; disposizioni che regolano i dispositivi di limitazione della velocità",
+      "img": null
+    },
+    {
+      "idargom": 4,
+      "idced": 8,
+      "argomento": "Limitazione del campo visivo legata alle caratteristiche del veicolo",
+      "img": null
+    },
+    {
+      "idargom": 5,
+      "idced": 9,
+      "argomento": "Fattori di sicurezza relativi al caricamento dei veicoli",
+      "img": null
+    },
+    {
+      "idargom": 6,
+      "idced": 10,
+      "argomento": "Sistemi di aggancio alla motrice di rimorchi e semirimorchi e relativi sistemi di frenatura",
+      "img": null
+    }
+  ]
+}

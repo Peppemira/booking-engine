@@ -1,0 +1,958 @@
+{
+  "source_file": "C:\\AFSoft\\GeCAFuture\\data\\citta.mdb",
+  "table": "province",
+  "count": 114,
+  "exported_at": "2026-03-25T14:50:28.322456",
+  "schema": [
+    {
+      "field": "idprov",
+      "type": "COUNTER",
+      "size": 10,
+      "nullable": false
+    },
+    {
+      "field": "provincia",
+      "type": "VARCHAR",
+      "size": 35,
+      "nullable": true
+    },
+    {
+      "field": "codprov",
+      "type": "VARCHAR",
+      "size": 4,
+      "nullable": true
+    },
+    {
+      "field": "sigla",
+      "type": "VARCHAR",
+      "size": 2,
+      "nullable": true
+    },
+    {
+      "field": "codtar",
+      "type": "VARCHAR",
+      "size": 255,
+      "nullable": true
+    },
+    {
+      "field": "nomtar",
+      "type": "VARCHAR",
+      "size": 255,
+      "nullable": true
+    }
+  ],
+  "rows": [
+    {
+      "idprov": 1,
+      "provincia": "AGRIGENTO",
+      "codprov": "084",
+      "sigla": "AG",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 2,
+      "provincia": "ALESSANDRIA",
+      "codprov": "006",
+      "sigla": "AL",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 3,
+      "provincia": "ANCONA",
+      "codprov": "042",
+      "sigla": "AN",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 4,
+      "provincia": "AOSTA",
+      "codprov": "007",
+      "sigla": "AO",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 5,
+      "provincia": "AREZZO",
+      "codprov": "051",
+      "sigla": "AR",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 6,
+      "provincia": "ASCOLI PICENO",
+      "codprov": "044",
+      "sigla": "AP",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 7,
+      "provincia": "ASTI",
+      "codprov": "005",
+      "sigla": "AT",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 8,
+      "provincia": "AVELLINO",
+      "codprov": "064",
+      "sigla": "AV",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 9,
+      "provincia": "BARI",
+      "codprov": "072",
+      "sigla": "BA",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 10,
+      "provincia": "BELLUNO",
+      "codprov": "025",
+      "sigla": "BL",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 11,
+      "provincia": "BENEVENTO",
+      "codprov": "062",
+      "sigla": "BN",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 12,
+      "provincia": "BERGAMO",
+      "codprov": "016",
+      "sigla": "BG",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 13,
+      "provincia": "BOLOGNA",
+      "codprov": "037",
+      "sigla": "BO",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 14,
+      "provincia": "BOLZANO-BOZEN",
+      "codprov": "021",
+      "sigla": "BZ",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 15,
+      "provincia": "BRESCIA",
+      "codprov": "017",
+      "sigla": "BS",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 16,
+      "provincia": "BRINDISI",
+      "codprov": "074",
+      "sigla": "BR",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 17,
+      "provincia": "CAGLIARI",
+      "codprov": "092",
+      "sigla": "CA",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 18,
+      "provincia": "CALTANISSETTA",
+      "codprov": "085",
+      "sigla": "CL",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 19,
+      "provincia": "CAMPOBASSO",
+      "codprov": "070",
+      "sigla": "CB",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 20,
+      "provincia": "CASERTA",
+      "codprov": "061",
+      "sigla": "CE",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 21,
+      "provincia": "CATANIA",
+      "codprov": "087",
+      "sigla": "CT",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 22,
+      "provincia": "CATANZARO",
+      "codprov": "079",
+      "sigla": "CZ",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 23,
+      "provincia": "CHIETI",
+      "codprov": "069",
+      "sigla": "CH",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 24,
+      "provincia": "COMO",
+      "codprov": "013",
+      "sigla": "CO",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 25,
+      "provincia": "COSENZA",
+      "codprov": "078",
+      "sigla": "CS",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 26,
+      "provincia": "CREMONA",
+      "codprov": "019",
+      "sigla": "CR",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 27,
+      "provincia": "CUNEO",
+      "codprov": "004",
+      "sigla": "CN",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 28,
+      "provincia": "ENNA",
+      "codprov": "086",
+      "sigla": "EN",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 29,
+      "provincia": "FERRARA",
+      "codprov": "038",
+      "sigla": "FE",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 30,
+      "provincia": "FIRENZE",
+      "codprov": "048",
+      "sigla": "FI",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 31,
+      "provincia": "FIUME",
+      "codprov": "701",
+      "sigla": "FU",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 32,
+      "provincia": "FOGGIA",
+      "codprov": "071",
+      "sigla": "FG",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 33,
+      "provincia": "FORLI'",
+      "codprov": "040",
+      "sigla": "FO",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 34,
+      "provincia": "FROSINONE",
+      "codprov": "060",
+      "sigla": "FR",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 35,
+      "provincia": "GENOVA",
+      "codprov": "010",
+      "sigla": "GE",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 36,
+      "provincia": "GORIZIA",
+      "codprov": "031",
+      "sigla": "GO",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 37,
+      "provincia": "GROSSETO",
+      "codprov": "053",
+      "sigla": "GR",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 38,
+      "provincia": "IMPERIA",
+      "codprov": "008",
+      "sigla": "IM",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 39,
+      "provincia": "ISERNIA",
+      "codprov": "094",
+      "sigla": "IS",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 40,
+      "provincia": "L'AQUILA",
+      "codprov": "066",
+      "sigla": "AQ",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 41,
+      "provincia": "LA SPEZIA",
+      "codprov": "011",
+      "sigla": "SP",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 42,
+      "provincia": "LATINA",
+      "codprov": "059",
+      "sigla": "LT",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 43,
+      "provincia": "LECCE",
+      "codprov": "075",
+      "sigla": "LE",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 44,
+      "provincia": "LIVORNO",
+      "codprov": "049",
+      "sigla": "LI",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 45,
+      "provincia": "LUCCA",
+      "codprov": "046",
+      "sigla": "LU",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 46,
+      "provincia": "MACERATA",
+      "codprov": "043",
+      "sigla": "MC",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 47,
+      "provincia": "MANTOVA",
+      "codprov": "020",
+      "sigla": "MN",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 48,
+      "provincia": "MASSA-CARRARA",
+      "codprov": "045",
+      "sigla": "MS",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 49,
+      "provincia": "MATERA",
+      "codprov": "077",
+      "sigla": "MT",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 50,
+      "provincia": "MESSINA",
+      "codprov": "083",
+      "sigla": "ME",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 51,
+      "provincia": "MILANO",
+      "codprov": "015",
+      "sigla": "MI",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 52,
+      "provincia": "MODENA",
+      "codprov": "036",
+      "sigla": "MO",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 53,
+      "provincia": "NAPOLI",
+      "codprov": "063",
+      "sigla": "NA",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 54,
+      "provincia": "NOVARA",
+      "codprov": "003",
+      "sigla": "NO",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 55,
+      "provincia": "NUORO",
+      "codprov": "091",
+      "sigla": "NU",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 56,
+      "provincia": "ORISTANO",
+      "codprov": "095",
+      "sigla": "OR",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 57,
+      "provincia": "PADOVA",
+      "codprov": "028",
+      "sigla": "PD",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 58,
+      "provincia": "PALERMO",
+      "codprov": "082",
+      "sigla": "PA",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 59,
+      "provincia": "PARMA",
+      "codprov": "034",
+      "sigla": "PR",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 60,
+      "provincia": "PAVIA",
+      "codprov": "018",
+      "sigla": "PV",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 61,
+      "provincia": "PERUGIA",
+      "codprov": "054",
+      "sigla": "PG",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 62,
+      "provincia": "PESARO",
+      "codprov": "041",
+      "sigla": "PS",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 63,
+      "provincia": "PESCARA",
+      "codprov": "068",
+      "sigla": "PE",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 64,
+      "provincia": "PIACENZA",
+      "codprov": "033",
+      "sigla": "PC",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 65,
+      "provincia": "PISA",
+      "codprov": "050",
+      "sigla": "PI",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 66,
+      "provincia": "PISTOIA",
+      "codprov": "047",
+      "sigla": "PT",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 67,
+      "provincia": "POLA",
+      "codprov": "702",
+      "sigla": "PL",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 68,
+      "provincia": "PORDENONE",
+      "codprov": "093",
+      "sigla": "PN",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 69,
+      "provincia": "POTENZA",
+      "codprov": "076",
+      "sigla": "PZ",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 70,
+      "provincia": "RAGUSA",
+      "codprov": "088",
+      "sigla": "RG",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 71,
+      "provincia": "RAVENNA",
+      "codprov": "039",
+      "sigla": "RA",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 72,
+      "provincia": "REGGIO DI CALABRIA",
+      "codprov": "080",
+      "sigla": "RC",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 73,
+      "provincia": "REGGIO NELL'EMILIA",
+      "codprov": "035",
+      "sigla": "RE",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 74,
+      "provincia": "RIETI",
+      "codprov": "057",
+      "sigla": "RI",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 75,
+      "provincia": "ROMA",
+      "codprov": "058",
+      "sigla": "RM",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 76,
+      "provincia": "ROVIGO",
+      "codprov": "029",
+      "sigla": "RO",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 77,
+      "provincia": "SALERNO",
+      "codprov": "065",
+      "sigla": "SA",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 78,
+      "provincia": "SASSARI",
+      "codprov": "090",
+      "sigla": "SS",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 79,
+      "provincia": "SAVONA",
+      "codprov": "009",
+      "sigla": "SV",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 80,
+      "provincia": "SIENA",
+      "codprov": "052",
+      "sigla": "SI",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 81,
+      "provincia": "SIRACUSA",
+      "codprov": "089",
+      "sigla": "SR",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 82,
+      "provincia": "SONDRIO",
+      "codprov": "014",
+      "sigla": "SO",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 83,
+      "provincia": "TARANTO",
+      "codprov": "073",
+      "sigla": "TA",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 84,
+      "provincia": "TERAMO",
+      "codprov": "067",
+      "sigla": "TE",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 85,
+      "provincia": "TERNI",
+      "codprov": "055",
+      "sigla": "TR",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 86,
+      "provincia": "TORINO",
+      "codprov": "001",
+      "sigla": "TO",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 87,
+      "provincia": "TRAPANI",
+      "codprov": "081",
+      "sigla": "TP",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 88,
+      "provincia": "TRENTO",
+      "codprov": "022",
+      "sigla": "TN",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 89,
+      "provincia": "TREVISO",
+      "codprov": "026",
+      "sigla": "TV",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 90,
+      "provincia": "TRIESTE",
+      "codprov": "032",
+      "sigla": "TS",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 91,
+      "provincia": "UDINE",
+      "codprov": "030",
+      "sigla": "UD",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 92,
+      "provincia": "VARESE",
+      "codprov": "012",
+      "sigla": "VA",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 93,
+      "provincia": "VENEZIA",
+      "codprov": "027",
+      "sigla": "VE",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 94,
+      "provincia": "VERCELLI",
+      "codprov": "002",
+      "sigla": "VC",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 95,
+      "provincia": "VERONA",
+      "codprov": "023",
+      "sigla": "VR",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 96,
+      "provincia": "VICENZA",
+      "codprov": "024",
+      "sigla": "VI",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 97,
+      "provincia": "VITERBO",
+      "codprov": "056",
+      "sigla": "VT",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 98,
+      "provincia": "ZARA",
+      "codprov": "703",
+      "sigla": "ZA",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 99,
+      "provincia": "BIELLA",
+      "codprov": "096",
+      "sigla": "BI",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 100,
+      "provincia": "CROTONE",
+      "codprov": "101",
+      "sigla": "KR",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 101,
+      "provincia": "LECCO",
+      "codprov": "097",
+      "sigla": "LC",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 102,
+      "provincia": "LODI",
+      "codprov": "098",
+      "sigla": "LO",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 103,
+      "provincia": "PRATO",
+      "codprov": "100",
+      "sigla": "PO",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 104,
+      "provincia": "RIMINI",
+      "codprov": "099",
+      "sigla": "RN",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 105,
+      "provincia": "VERBANIA",
+      "codprov": "103",
+      "sigla": "VB",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 106,
+      "provincia": "VIBO VALENTIA",
+      "codprov": "102",
+      "sigla": "VV",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 107,
+      "provincia": "CARBONIA-IGLESIAS",
+      "codprov": "107",
+      "sigla": "CI",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 108,
+      "provincia": "MEDIO CAMPIDANO",
+      "codprov": "106",
+      "sigla": "VS",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 109,
+      "provincia": "OGLIASTRA",
+      "codprov": "105",
+      "sigla": "OG",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 110,
+      "provincia": "OLBIA-TEMPIO",
+      "codprov": "104",
+      "sigla": "OT",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 111,
+      "provincia": "BARLETTA-ANDRIA-TRANI",
+      "codprov": "110",
+      "sigla": "BT",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 112,
+      "provincia": "FERMO",
+      "codprov": "109",
+      "sigla": "FM",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 113,
+      "provincia": "MONZA E DELLA BRIANZA",
+      "codprov": "108",
+      "sigla": "MB",
+      "codtar": null,
+      "nomtar": null
+    },
+    {
+      "idprov": 114,
+      "provincia": "SUD SARDEGNA",
+      "codprov": "111",
+      "sigla": "SU",
+      "codtar": null,
+      "nomtar": null
+    }
+  ]
+}

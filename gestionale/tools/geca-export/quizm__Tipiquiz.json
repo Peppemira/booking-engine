@@ -1,0 +1,526 @@
+{
+  "source_file": "C:\\AFSoft\\GeCAFuture\\data\\quizm.mdb",
+  "table": "Tipiquiz",
+  "count": 42,
+  "exported_at": "2026-03-25T14:50:27.421652",
+  "schema": [
+    {
+      "field": "idprogr",
+      "type": "SMALLINT",
+      "size": 5,
+      "nullable": true
+    },
+    {
+      "field": "tipoquiz",
+      "type": "VARCHAR",
+      "size": 255,
+      "nullable": true
+    },
+    {
+      "field": "schemascheda",
+      "type": "VARCHAR",
+      "size": 255,
+      "nullable": true
+    },
+    {
+      "field": "argomentischeda",
+      "type": "VARCHAR",
+      "size": 255,
+      "nullable": true
+    },
+    {
+      "field": "totdomande",
+      "type": "INTEGER",
+      "size": 10,
+      "nullable": true
+    },
+    {
+      "field": "errorimax",
+      "type": "INTEGER",
+      "size": 10,
+      "nullable": true
+    },
+    {
+      "field": "nometab",
+      "type": "VARCHAR",
+      "size": 255,
+      "nullable": true
+    },
+    {
+      "field": "maxtime",
+      "type": "INTEGER",
+      "size": 10,
+      "nullable": true
+    },
+    {
+      "field": "tabargomenti",
+      "type": "VARCHAR",
+      "size": 255,
+      "nullable": true
+    }
+  ],
+  "rows": [
+    {
+      "idprogr": 1,
+      "tipoquiz": "AMI",
+      "schemascheda": "3,3,3,3,3,3,3,3,3,3",
+      "argomentischeda": "1,2,3,4,5,6,7,8,9,10",
+      "totdomande": 30,
+      "errorimax": 3,
+      "nometab": "quizam",
+      "maxtime": 25,
+      "tabargomenti": "argomAM"
+    },
+    {
+      "idprogr": 2,
+      "tipoquiz": "BI",
+      "schemascheda": "1,1,1,1,2,1,1,1,1,1,1,2,2,1,1,1,2,1,1,1,1,2,1,1,1",
+      "argomentischeda": "11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35",
+      "totdomande": 30,
+      "errorimax": 3,
+      "nometab": "quizab",
+      "maxtime": 20,
+      "tabargomenti": "argomAB"
+    },
+    {
+      "idprogr": 3,
+      "tipoquiz": "AMR",
+      "schemascheda": "2,2,2,2,2,2,2,2,2,2",
+      "argomentischeda": "1,2,3,4,5,6,7,8,9,10",
+      "totdomande": 20,
+      "errorimax": 2,
+      "nometab": "quizamrev",
+      "maxtime": 25,
+      "tabargomenti": "argomAMRev"
+    },
+    {
+      "idprogr": 4,
+      "tipoquiz": "BR",
+      "schemascheda": "3,3,3,3,3,3,3,3,3,3",
+      "argomentischeda": "1,2,3,4,5,6,7,8,9,10",
+      "totdomande": 30,
+      "errorimax": 3,
+      "nometab": "quizabrev",
+      "maxtime": 20,
+      "tabargomenti": "argomABRev"
+    },
+    {
+      "idprogr": 5,
+      "tipoquiz": "A1I",
+      "schemascheda": "1,1,1,1,2,1,1,1,1,1,1,2,2,1,1,1,2,1,1,1,1,2,1,1,1",
+      "argomentischeda": "11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35",
+      "totdomande": 30,
+      "errorimax": 3,
+      "nometab": "quizab",
+      "maxtime": 20,
+      "tabargomenti": "argomAB"
+    },
+    {
+      "idprogr": 6,
+      "tipoquiz": "A2I",
+      "schemascheda": "1,1,1,1,2,1,1,1,1,1,1,2,2,1,1,1,2,1,1,1,1,2,1,1,1",
+      "argomentischeda": "11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35",
+      "totdomande": 30,
+      "errorimax": 3,
+      "nometab": "quizab",
+      "maxtime": 20,
+      "tabargomenti": "argomAB"
+    },
+    {
+      "idprogr": 7,
+      "tipoquiz": "AI",
+      "schemascheda": "1,1,1,1,2,1,1,1,1,1,1,2,2,1,1,1,2,1,1,1,1,2,1,1,1",
+      "argomentischeda": "11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35",
+      "totdomande": 30,
+      "errorimax": 3,
+      "nometab": "quizab",
+      "maxtime": 20,
+      "tabargomenti": "argomAB"
+    },
+    {
+      "idprogr": 8,
+      "tipoquiz": "B1I",
+      "schemascheda": "1,1,1,1,2,1,1,1,1,1,1,2,2,1,1,1,2,1,1,1,1,2,1,1,1",
+      "argomentischeda": "11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35",
+      "totdomande": 30,
+      "errorimax": 3,
+      "nometab": "quizab",
+      "maxtime": 20,
+      "tabargomenti": "argomAB"
+    },
+    {
+      "idprogr": 11,
+      "tipoquiz": "A1R",
+      "schemascheda": "3,3,3,3,3,3,3,3,3,3",
+      "argomentischeda": "1,2,3,4,5,6,7,8,9,10",
+      "totdomande": 30,
+      "errorimax": 3,
+      "nometab": "quizabrev",
+      "maxtime": 20,
+      "tabargomenti": "argomABRev"
+    },
+    {
+      "idprogr": 12,
+      "tipoquiz": "A2R",
+      "schemascheda": "3,3,3,3,3,3,3,3,3,3",
+      "argomentischeda": "1,2,3,4,5,6,7,8,9,10",
+      "totdomande": 30,
+      "errorimax": 3,
+      "nometab": "quizabrev",
+      "maxtime": 20,
+      "tabargomenti": "argomABRev"
+    },
+    {
+      "idprogr": 13,
+      "tipoquiz": "AR",
+      "schemascheda": "3,3,3,3,3,3,3,3,3,3",
+      "argomentischeda": "1,2,3,4,5,6,7,8,9,10",
+      "totdomande": 30,
+      "errorimax": 3,
+      "nometab": "quizabrev",
+      "maxtime": 20,
+      "tabargomenti": "argomABRev"
+    },
+    {
+      "idprogr": 14,
+      "tipoquiz": "B1R",
+      "schemascheda": "3,3,3,3,3,3,3,3,3,3",
+      "argomentischeda": "1,2,3,4,5,6,7,8,9,10",
+      "totdomande": 30,
+      "errorimax": 3,
+      "nometab": "quizabrev",
+      "maxtime": 20,
+      "tabargomenti": "argomABRev"
+    },
+    {
+      "idprogr": 15,
+      "tipoquiz": "C1I",
+      "schemascheda": "2,3,3,1,3,1,3,1,1,2",
+      "argomentischeda": "1,2,3,4,5,6,7,8,9,10",
+      "totdomande": 20,
+      "errorimax": 2,
+      "nometab": "quizc1",
+      "maxtime": 20,
+      "tabargomenti": "argomC"
+    },
+    {
+      "idprogr": 16,
+      "tipoquiz": "C7I",
+      "schemascheda": "2,1,3,1,1,2",
+      "argomentischeda": "5,6,7,8,9,10",
+      "totdomande": 10,
+      "errorimax": 1,
+      "nometab": "quizc197",
+      "maxtime": 20,
+      "tabargomenti": "argomC197"
+    },
+    {
+      "idprogr": 17,
+      "tipoquiz": "CI",
+      "schemascheda": "2,3,4,1,2,1,3,1,1,2,5,1,4,3,3,3,1",
+      "argomentischeda": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17",
+      "totdomande": 40,
+      "errorimax": 4,
+      "nometab": "quizc",
+      "maxtime": 40,
+      "tabargomenti": "argomC"
+    },
+    {
+      "idprogr": 18,
+      "tipoquiz": "D1I",
+      "schemascheda": "2,3,2,1,2,2,3,1,2,2",
+      "argomentischeda": "1,2,3,4,5,6,7,8,9,10",
+      "totdomande": 20,
+      "errorimax": 2,
+      "nometab": "quizd1",
+      "maxtime": 20,
+      "tabargomenti": "argomD"
+    },
+    {
+      "idprogr": 19,
+      "tipoquiz": "DI",
+      "schemascheda": "2,3,3,1,3,2,3,1,2,2,5,1,4,2,3,3",
+      "argomentischeda": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16",
+      "totdomande": 40,
+      "errorimax": 4,
+      "nometab": "quizd",
+      "maxtime": 40,
+      "tabargomenti": "argomD"
+    },
+    {
+      "idprogr": 20,
+      "tipoquiz": "ECI",
+      "schemascheda": "5,1,4,3,3,3,1",
+      "argomentischeda": "11,12,13,14,15,16,17",
+      "totdomande": 20,
+      "errorimax": 2,
+      "nometab": "quizec",
+      "maxtime": 20,
+      "tabargomenti": "argomC"
+    },
+    {
+      "idprogr": 21,
+      "tipoquiz": "EDI",
+      "schemascheda": "5,2,4,3,3,3",
+      "argomentischeda": "11,12,13,14,15,16",
+      "totdomande": 20,
+      "errorimax": 2,
+      "nometab": "quized",
+      "maxtime": 20,
+      "tabargomenti": "argomD"
+    },
+    {
+      "idprogr": 23,
+      "tipoquiz": "C7R",
+      "schemascheda": "3,3,3,2,3,2,3,3,2,2,2,2",
+      "argomentischeda": "1,2,3,4,5,6,7,8,9,10,11,12",
+      "totdomande": 30,
+      "errorimax": 3,
+      "nometab": "quizsuprev",
+      "maxtime": 30,
+      "tabargomenti": "argomC197Rev"
+    },
+    {
+      "idprogr": 24,
+      "tipoquiz": "CR",
+      "schemascheda": "3,2,3,2,3,2,2,2,2,3,2,2,2",
+      "argomentischeda": "1,2,3,4,5,6,7,8,9,10,11,12,13",
+      "totdomande": 30,
+      "errorimax": 3,
+      "nometab": "quizsuprev",
+      "maxtime": 30,
+      "tabargomenti": "argomCRev"
+    },
+    {
+      "idprogr": 25,
+      "tipoquiz": "DR",
+      "schemascheda": "3,2,3,2,3,2,2,2,2,3,2,2,2",
+      "argomentischeda": "1,2,3,4,5,6,7,8,9,14,15,16,17",
+      "totdomande": 30,
+      "errorimax": 3,
+      "nometab": "quizsuprev",
+      "maxtime": 30,
+      "tabargomenti": "argomDRev"
+    },
+    {
+      "idprogr": 26,
+      "tipoquiz": "IAM",
+      "schemascheda": "4,4,4,4,4,4,4,4,4,4,10,10,10",
+      "argomentischeda": "1,2,3,4,5,6,7,8,9,10,11,12,13",
+      "totdomande": 70,
+      "errorimax": 7,
+      "nometab": "quizcqc",
+      "maxtime": 90,
+      "tabargomenti": "argomCQC"
+    },
+    {
+      "idprogr": 27,
+      "tipoquiz": "IAP",
+      "schemascheda": "4,4,4,4,4,4,4,4,4,4,10,10,10",
+      "argomentischeda": "1,2,3,4,5,6,7,8,9,10,14,15,16",
+      "totdomande": 70,
+      "errorimax": 7,
+      "nometab": "quizcqc",
+      "maxtime": 90,
+      "tabargomenti": "argomCQC"
+    },
+    {
+      "idprogr": 28,
+      "tipoquiz": "IOM",
+      "schemascheda": "4,4,4,4,4,4,4,4,4,4,10,10,10",
+      "argomentischeda": "1,2,3,4,5,6,7,8,9,10,11,12,13",
+      "totdomande": 70,
+      "errorimax": 7,
+      "nometab": "quizcqc",
+      "maxtime": 90,
+      "tabargomenti": "argomCQC"
+    },
+    {
+      "idprogr": 29,
+      "tipoquiz": "IOP",
+      "schemascheda": "4,4,4,4,4,4,4,4,4,4,10,10,10",
+      "argomentischeda": "1,2,3,4,5,6,7,8,9,10,14,15,16",
+      "totdomande": 70,
+      "errorimax": 7,
+      "nometab": "quizcqc",
+      "maxtime": 90,
+      "tabargomenti": "argomCQC"
+    },
+    {
+      "idprogr": 30,
+      "tipoquiz": "EAM",
+      "schemascheda": "10,10,10",
+      "argomentischeda": "11,12,13",
+      "totdomande": 30,
+      "errorimax": 3,
+      "nometab": "quizcqc",
+      "maxtime": 40,
+      "tabargomenti": "argomCQC"
+    },
+    {
+      "idprogr": 31,
+      "tipoquiz": "EAP",
+      "schemascheda": "10,10,10",
+      "argomentischeda": "14,15,16",
+      "totdomande": 30,
+      "errorimax": 3,
+      "nometab": "quizcqc",
+      "maxtime": 40,
+      "tabargomenti": "argomCQC"
+    },
+    {
+      "idprogr": 32,
+      "tipoquiz": "EOM",
+      "schemascheda": "10,10,10",
+      "argomentischeda": "11,12,13",
+      "totdomande": 30,
+      "errorimax": 3,
+      "nometab": "quizcqc",
+      "maxtime": 40,
+      "tabargomenti": "argomCQC"
+    },
+    {
+      "idprogr": 33,
+      "tipoquiz": "EOP",
+      "schemascheda": "10,10,10",
+      "argomentischeda": "14,15,16",
+      "totdomande": 30,
+      "errorimax": 3,
+      "nometab": "quizcqc",
+      "maxtime": 40,
+      "tabargomenti": "argomCQC"
+    },
+    {
+      "idprogr": 34,
+      "tipoquiz": "CQZ",
+      "schemascheda": "4,4,4,4,4,4,4,4,4,4",
+      "argomentischeda": "1,2,3,4,5,6,7,8,9,10",
+      "totdomande": 40,
+      "errorimax": 4,
+      "nometab": "quizcqc",
+      "maxtime": 50,
+      "tabargomenti": "argomCQC"
+    },
+    {
+      "idprogr": 36,
+      "tipoquiz": "KBI",
+      "schemascheda": "6:1-11;10:12-15;2:16;2:17-19",
+      "argomentischeda": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19",
+      "totdomande": 20,
+      "errorimax": 2,
+      "nometab": "quizkb",
+      "maxtime": 30,
+      "tabargomenti": "argomKB"
+    },
+    {
+      "idprogr": 37,
+      "tipoquiz": "DRB",
+      "schemascheda": "1,1,2,1,1,1,1,1,1,2,2,1,1,1,1,2,1,1,2,1",
+      "argomentischeda": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20",
+      "totdomande": 25,
+      "errorimax": 6,
+      "nometab": "quizadr",
+      "maxtime": 45,
+      "tabargomenti": "argomADR"
+    },
+    {
+      "idprogr": 38,
+      "tipoquiz": "DRC",
+      "schemascheda": "2,1,3,1,3,1,1,2,1",
+      "argomentischeda": "21,22,23,24,25,26,27,28,29",
+      "totdomande": 15,
+      "errorimax": 4,
+      "nometab": "quizadr",
+      "maxtime": 45,
+      "tabargomenti": "argomADR"
+    },
+    {
+      "idprogr": 39,
+      "tipoquiz": "DRE",
+      "schemascheda": "4,4,7",
+      "argomentischeda": "30,31,32",
+      "totdomande": 15,
+      "errorimax": 4,
+      "nometab": "quizadr",
+      "maxtime": 45,
+      "tabargomenti": "argomADR"
+    },
+    {
+      "idprogr": 40,
+      "tipoquiz": "DRR",
+      "schemascheda": "5,5,5",
+      "argomentischeda": "33,34,35",
+      "totdomande": 15,
+      "errorimax": 4,
+      "nometab": "quizadr",
+      "maxtime": 45,
+      "tabargomenti": "argomADR"
+    },
+    {
+      "idprogr": 41,
+      "tipoquiz": "RDB",
+      "schemascheda": "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1",
+      "argomentischeda": "1,3,4,5,8,9,10,11,12,13,14,16,18,19,20",
+      "totdomande": 15,
+      "errorimax": 5,
+      "nometab": "quizadr",
+      "maxtime": 45,
+      "tabargomenti": "argomADR"
+    },
+    {
+      "idprogr": 42,
+      "tipoquiz": "RDC",
+      "schemascheda": "2,1,3,1,3,1,1,2,1",
+      "argomentischeda": "21,22,23,24,25,26,27,28,29",
+      "totdomande": 15,
+      "errorimax": 5,
+      "nometab": "quizadr",
+      "maxtime": 45,
+      "tabargomenti": "argomADR"
+    },
+    {
+      "idprogr": 43,
+      "tipoquiz": "RDE",
+      "schemascheda": "4,4,7",
+      "argomentischeda": "30,31,32",
+      "totdomande": 15,
+      "errorimax": 5,
+      "nometab": "quizadr",
+      "maxtime": 45,
+      "tabargomenti": "argomADR"
+    },
+    {
+      "idprogr": 44,
+      "tipoquiz": "RDR",
+      "schemascheda": "5,5,5",
+      "argomentischeda": "33,34,35",
+      "totdomande": 15,
+      "errorimax": 5,
+      "nometab": "quizadr",
+      "maxtime": 45,
+      "tabargomenti": "argomADR"
+    },
+    {
+      "idprogr": 45,
+      "tipoquiz": "PNB",
+      "schemascheda": "1,1,3,4,2,2,4,3",
+      "argomentischeda": "11,12,13,14,15,16,17,18",
+      "totdomande": 20,
+      "errorimax": 4,
+      "nometab": "quizPN",
+      "maxtime": 30,
+      "tabargomenti": "argomPN"
+    },
+    {
+      "idprogr": 46,
+      "tipoquiz": "PND",
+      "schemascheda": "1,2,3,2,2,1,1,3",
+      "argomentischeda": "61,62,63,64,65,66,67,68",
+      "totdomande": 15,
+      "errorimax": 3,
+      "nometab": "quizPN",
+      "maxtime": 30,
+      "tabargomenti": "argomPN"
+    }
+  ]
+}

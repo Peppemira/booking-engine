@@ -1,0 +1,94 @@
+{
+  "source_file": "C:\\AFSoft\\GeCAFuture\\data\\quizm.mdb",
+  "table": "ArgomAMRev",
+  "count": 10,
+  "exported_at": "2026-03-25T14:50:26.453072",
+  "schema": [
+    {
+      "field": "idargom",
+      "type": "SMALLINT",
+      "size": 5,
+      "nullable": true
+    },
+    {
+      "field": "idced",
+      "type": "SMALLINT",
+      "size": 5,
+      "nullable": true
+    },
+    {
+      "field": "argomento",
+      "type": "LONGCHAR",
+      "size": 1073741823,
+      "nullable": true
+    },
+    {
+      "field": "img",
+      "type": "VARCHAR",
+      "size": 255,
+      "nullable": true
+    }
+  ],
+  "rows": [
+    {
+      "idargom": 1,
+      "idced": 1,
+      "argomento": "Segnali di pericolo",
+      "img": "ab12"
+    },
+    {
+      "idargom": 2,
+      "idced": 2,
+      "argomento": "Segnali di divieto - Segnali di obbligo - Segnali di precedenza",
+      "img": "am2"
+    },
+    {
+      "idargom": 3,
+      "idced": 3,
+      "argomento": "Segnali luminosi - Segnali orizzontali",
+      "img": "amrev3"
+    },
+    {
+      "idargom": 4,
+      "idced": 4,
+      "argomento": "Norme sulla precedenza",
+      "img": "ab24"
+    },
+    {
+      "idargom": 5,
+      "idced": 5,
+      "argomento": "Velocità, distanza di sicurezza, sorpasso, svolta, cambio di corsia, cambio di direzione",
+      "img": "am5"
+    },
+    {
+      "idargom": 6,
+      "idced": 6,
+      "argomento": "Fermata e sosta",
+      "img": "ab26"
+    },
+    {
+      "idargom": 7,
+      "idced": 7,
+      "argomento": "Cause di incidenti",
+      "img": "ab31"
+    },
+    {
+      "idargom": 8,
+      "idced": 8,
+      "argomento": "Elementi del ciclomotore e loro uso - Casco",
+      "img": "am8"
+    },
+    {
+      "idargom": 9,
+      "idced": 9,
+      "argomento": "Comportamenti alla guida del ciclomotore",
+      "img": "am9"
+    },
+    {
+      "idargom": 10,
+      "idced": 10,
+      "argomento": "Educazione alla legalità",
+      "img": "am10"
+    }
+  ]
+}

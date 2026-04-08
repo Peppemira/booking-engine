@@ -1,0 +1,148 @@
+{
+  "source_file": "C:\\AFSoft\\GeCAFuture\\data\\quizm.mdb",
+  "table": "ArgomKB",
+  "count": 19,
+  "exported_at": "2026-03-25T14:50:26.473600",
+  "schema": [
+    {
+      "field": "idargom",
+      "type": "SMALLINT",
+      "size": 5,
+      "nullable": true
+    },
+    {
+      "field": "idced",
+      "type": "SMALLINT",
+      "size": 5,
+      "nullable": true
+    },
+    {
+      "field": "argomento",
+      "type": "LONGCHAR",
+      "size": 1073741823,
+      "nullable": true
+    },
+    {
+      "field": "img",
+      "type": "VARCHAR",
+      "size": 255,
+      "nullable": true
+    }
+  ],
+  "rows": [
+    {
+      "idargom": 1,
+      "idced": 1,
+      "argomento": "Ripasso Patente B - Veicoli a motore",
+      "img": null
+    },
+    {
+      "idargom": 2,
+      "idced": 2,
+      "argomento": "Ripasso Patente B - Definizioni stradali",
+      "img": null
+    },
+    {
+      "idargom": 3,
+      "idced": 3,
+      "argomento": "Ripasso Patente B - Segnaletica orizzontale",
+      "img": null
+    },
+    {
+      "idargom": 4,
+      "idced": 4,
+      "argomento": "Ripasso Patente B - Intralcio, arresto del veicolo e distanza di sicurezza",
+      "img": null
+    },
+    {
+      "idargom": 5,
+      "idced": 5,
+      "argomento": "Ripasso Patente B - Sosta",
+      "img": null
+    },
+    {
+      "idargom": 6,
+      "idced": 6,
+      "argomento": "Ripasso Patente B - Segnalazione di emergenza e acustica",
+      "img": null
+    },
+    {
+      "idargom": 7,
+      "idced": 7,
+      "argomento": "Ripasso Patente B - Sorpasso, carico veicollo e addetti della polizia",
+      "img": null
+    },
+    {
+      "idargom": 8,
+      "idced": 8,
+      "argomento": "Ripasso Patente B - Prevenzione incidenti",
+      "img": null
+    },
+    {
+      "idargom": 9,
+      "idced": 9,
+      "argomento": "Incidenti e assicurazione - Comportamento in caso di incidente",
+      "img": null
+    },
+    {
+      "idargom": 10,
+      "idced": 10,
+      "argomento": "Incidenti e assicurazione - Responsabilita' civile e penale",
+      "img": null
+    },
+    {
+      "idargom": 11,
+      "idced": 11,
+      "argomento": "Incidenti e assicurazione - Assicurazione obbligatoria R.C.A.",
+      "img": null
+    },
+    {
+      "idargom": 12,
+      "idced": 12,
+      "argomento": "Norme per trasporto di persone - Destinazione e uso dei veicoli",
+      "img": null
+    },
+    {
+      "idargom": 13,
+      "idced": 13,
+      "argomento": "Norme per trasporto di persone - Disciplina comune dei servizi pubblici non di linea",
+      "img": null
+    },
+    {
+      "idargom": 14,
+      "idced": 14,
+      "argomento": "Norme per trasporto di persone - Servizio di piazza (taxi)",
+      "img": null
+    },
+    {
+      "idargom": 15,
+      "idced": 15,
+      "argomento": "Norme per trasporto di persone - Servizio di noleggio con conducente (NCC)",
+      "img": null
+    },
+    {
+      "idargom": 16,
+      "idced": 16,
+      "argomento": "Uso carte geografiche - Carte georgrafiche",
+      "img": null
+    },
+    {
+      "idargom": 17,
+      "idced": 17,
+      "argomento": "L'autoveicolo e le sue parti - Motore",
+      "img": null
+    },
+    {
+      "idargom": 18,
+      "idced": 18,
+      "argomento": "L'autoveicolo e le sue parti - Organi di trasmissione",
+      "img": null
+    },
+    {
+      "idargom": 19,
+      "idced": 19,
+      "argomento": "L'autoveicolo e le sue parti - Controlli e manutenzione programmata",
+      "img": null
+    }
+  ]
+}

@@ -1,0 +1,184 @@
+{
+  "source_file": "C:\\AFSoft\\GeCAFuture\\data\\quizm.mdb",
+  "table": "ArgomAB",
+  "count": 25,
+  "exported_at": "2026-03-25T14:50:26.443328",
+  "schema": [
+    {
+      "field": "idargom",
+      "type": "SMALLINT",
+      "size": 5,
+      "nullable": true
+    },
+    {
+      "field": "idced",
+      "type": "SMALLINT",
+      "size": 5,
+      "nullable": true
+    },
+    {
+      "field": "argomento",
+      "type": "LONGCHAR",
+      "size": 1073741823,
+      "nullable": true
+    },
+    {
+      "field": "img",
+      "type": "VARCHAR",
+      "size": 255,
+      "nullable": true
+    }
+  ],
+  "rows": [
+    {
+      "idargom": 1,
+      "idced": 11,
+      "argomento": "Definizioni stradali e di traffico, classificazione dei veicoli, doveri del conducente nell’uso della strada convivenza civile ed uso responsabile della strada",
+      "img": "ab11"
+    },
+    {
+      "idargom": 2,
+      "idced": 12,
+      "argomento": "Segnali di pericolo",
+      "img": "ab12"
+    },
+    {
+      "idargom": 3,
+      "idced": 13,
+      "argomento": "Segnali di divieto",
+      "img": "ab13"
+    },
+    {
+      "idargom": 4,
+      "idced": 14,
+      "argomento": "Segnali di obbligo",
+      "img": "ab14"
+    },
+    {
+      "idargom": 5,
+      "idced": 15,
+      "argomento": "Segnali di precedenza",
+      "img": "ab15"
+    },
+    {
+      "idargom": 6,
+      "idced": 16,
+      "argomento": "Segnaletica orizzontale e segni sugli ostacoli",
+      "img": "ab16"
+    },
+    {
+      "idargom": 7,
+      "idced": 17,
+      "argomento": "Segnalazioni semaforiche e segnalazioni degli agenti del traffico",
+      "img": "ab17"
+    },
+    {
+      "idargom": 8,
+      "idced": 18,
+      "argomento": "Segnali di indicazione",
+      "img": "ab18"
+    },
+    {
+      "idargom": 9,
+      "idced": 20,
+      "argomento": "Pannelli integrativi dei segnali",
+      "img": "ab20"
+    },
+    {
+      "idargom": 10,
+      "idced": 19,
+      "argomento": "Segnali complementari, segnali temporanei e di cantiere",
+      "img": "ab19"
+    },
+    {
+      "idargom": 11,
+      "idced": 21,
+      "argomento": "Limiti di velocità, pericolo e intralcio alla circolazione",
+      "img": "ab21"
+    },
+    {
+      "idargom": 12,
+      "idced": 22,
+      "argomento": "Distanza di sicurezza",
+      "img": "ab22"
+    },
+    {
+      "idargom": 13,
+      "idced": 23,
+      "argomento": "Norme sulla circolazione dei veicoli, posizione dei veicoli sulla carreggiata, cambio di direzione di corsia (svolta)",
+      "img": "ab23"
+    },
+    {
+      "idargom": 14,
+      "idced": 24,
+      "argomento": "Esempi di precedenza (ordine di precedenza agli incroci)",
+      "img": "ab24"
+    },
+    {
+      "idargom": 15,
+      "idced": 25,
+      "argomento": "Norme sul sorpasso",
+      "img": "ab25"
+    },
+    {
+      "idargom": 16,
+      "idced": 26,
+      "argomento": "Fermata, sosta, arresto e partenza",
+      "img": "ab26"
+    },
+    {
+      "idargom": 17,
+      "idced": 27,
+      "argomento": "Ingombro della carreggiata, segnalazione di veicolo fermo, norme sulla circolazione in autostrada e strade extraurbane principali, trasporto di persone, carico dei veicoli, pannelli sui veicoli, traino dei veicoli e dei veicoli in avaria",
+      "img": "ab27"
+    },
+    {
+      "idargom": 18,
+      "idced": 28,
+      "argomento": "Uso delle luci, spie e simboli",
+      "img": "ab28"
+    },
+    {
+      "idargom": 19,
+      "idced": 29,
+      "argomento": "Dispositivi di equipaggiamento, funzione ed uso: cinture di sicurezza, sistemi di ritenuta per bambini, casco protettivo e abbigliamento di sicurezza",
+      "img": "ab29"
+    },
+    {
+      "idargom": 20,
+      "idced": 30,
+      "argomento": "Patenti di guida, sistema sanzionatorio, documenti di circolazione, obbligo verso agenti, uso di lenti e altri apparecchi",
+      "img": "ab30"
+    },
+    {
+      "idargom": 21,
+      "idced": 31,
+      "argomento": "Incidenti stradali e comportamento in caso di incidente stradale",
+      "img": "ab31"
+    },
+    {
+      "idargom": 22,
+      "idced": 32,
+      "argomento": "Guida in relazione alle qualità e condizioni fisiche e psichiche, alcool, droga e farmaci, primo soccorso",
+      "img": "ab32"
+    },
+    {
+      "idargom": 23,
+      "idced": 33,
+      "argomento": "Responsabilità civile e penale e amministrativa, assicurazione R.C.A. e altre forme assicurative legate al veicolo",
+      "img": "ab33"
+    },
+    {
+      "idargom": 24,
+      "idced": 34,
+      "argomento": "Limitazione dei consumi e rispetto dell’ambiente, inquinamento: atmosferico, acustico, da cattivo smaltimento dei rifiuti",
+      "img": "ab34"
+    },
+    {
+      "idargom": 25,
+      "idced": 35,
+      "argomento": "Elementi costitutivi del veicolo, manutenzione ed uso, stabilità e tenuta di strada del veicolo, comportamenti e cautele di guida",
+      "img": "ab35"
+    }
+  ]
+}

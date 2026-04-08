@@ -1,0 +1,5566 @@
+{
+  "source_file": "C:\\AFSoft\\GeCAFuture\\data\\quizm.mdb",
+  "table": "Quizadr",
+  "count": 922,
+  "exported_at": "2026-03-25T14:50:26.623945",
+  "schema": [
+    {
+      "field": "ID",
+      "type": "SMALLINT",
+      "size": 5,
+      "nullable": true
+    },
+    {
+      "field": "riferimento",
+      "type": "SMALLINT",
+      "size": 5,
+      "nullable": true
+    },
+    {
+      "field": "idced",
+      "type": "INTEGER",
+      "size": 10,
+      "nullable": true
+    },
+    {
+      "field": "quesito",
+      "type": "LONGCHAR",
+      "size": 1073741823,
+      "nullable": true
+    }
+  ],
+  "rows": [
+    {
+      "ID": 1,
+      "riferimento": 1,
+      "idced": 1101,
+      "quesito": "Che cos'è l’accordo ADR?"
+    },
+    {
+      "ID": 2,
+      "riferimento": 1,
+      "idced": 1102,
+      "quesito": "Le norme dell'ADR contengono:"
+    },
+    {
+      "ID": 3,
+      "riferimento": 1,
+      "idced": 1103,
+      "quesito": "In linea di principio le norme contenute nell'ADR si applicano:"
+    },
+    {
+      "ID": 4,
+      "riferimento": 1,
+      "idced": 1104,
+      "quesito": "Per merce pericolosa ADR s'intende:"
+    },
+    {
+      "ID": 5,
+      "riferimento": 1,
+      "idced": 1105,
+      "quesito": "Cos'è una merce pericolosa?"
+    },
+    {
+      "ID": 6,
+      "riferimento": 1,
+      "idced": 1106,
+      "quesito": "Viene considerata merce pericolosa ai fini ADR:"
+    },
+    {
+      "ID": 7,
+      "riferimento": 1,
+      "idced": 1107,
+      "quesito": "Ai fini ADR, cosa s'intende per carico completo?"
+    },
+    {
+      "ID": 8,
+      "riferimento": 1,
+      "idced": 1108,
+      "quesito": "La classificazione ADR della merce pericolosa spetta:"
+    },
+    {
+      "ID": 9,
+      "riferimento": 1,
+      "idced": 1109,
+      "quesito": "Cosa sono le classi di pericolo dell'ADR?"
+    },
+    {
+      "ID": 10,
+      "riferimento": 1,
+      "idced": 1110,
+      "quesito": "Le classi di pericolo dell'ADR:"
+    },
+    {
+      "ID": 11,
+      "riferimento": 1,
+      "idced": 1111,
+      "quesito": "Quante sono le classi di pericolo dell'ADR?"
+    },
+    {
+      "ID": 12,
+      "riferimento": 21,
+      "idced": 10101,
+      "quesito": "Si definisce cisterna per trasporto di merci pericolose .."
+    },
+    {
+      "ID": 13,
+      "riferimento": 1,
+      "idced": 1112,
+      "quesito": "Quali classi di pericolo ADR sono trasportabili in colli?"
+    },
+    {
+      "ID": 14,
+      "riferimento": 1,
+      "idced": 1113,
+      "quesito": "Le modalità di trasporto delle merci pericolose, disciplinate in modo specifico dall’ADR sono:"
+    },
+    {
+      "ID": 15,
+      "riferimento": 1,
+      "idced": 1114,
+      "quesito": "Cosa s'intende per trasporto in colli?"
+    },
+    {
+      "ID": 16,
+      "riferimento": 1,
+      "idced": 1115,
+      "quesito": "Cosa s'intende per trasporto in cisterna?"
+    },
+    {
+      "ID": 17,
+      "riferimento": 1,
+      "idced": 1116,
+      "quesito": "Cosa s'intende per trasporto alla rinfusa?"
+    },
+    {
+      "ID": 18,
+      "riferimento": 1,
+      "idced": 1117,
+      "quesito": "Le esenzioni previste dall'ADR:"
+    },
+    {
+      "ID": 19,
+      "riferimento": 1,
+      "idced": 1118,
+      "quesito": "Durante il trasporto in regime di esenzione “totale” dall'ADR (materie imballate in quantità limitate per unità di collo):"
+    },
+    {
+      "ID": 20,
+      "riferimento": 1,
+      "idced": 1119,
+      "quesito": "L’esenzione 'parziale' o 1.1.3.6 (per materie trasportate in quantità limitate per unità di trasporto) dall'applicazione dell'ADR:"
+    },
+    {
+      "ID": 21,
+      "riferimento": 1,
+      "idced": 1120,
+      "quesito": "Durante il trasporto in regime di esenzione parziale (quantità limitate per unità di trasporto - 1.1.3.6):"
+    },
+    {
+      "ID": 22,
+      "riferimento": 1,
+      "idced": 1121,
+      "quesito": "Il certificato di formazione professionale ADR:"
+    },
+    {
+      "ID": 23,
+      "riferimento": 1,
+      "idced": 1122,
+      "quesito": "Quali operatori, ovvero quali soggetti, si occupano dell’effettuazione di un trasporto ADR?"
+    },
+    {
+      "ID": 24,
+      "riferimento": 1,
+      "idced": 1123,
+      "quesito": "Quali pericoli o danni possono derivare dal trasporto di merci pericolose su strada?"
+    },
+    {
+      "ID": 25,
+      "riferimento": 1,
+      "idced": 1124,
+      "quesito": "Quale è l'obiettivo della regolamentazione ADR?"
+    },
+    {
+      "ID": 26,
+      "riferimento": 1,
+      "idced": 1125,
+      "quesito": "Per quali tipi di trasporto valgono le disposizioni ADR?"
+    },
+    {
+      "ID": 27,
+      "riferimento": 1,
+      "idced": 1126,
+      "quesito": "Durante il trasporto di merci pericolose imballate in quantità esenti:"
+    },
+    {
+      "ID": 28,
+      "riferimento": 2,
+      "idced": 1201,
+      "quesito": "In Italia, chi effettua il controllo su strada del rispetto delle norme ADR?"
+    },
+    {
+      "ID": 29,
+      "riferimento": 2,
+      "idced": 1202,
+      "quesito": "Da chi viene rilasciato il certificato di formazione professionale ADR?"
+    },
+    {
+      "ID": 30,
+      "riferimento": 2,
+      "idced": 2108,
+      "quesito": "Dei seguenti, quale è considerato rischio principale della classe 5.2?"
+    },
+    {
+      "ID": 31,
+      "riferimento": 2,
+      "idced": 2109,
+      "quesito": "Dei seguenti, quale è considerato rischio principale della classe 6.1?"
+    },
+    {
+      "ID": 32,
+      "riferimento": 2,
+      "idced": 2110,
+      "quesito": "Dei seguenti, quale è considerato rischio principale della classe 6.2?"
+    },
+    {
+      "ID": 33,
+      "riferimento": 2,
+      "idced": 2111,
+      "quesito": "Dei seguenti, quale è considerato rischio principale della classe 7?"
+    },
+    {
+      "ID": 34,
+      "riferimento": 2,
+      "idced": 2112,
+      "quesito": "Dei seguenti, quale è considerato il rischio principale della classe 8?"
+    },
+    {
+      "ID": 35,
+      "riferimento": 2,
+      "idced": 2113,
+      "quesito": "Dei seguenti, quali sono i rischi della classe 9?"
+    },
+    {
+      "ID": 36,
+      "riferimento": 2,
+      "idced": 2114,
+      "quesito": "Come si può presentare durante il trasporto un prodotto della classe 2?"
+    },
+    {
+      "ID": 37,
+      "riferimento": 2,
+      "idced": 2115,
+      "quesito": "Eseguite un trasporto della classe 3, come si presenta il prodotto?"
+    },
+    {
+      "ID": 38,
+      "riferimento": 2,
+      "idced": 2116,
+      "quesito": "Eseguite un trasporto della classe 5.1, come può presentarsi il prodotto?"
+    },
+    {
+      "ID": 39,
+      "riferimento": 2,
+      "idced": 2117,
+      "quesito": "Eseguite un trasporto della classe 6.1, come può presentarsi il prodotto?"
+    },
+    {
+      "ID": 40,
+      "riferimento": 2,
+      "idced": 2118,
+      "quesito": "Eseguite un trasporto della classe 8, come può presentarsi il prodotto?"
+    },
+    {
+      "ID": 41,
+      "riferimento": 2,
+      "idced": 2119,
+      "quesito": "Eseguite un trasporto della classe 9, come può presentarsi il prodotto?"
+    },
+    {
+      "ID": 42,
+      "riferimento": 2,
+      "idced": 2120,
+      "quesito": "Quali materie appartengono alla classe 1 dell’ADR?"
+    },
+    {
+      "ID": 43,
+      "riferimento": 2,
+      "idced": 2121,
+      "quesito": "Quali materie appartengono alla classe 2 dell'ADR?"
+    },
+    {
+      "ID": 44,
+      "riferimento": 2,
+      "idced": 2122,
+      "quesito": "Quali materie appartengono alla classe 3 dell'ADR?"
+    },
+    {
+      "ID": 45,
+      "riferimento": 2,
+      "idced": 2123,
+      "quesito": "Quali materie appartengono alla classe 4.1 dell'ADR?"
+    },
+    {
+      "ID": 46,
+      "riferimento": 2,
+      "idced": 2124,
+      "quesito": "Quali materie appartengono alla classe 4.2 dell'ADR?"
+    },
+    {
+      "ID": 47,
+      "riferimento": 2,
+      "idced": 2125,
+      "quesito": "Quali materie appartengono alla classe 4.3 dell'ADR?"
+    },
+    {
+      "ID": 48,
+      "riferimento": 2,
+      "idced": 2126,
+      "quesito": "Quali materie appartengono alla classe 5.1 dell'ADR?"
+    },
+    {
+      "ID": 49,
+      "riferimento": 2,
+      "idced": 2127,
+      "quesito": "Quali materie appartengono alla classe 5.2 dell'ADR?"
+    },
+    {
+      "ID": 50,
+      "riferimento": 2,
+      "idced": 2128,
+      "quesito": "Quali materie appartengono alla classe 6.1 dell'ADR?"
+    },
+    {
+      "ID": 51,
+      "riferimento": 2,
+      "idced": 2129,
+      "quesito": "Quali materie appartengono alla classe 6.2 dell'ADR?"
+    },
+    {
+      "ID": 52,
+      "riferimento": 2,
+      "idced": 2130,
+      "quesito": "Quali materie appartengono alla classe 7 dell'ADR?"
+    },
+    {
+      "ID": 53,
+      "riferimento": 2,
+      "idced": 2131,
+      "quesito": "Quali materie appartengono alla classe 8 dell'ADR?"
+    },
+    {
+      "ID": 54,
+      "riferimento": 2,
+      "idced": 2132,
+      "quesito": "Quali materie appartengono alla classe 9 dell'ADR?"
+    },
+    {
+      "ID": 55,
+      "riferimento": 2,
+      "idced": 2133,
+      "quesito": "A quale classe ADR appartengono le materie e oggetti esplosivi?"
+    },
+    {
+      "ID": 56,
+      "riferimento": 2,
+      "idced": 2134,
+      "quesito": "A quale classe ADR appartengono i gas compressi, liquefatti o disciolti sotto pressione?"
+    },
+    {
+      "ID": 57,
+      "riferimento": 2,
+      "idced": 2135,
+      "quesito": "A quale classe ADR appartengono le materie liquide infiammabili?"
+    },
+    {
+      "ID": 58,
+      "riferimento": 2,
+      "idced": 2136,
+      "quesito": "A quale classe ADR appartengono le materie solide infiammabili?"
+    },
+    {
+      "ID": 59,
+      "riferimento": 2,
+      "idced": 2137,
+      "quesito": "A quale classe ADR appartengono le materie soggette a accensione spontanea?"
+    },
+    {
+      "ID": 60,
+      "riferimento": 2,
+      "idced": 2138,
+      "quesito": "A quale classe ADR appartengono le materie che, a contatto con l'acqua liberano gas infiammabili?"
+    },
+    {
+      "ID": 61,
+      "riferimento": 2,
+      "idced": 2139,
+      "quesito": "A quale classe ADR appartengono le materie comburenti?"
+    },
+    {
+      "ID": 62,
+      "riferimento": 2,
+      "idced": 2140,
+      "quesito": "A quale classe ADR appartengono i perossidi organici?"
+    },
+    {
+      "ID": 63,
+      "riferimento": 2,
+      "idced": 2141,
+      "quesito": "A quale classe ADR appartengono le materie tossiche?"
+    },
+    {
+      "ID": 64,
+      "riferimento": 2,
+      "idced": 2142,
+      "quesito": "A quale classe ADR appartengono le materie infettive?"
+    },
+    {
+      "ID": 65,
+      "riferimento": 2,
+      "idced": 2143,
+      "quesito": "A quale classe ADR appartengono le materie radioattive?"
+    },
+    {
+      "ID": 66,
+      "riferimento": 2,
+      "idced": 2144,
+      "quesito": "A quale classe ADR appartengono le materie corrosive?"
+    },
+    {
+      "ID": 67,
+      "riferimento": 2,
+      "idced": 2145,
+      "quesito": "A quale classe ADR appartengono le materie e oggetti pericolosi diversi?"
+    },
+    {
+      "ID": 68,
+      "riferimento": 2,
+      "idced": 2146,
+      "quesito": "Il trinitrotoluene (TNT), classe 1 è una materia:"
+    },
+    {
+      "ID": 69,
+      "riferimento": 2,
+      "idced": 2147,
+      "quesito": "L'ammoniaca anidra, classe 2, è una materia:"
+    },
+    {
+      "ID": 70,
+      "riferimento": 2,
+      "idced": 2148,
+      "quesito": "L'acetone, classe 3, è una materia:"
+    },
+    {
+      "ID": 71,
+      "riferimento": 2,
+      "idced": 2149,
+      "quesito": "La naftalina, classe 4.1, è una materia:"
+    },
+    {
+      "ID": 72,
+      "riferimento": 2,
+      "idced": 2150,
+      "quesito": "Il perossido d'idrogeno (acqua ossigenata), classe 5.1, è una materia:"
+    },
+    {
+      "ID": 73,
+      "riferimento": 2,
+      "idced": 2151,
+      "quesito": "Il fenolo, classe 6.1, è una materia:"
+    },
+    {
+      "ID": 74,
+      "riferimento": 2,
+      "idced": 2152,
+      "quesito": "L'uranio naturale, classe 7, è una materia:"
+    },
+    {
+      "ID": 75,
+      "riferimento": 2,
+      "idced": 2153,
+      "quesito": "L'acido solforico, classe 8, è una materia:"
+    },
+    {
+      "ID": 76,
+      "riferimento": 2,
+      "idced": 2154,
+      "quesito": "L'amianto in polvere fine, classe 9, è una materia:"
+    },
+    {
+      "ID": 77,
+      "riferimento": 2,
+      "idced": 2155,
+      "quesito": "Il propano è un gas infiammabile e appartiene alla classe:"
+    },
+    {
+      "ID": 78,
+      "riferimento": 2,
+      "idced": 2156,
+      "quesito": "L'acetone è un liquido infiammabile e appartiene alla classe:"
+    },
+    {
+      "ID": 79,
+      "riferimento": 2,
+      "idced": 2157,
+      "quesito": "Lo zolfo è un solido infiammabile e appartiene alla classe:"
+    },
+    {
+      "ID": 80,
+      "riferimento": 2,
+      "idced": 2158,
+      "quesito": "Il clorato di sodio è una materia comburente e appartiene alla classe:"
+    },
+    {
+      "ID": 81,
+      "riferimento": 2,
+      "idced": 2159,
+      "quesito": "Il cloroformio è una materia tossica e appartiene alla classe:"
+    },
+    {
+      "ID": 82,
+      "riferimento": 2,
+      "idced": 2160,
+      "quesito": "L'acido nitrico è una materia corrosiva e appartiene alla classe:"
+    },
+    {
+      "ID": 83,
+      "riferimento": 2,
+      "idced": 2161,
+      "quesito": "Quali materie appartengono alla classe 2 ADR?"
+    },
+    {
+      "ID": 84,
+      "riferimento": 2,
+      "idced": 2162,
+      "quesito": "Le materie pericolose per l'ambiente"
+    },
+    {
+      "ID": 85,
+      "riferimento": 2,
+      "idced": 2163,
+      "quesito": "Gli oggetti contenenti una materia tossica n.a.s."
+    },
+    {
+      "ID": 86,
+      "riferimento": 2,
+      "idced": 1203,
+      "quesito": "Chi è responsabile della corretta compilazione del documento di trasporto?"
+    },
+    {
+      "ID": 87,
+      "riferimento": 2,
+      "idced": 1204,
+      "quesito": "I documenti di bordo obbligatori ai fini del trasporto di merci pericolose in campo nazionale comprendono, tra gli altri:"
+    },
+    {
+      "ID": 88,
+      "riferimento": 2,
+      "idced": 1205,
+      "quesito": "Quali sono i limiti massimi di velocità in Italia di un autoveicolo carico di merci ADR (esclusa la classe 1) di massa superiore a 3,5 t e fino a 12 t?"
+    },
+    {
+      "ID": 89,
+      "riferimento": 2,
+      "idced": 1206,
+      "quesito": "Quali sono i limiti massimi di velocità in Italia di un autoveicolo carico di merci ADR (esclusa la classe 1) di massa superiore a 12 t?"
+    },
+    {
+      "ID": 90,
+      "riferimento": 2,
+      "idced": 1207,
+      "quesito": "I rifiuti liquidi pericolosi ADR spediti in colli devono essere trasportati:"
+    },
+    {
+      "ID": 91,
+      "riferimento": 3,
+      "idced": 2101,
+      "quesito": "Dei seguenti, quale è considerato rischio principale della classe 1?"
+    },
+    {
+      "ID": 92,
+      "riferimento": 3,
+      "idced": 2102,
+      "quesito": "Dei seguenti, quale è considerato il rischio principale della classe 2?"
+    },
+    {
+      "ID": 93,
+      "riferimento": 3,
+      "idced": 2103,
+      "quesito": "Dei seguenti, quale è considerato rischio principale della classe 3?"
+    },
+    {
+      "ID": 94,
+      "riferimento": 3,
+      "idced": 2104,
+      "quesito": "Dei seguenti, quale è considerato rischio principale della classe 4.1?"
+    },
+    {
+      "ID": 95,
+      "riferimento": 3,
+      "idced": 2105,
+      "quesito": "Dei seguenti, quale è considerato rischio principale della classe 4.2?"
+    },
+    {
+      "ID": 96,
+      "riferimento": 3,
+      "idced": 2106,
+      "quesito": "Dei seguenti, quale è considerato rischio principale della classe 4.3?"
+    },
+    {
+      "ID": 97,
+      "riferimento": 3,
+      "idced": 2107,
+      "quesito": "Dei seguenti, quale è considerato rischio principale della classe 5.1?"
+    },
+    {
+      "ID": 98,
+      "riferimento": 3,
+      "idced": 2164,
+      "quesito": "Gli oggetti contenenti un liquido infiammabile n.a.s."
+    },
+    {
+      "ID": 99,
+      "riferimento": 3,
+      "idced": 2165,
+      "quesito": "Le materie che polimerizzano"
+    },
+    {
+      "ID": 100,
+      "riferimento": 4,
+      "idced": 2201,
+      "quesito": "Un liquido con punto di infiammabilità basso, ad esempio 10°C:"
+    },
+    {
+      "ID": 101,
+      "riferimento": 4,
+      "idced": 2202,
+      "quesito": "Un liquido con un punto di infiammabilità alto, ad esempio 60°C:"
+    },
+    {
+      "ID": 102,
+      "riferimento": 4,
+      "idced": 2203,
+      "quesito": "I liquidi infiammabili sono pericolosi perché i loro vapori:"
+    },
+    {
+      "ID": 103,
+      "riferimento": 4,
+      "idced": 2204,
+      "quesito": "Perché le perdite di liquidi infiammabili (combustibili o carburanti) sono pericolose?"
+    },
+    {
+      "ID": 104,
+      "riferimento": 4,
+      "idced": 2205,
+      "quesito": "Perché i liquidi infiammabili vengono travasati più sicuramente mediante il recupero dei vapori?"
+    },
+    {
+      "ID": 105,
+      "riferimento": 4,
+      "idced": 2206,
+      "quesito": "Per prevenire un incendio o esplosione durante la movimentazione di colli contenenti liquidi infiammabili occorre"
+    },
+    {
+      "ID": 106,
+      "riferimento": 4,
+      "idced": 2207,
+      "quesito": "Perché i recipienti vuoti (non ripuliti) di liquido infiammabile sono pericolosi?"
+    },
+    {
+      "ID": 107,
+      "riferimento": 4,
+      "idced": 2208,
+      "quesito": "Le materie della classe 3, devono essere trasportate:"
+    },
+    {
+      "ID": 108,
+      "riferimento": 4,
+      "idced": 2209,
+      "quesito": "Perché le materie delle classi 4.1 - 4.2 - 4.3 sono pericolose?"
+    },
+    {
+      "ID": 109,
+      "riferimento": 4,
+      "idced": 2210,
+      "quesito": "Perché le materie della classe 4.1 sono pericolose?"
+    },
+    {
+      "ID": 110,
+      "riferimento": 4,
+      "idced": 2211,
+      "quesito": "Le materie della classe 4.1, durante il trasporto, devono:"
+    },
+    {
+      "ID": 111,
+      "riferimento": 4,
+      "idced": 2212,
+      "quesito": "Perché le materie della classe 4.2 sono pericolose?"
+    },
+    {
+      "ID": 112,
+      "riferimento": 4,
+      "idced": 2213,
+      "quesito": "Le materie della classe 4.2 devono essere trasportate:"
+    },
+    {
+      "ID": 113,
+      "riferimento": 4,
+      "idced": 2214,
+      "quesito": "Perché le materie della classe 4.3 sono pericolose?"
+    },
+    {
+      "ID": 114,
+      "riferimento": 4,
+      "idced": 2215,
+      "quesito": "Le materie della classe 4.3 devono essere trasportate:"
+    },
+    {
+      "ID": 115,
+      "riferimento": 4,
+      "idced": 2216,
+      "quesito": "Perché le materie della classe 5.1 sono pericolose?"
+    },
+    {
+      "ID": 116,
+      "riferimento": 4,
+      "idced": 2217,
+      "quesito": "Le materie comburenti possono provocare o favorire l'incendio?"
+    },
+    {
+      "ID": 117,
+      "riferimento": 4,
+      "idced": 2218,
+      "quesito": "Le materie della classe 5.1, devono essere trasportate:"
+    },
+    {
+      "ID": 118,
+      "riferimento": 4,
+      "idced": 2219,
+      "quesito": "Perché le materie della classe 5.2 sono pericolose?"
+    },
+    {
+      "ID": 119,
+      "riferimento": 4,
+      "idced": 2220,
+      "quesito": "La decomposizione dei perossidi organici può essere provocata:"
+    },
+    {
+      "ID": 120,
+      "riferimento": 4,
+      "idced": 2221,
+      "quesito": "Le materie della classe 5.2 devono essere generalmente trasportate:"
+    },
+    {
+      "ID": 121,
+      "riferimento": 4,
+      "idced": 2222,
+      "quesito": "Perché le materie della classe 6.1 sono pericolose?"
+    },
+    {
+      "ID": 122,
+      "riferimento": 4,
+      "idced": 2223,
+      "quesito": "Durante il trasporto di gas tossici secondo l’ADR:"
+    },
+    {
+      "ID": 123,
+      "riferimento": 4,
+      "idced": 2224,
+      "quesito": "Perché le materie della classe 6.2 sono pericolose?"
+    },
+    {
+      "ID": 124,
+      "riferimento": 4,
+      "idced": 2225,
+      "quesito": "Le materie della classe 6.2, infettanti per l'uomo o per gli animali, devono essere trasportate:"
+    },
+    {
+      "ID": 125,
+      "riferimento": 4,
+      "idced": 2226,
+      "quesito": "Perché le materie della classe 8 sono pericolose?"
+    },
+    {
+      "ID": 126,
+      "riferimento": 4,
+      "idced": 2227,
+      "quesito": "Gli acidi e le basi o alcali, appartenenti alla classe 8, devono essere contenuti:"
+    },
+    {
+      "ID": 127,
+      "riferimento": 4,
+      "idced": 2228,
+      "quesito": "Le materie della classe 8 devono essere trasportate:"
+    },
+    {
+      "ID": 128,
+      "riferimento": 4,
+      "idced": 2229,
+      "quesito": "Perché le materie e oggetti della classe 9 sono pericolose?"
+    },
+    {
+      "ID": 129,
+      "riferimento": 4,
+      "idced": 2230,
+      "quesito": "Tra le materie e oggetti pericolosi diversi della classe 9 figurano:"
+    },
+    {
+      "ID": 130,
+      "riferimento": 4,
+      "idced": 2231,
+      "quesito": "Le materie e oggetti pericolosi diversi, devono essere trasportati:"
+    },
+    {
+      "ID": 131,
+      "riferimento": 4,
+      "idced": 2232,
+      "quesito": "Le materie della Classe 2 sono pericolose perché:"
+    },
+    {
+      "ID": 132,
+      "riferimento": 4,
+      "idced": 2233,
+      "quesito": "Le materie della Classe 2 devono essere trasportate:"
+    },
+    {
+      "ID": 133,
+      "riferimento": 4,
+      "idced": 2234,
+      "quesito": "Le materie della Classe 4.3 possono causare un incendio?"
+    },
+    {
+      "ID": 134,
+      "riferimento": 4,
+      "idced": 2235,
+      "quesito": "Alcune materie della Classe 9"
+    },
+    {
+      "ID": 135,
+      "riferimento": 5,
+      "idced": 2301,
+      "quesito": "La fusione indica il passaggio di stato da:"
+    },
+    {
+      "ID": 136,
+      "riferimento": 5,
+      "idced": 2302,
+      "quesito": "La solidificazione indica il passaggio di stato da:"
+    },
+    {
+      "ID": 137,
+      "riferimento": 5,
+      "idced": 2303,
+      "quesito": "L'evaporazione indica il passaggio di stato da:"
+    },
+    {
+      "ID": 138,
+      "riferimento": 5,
+      "idced": 2304,
+      "quesito": "Cosa si intende con il termine miscibile?"
+    },
+    {
+      "ID": 139,
+      "riferimento": 5,
+      "idced": 2305,
+      "quesito": "L'aria contiene:"
+    },
+    {
+      "ID": 140,
+      "riferimento": 5,
+      "idced": 2306,
+      "quesito": "I liquidi infiammabili ..."
+    },
+    {
+      "ID": 141,
+      "riferimento": 5,
+      "idced": 2307,
+      "quesito": "Perché avvenga un incendio, sono necessari:"
+    },
+    {
+      "ID": 142,
+      "riferimento": 5,
+      "idced": 2308,
+      "quesito": "Un aumento della percentuale di ossigeno nell'aria"
+    },
+    {
+      "ID": 143,
+      "riferimento": 5,
+      "idced": 2309,
+      "quesito": "Cos'è il punto d'infiammabilità?"
+    },
+    {
+      "ID": 144,
+      "riferimento": 5,
+      "idced": 2310,
+      "quesito": "Il punto d'infiammabilità è:"
+    },
+    {
+      "ID": 145,
+      "riferimento": 5,
+      "idced": 2311,
+      "quesito": "Quale dei seguenti punti d'infiammabilità è il più pericoloso?"
+    },
+    {
+      "ID": 146,
+      "riferimento": 5,
+      "idced": 2312,
+      "quesito": "Com'è possibile evitare che una materia infiammabile prenda fuoco?"
+    },
+    {
+      "ID": 147,
+      "riferimento": 5,
+      "idced": 2313,
+      "quesito": "In generale, una materia infiammabile presenta maggiore pericolo:"
+    },
+    {
+      "ID": 148,
+      "riferimento": 5,
+      "idced": 2314,
+      "quesito": "All'aumentare della temperatura:"
+    },
+    {
+      "ID": 149,
+      "riferimento": 5,
+      "idced": 2315,
+      "quesito": "Quali delle seguenti affermazioni relative alla solubilità nell'acqua, sono corrette?"
+    },
+    {
+      "ID": 150,
+      "riferimento": 5,
+      "idced": 2316,
+      "quesito": "Cos'è il punto di autoaccensione o autoignizione?"
+    },
+    {
+      "ID": 151,
+      "riferimento": 5,
+      "idced": 2317,
+      "quesito": "Per diminuire i rischi di incendio delle materie infiammabili, occorre:"
+    },
+    {
+      "ID": 152,
+      "riferimento": 5,
+      "idced": 2318,
+      "quesito": "Quali possono essere le cause di un incendio?"
+    },
+    {
+      "ID": 153,
+      "riferimento": 5,
+      "idced": 2319,
+      "quesito": "Secondo l'ADR, per materia chimicamente instabile s'intende:"
+    },
+    {
+      "ID": 154,
+      "riferimento": 5,
+      "idced": 2320,
+      "quesito": "Una materia pericolosa per l'ambiente ai sensi della normativa del trasporto"
+    },
+    {
+      "ID": 155,
+      "riferimento": 5,
+      "idced": 2321,
+      "quesito": "Lo strumento per controllare la pressione durante il trasporto è"
+    },
+    {
+      "ID": 156,
+      "riferimento": 6,
+      "idced": 2401,
+      "quesito": "Il gas è una sostanza che..."
+    },
+    {
+      "ID": 157,
+      "riferimento": 6,
+      "idced": 2402,
+      "quesito": "A pressione atmosferica, il punto di ebollizione di un gas liquefatto è la temperatura alla quale ..."
+    },
+    {
+      "ID": 158,
+      "riferimento": 6,
+      "idced": 2403,
+      "quesito": "Un pericolo individuabile nella maggior parte dei gas è:"
+    },
+    {
+      "ID": 159,
+      "riferimento": 6,
+      "idced": 2404,
+      "quesito": "Perché le materie della classe 2 sono pericolose?"
+    },
+    {
+      "ID": 160,
+      "riferimento": 6,
+      "idced": 2405,
+      "quesito": "Tutti i gas infiammabili in certe proporzioni di miscela con l'aria possono incendiarsi:"
+    },
+    {
+      "ID": 161,
+      "riferimento": 6,
+      "idced": 2406,
+      "quesito": "Perché i gas liquefatti fortemente refrigerati (criogenici) sono pericolosi?"
+    },
+    {
+      "ID": 162,
+      "riferimento": 6,
+      "idced": 2407,
+      "quesito": "Se i recipienti che contengono gas sono surriscaldati ..."
+    },
+    {
+      "ID": 163,
+      "riferimento": 6,
+      "idced": 2408,
+      "quesito": "Quali dei seguenti gas sono infiammabili?"
+    },
+    {
+      "ID": 164,
+      "riferimento": 6,
+      "idced": 2409,
+      "quesito": "Quali tra i seguenti gas, presentano un pericolo d'infiammabilità?"
+    },
+    {
+      "ID": 165,
+      "riferimento": 6,
+      "idced": 2410,
+      "quesito": "Quali dei seguenti gas sono tossici?"
+    },
+    {
+      "ID": 166,
+      "riferimento": 6,
+      "idced": 2411,
+      "quesito": "Quali dei seguenti gas, presentano un pericolo di tossicità?"
+    },
+    {
+      "ID": 167,
+      "riferimento": 6,
+      "idced": 2412,
+      "quesito": "Tra i seguenti gas, quali sono comburenti o presentano un pericolo d'ossidazione e possono alimentare/favorire un incendio?"
+    },
+    {
+      "ID": 168,
+      "riferimento": 6,
+      "idced": 2413,
+      "quesito": "L'ossigeno puro è un gas ..."
+    },
+    {
+      "ID": 169,
+      "riferimento": 7,
+      "idced": 2501,
+      "quesito": "I rifiuti classificati pericolosi secondo l'ADR ..."
+    },
+    {
+      "ID": 170,
+      "riferimento": 7,
+      "idced": 2502,
+      "quesito": "La classificazione ADR del rifiuto pericoloso spetta:"
+    },
+    {
+      "ID": 171,
+      "riferimento": 7,
+      "idced": 2503,
+      "quesito": "Come deve essere segnalato un veicolo che trasporta rifiuti pericolosi ADR?"
+    },
+    {
+      "ID": 172,
+      "riferimento": 7,
+      "idced": 2504,
+      "quesito": "I rifiuti classificati pericolosi ADR, devono essere trasportati ..."
+    },
+    {
+      "ID": 173,
+      "riferimento": 7,
+      "idced": 2505,
+      "quesito": "Cosa deve apparire sul documento di trasporto relativo ad un rifiuto ADR?"
+    },
+    {
+      "ID": 174,
+      "riferimento": 7,
+      "idced": 2506,
+      "quesito": "Quali sono i principali motivi di tutela ambientale per i quali viene disciplinato il trasporto di rifiuti?"
+    },
+    {
+      "ID": 175,
+      "riferimento": 7,
+      "idced": 2507,
+      "quesito": "Eventuali perdite di rifiuti liquidi infiammabili ..."
+    },
+    {
+      "ID": 176,
+      "riferimento": 7,
+      "idced": 2508,
+      "quesito": "Quale è la conseguenza, quando il gasolio o i liquidi infiammabili leggeri finiscono nell'acqua?"
+    },
+    {
+      "ID": 177,
+      "riferimento": 7,
+      "idced": 2509,
+      "quesito": "Eventuali perdite di rifiuti liquidi tossici ..."
+    },
+    {
+      "ID": 178,
+      "riferimento": 7,
+      "idced": 2510,
+      "quesito": "Eventuali perdite di rifiuti liquidi corrosivi ..."
+    },
+    {
+      "ID": 179,
+      "riferimento": 7,
+      "idced": 2511,
+      "quesito": "I rifiuti classificati 'Materia pericolosa per l'ambiente' possono essere:"
+    },
+    {
+      "ID": 180,
+      "riferimento": 8,
+      "idced": 3101,
+      "quesito": "Un container ..."
+    },
+    {
+      "ID": 181,
+      "riferimento": 8,
+      "idced": 3102,
+      "quesito": "Un veicolo scoperto ..."
+    },
+    {
+      "ID": 182,
+      "riferimento": 8,
+      "idced": 3103,
+      "quesito": "Un veicolo chiuso:"
+    },
+    {
+      "ID": 183,
+      "riferimento": 8,
+      "idced": 3104,
+      "quesito": "Un veicolo telonato ..."
+    },
+    {
+      "ID": 184,
+      "riferimento": 8,
+      "idced": 3105,
+      "quesito": "Cosa s'intende per unità di trasporto?"
+    },
+    {
+      "ID": 185,
+      "riferimento": 8,
+      "idced": 3106,
+      "quesito": "Quale figura mostra un veicolo scoperto?"
+    },
+    {
+      "ID": 186,
+      "riferimento": 8,
+      "idced": 3107,
+      "quesito": "Quale figura mostra un veicolo chiuso?"
+    },
+    {
+      "ID": 187,
+      "riferimento": 8,
+      "idced": 3108,
+      "quesito": "Quale figura mostra un veicolo telonato?"
+    },
+    {
+      "ID": 188,
+      "riferimento": 8,
+      "idced": 3109,
+      "quesito": "Il veicolo rappresentato in figura n. 49 è un ..."
+    },
+    {
+      "ID": 189,
+      "riferimento": 8,
+      "idced": 3110,
+      "quesito": "Il veicolo rappresentato in figura n. 52 è un ..."
+    },
+    {
+      "ID": 190,
+      "riferimento": 8,
+      "idced": 3111,
+      "quesito": "Il veicolo rappresentato in figura n. 50 è un ..."
+    },
+    {
+      "ID": 191,
+      "riferimento": 8,
+      "idced": 3112,
+      "quesito": "Quale figura mostra un container per colli?"
+    },
+    {
+      "ID": 192,
+      "riferimento": 8,
+      "idced": 3113,
+      "quesito": "La Figura n. 53 rappresenta un ..."
+    },
+    {
+      "ID": 193,
+      "riferimento": 8,
+      "idced": 3114,
+      "quesito": "Quale figura mostra un IBC"
+    },
+    {
+      "ID": 194,
+      "riferimento": 8,
+      "idced": 3115,
+      "quesito": "Un container telonato ..."
+    },
+    {
+      "ID": 195,
+      "riferimento": 9,
+      "idced": 3201,
+      "quesito": "Le unità di trasporto ADR in colli devono essere dotate..."
+    },
+    {
+      "ID": 196,
+      "riferimento": 9,
+      "idced": 3202,
+      "quesito": "Tutte le unità di trasporto ADR per colli devono essere dotate ..."
+    },
+    {
+      "ID": 197,
+      "riferimento": 9,
+      "idced": 3203,
+      "quesito": "Una unità di trasporto di merci pericolose ADR in colli deve essere dotata di:"
+    },
+    {
+      "ID": 198,
+      "riferimento": 9,
+      "idced": 3204,
+      "quesito": "Un'unità di trasporto ADR di massa complessiva fino a 3,5 t deve essere munita dei seguenti mezzi antincendio:"
+    },
+    {
+      "ID": 199,
+      "riferimento": 9,
+      "idced": 3205,
+      "quesito": "Una unità di trasporto ADR di massa complessiva superiore a 3,5 t e fino a 7,5 t. deve essere munita almeno dei seguenti mezzi antincendio:"
+    },
+    {
+      "ID": 200,
+      "riferimento": 9,
+      "idced": 5106,
+      "quesito": "Le cifre contenute nel pannello di segnalazione arancio si riferiscono a:"
+    },
+    {
+      "ID": 201,
+      "riferimento": 9,
+      "idced": 5107,
+      "quesito": "Che significato ha il numero di identificazione della materia (N° ONU) che si trova nella parte inferiore del pannello di segnalazione arancio?"
+    },
+    {
+      "ID": 202,
+      "riferimento": 9,
+      "idced": 5108,
+      "quesito": "Quale dei seguenti numeri può essere un numero ONU?"
+    },
+    {
+      "ID": 203,
+      "riferimento": 9,
+      "idced": 5109,
+      "quesito": "Dove si può trovare il numero d'identificazione della materia (N° ONU)?"
+    },
+    {
+      "ID": 204,
+      "riferimento": 9,
+      "idced": 5110,
+      "quesito": "Quanti numeri può riportare il pannello di segnalazione arancio?"
+    },
+    {
+      "ID": 205,
+      "riferimento": 9,
+      "idced": 5111,
+      "quesito": "Cosa sono le etichette di pericolo poste sui colli?"
+    },
+    {
+      "ID": 206,
+      "riferimento": 9,
+      "idced": 5112,
+      "quesito": "Che significato hanno 2 etichette di pericolo affiancate?"
+    },
+    {
+      "ID": 207,
+      "riferimento": 9,
+      "idced": 5113,
+      "quesito": "Un container carico di colli contenenti merci pericolose ADR deve essere segnalato nel modo seguente:"
+    },
+    {
+      "ID": 208,
+      "riferimento": 9,
+      "idced": 5114,
+      "quesito": "Le misure delle placche (grandi etichette) da porre sui veicoli sono:"
+    },
+    {
+      "ID": 209,
+      "riferimento": 9,
+      "idced": 5115,
+      "quesito": "L'etichetta con una bomba esplodente nera nella metà superiore, su fondo arancio, si riferisce:"
+    },
+    {
+      "ID": 210,
+      "riferimento": 9,
+      "idced": 3206,
+      "quesito": "Una unità di trasporto di colli ADR deve essere equipaggiata …"
+    },
+    {
+      "ID": 211,
+      "riferimento": 9,
+      "idced": 3207,
+      "quesito": "Una unità di trasporto di colli ADR, di massa complessiva superiore a 7,5 t, deve essere obbligatoriamente munita:"
+    },
+    {
+      "ID": 212,
+      "riferimento": 9,
+      "idced": 3208,
+      "quesito": "Le unità di trasporto caricate con recipienti (colli) della classe 2, devono essere equipaggiate:"
+    },
+    {
+      "ID": 213,
+      "riferimento": 9,
+      "idced": 3209,
+      "quesito": "Le unità di trasporto per merci in colli della classe 4.1, possono essere munite:"
+    },
+    {
+      "ID": 214,
+      "riferimento": 9,
+      "idced": 3210,
+      "quesito": "Le unità di trasporto per merci in colli della classe 4.3 possono essere equipaggiate con:"
+    },
+    {
+      "ID": 215,
+      "riferimento": 9,
+      "idced": 3211,
+      "quesito": "Le unità di trasporto per merci in colli della classe 5.2 devono essere equipaggiate di:"
+    },
+    {
+      "ID": 216,
+      "riferimento": 9,
+      "idced": 3212,
+      "quesito": "Una unità di trasporto ADR di massa complessiva fino a 3,5 t deve essere munita dei seguenti mezzi antincendio:"
+    },
+    {
+      "ID": 217,
+      "riferimento": 9,
+      "idced": 3213,
+      "quesito": "Una unità di trasporto di liquidi infiammabili, di massa superiore a 3,5 t deve essere dotata di:"
+    },
+    {
+      "ID": 218,
+      "riferimento": 9,
+      "idced": 3214,
+      "quesito": "Una unità di trasporto di materie corrosive, di massa superiore a 3,5 t deve essere dotata di:"
+    },
+    {
+      "ID": 219,
+      "riferimento": 9,
+      "idced": 3215,
+      "quesito": "Una unità di trasporto di materie tossiche e infiammabili, di massa superiore a 7,5 t deve essere dotata di:"
+    },
+    {
+      "ID": 220,
+      "riferimento": 10,
+      "idced": 4001,
+      "quesito": "Cosa s'intende per collo?"
+    },
+    {
+      "ID": 221,
+      "riferimento": 10,
+      "idced": 4002,
+      "quesito": "Per collo s'intende:"
+    },
+    {
+      "ID": 222,
+      "riferimento": 10,
+      "idced": 4003,
+      "quesito": "Cosa s'intende per imballaggio?"
+    },
+    {
+      "ID": 223,
+      "riferimento": 10,
+      "idced": 4004,
+      "quesito": "Per imballaggio s'intende:"
+    },
+    {
+      "ID": 224,
+      "riferimento": 10,
+      "idced": 4005,
+      "quesito": "I contenitori intermedi per il trasporto alla rinfusa (IBC):"
+    },
+    {
+      "ID": 225,
+      "riferimento": 10,
+      "idced": 4006,
+      "quesito": "I contenitori intermedi per il trasporto alla rinfusa (IBC):"
+    },
+    {
+      "ID": 226,
+      "riferimento": 10,
+      "idced": 4007,
+      "quesito": "Il recipiente di plastica rigida munito di gabbia metallica esterna di capacità di 1.000 litri è:"
+    },
+    {
+      "ID": 227,
+      "riferimento": 10,
+      "idced": 4008,
+      "quesito": "Quali sono gli obblighi di sicurezza che devono essere rispettati durante il riempimento degli imballaggi con liquidi ?"
+    },
+    {
+      "ID": 228,
+      "riferimento": 10,
+      "idced": 4009,
+      "quesito": "Condizioni generali degli imballaggi:"
+    },
+    {
+      "ID": 229,
+      "riferimento": 10,
+      "idced": 4010,
+      "quesito": "Un imballaggio in metallo o in plastica, a sezione rettangolare è:"
+    },
+    {
+      "ID": 230,
+      "riferimento": 10,
+      "idced": 4011,
+      "quesito": "Un imballaggio a pareti intere a sezione rettangolare in metallo, legno, cartone o plastica, è:"
+    },
+    {
+      "ID": 231,
+      "riferimento": 10,
+      "idced": 4012,
+      "quesito": "Un imballaggio cilindrico a fondo piatto o bombato, in acciaio o alluminio o cartone o plastica è:"
+    },
+    {
+      "ID": 232,
+      "riferimento": 10,
+      "idced": 4013,
+      "quesito": "Gli imballaggi idonei per i gas della classe 2, sono:"
+    },
+    {
+      "ID": 233,
+      "riferimento": 10,
+      "idced": 4014,
+      "quesito": "Le materie della classe 3 possono essere imballate in:"
+    },
+    {
+      "ID": 234,
+      "riferimento": 10,
+      "idced": 4015,
+      "quesito": "Quale figura mostra un fusto?"
+    },
+    {
+      "ID": 235,
+      "riferimento": 10,
+      "idced": 4016,
+      "quesito": "Quale figura mostra una tanica?"
+    },
+    {
+      "ID": 236,
+      "riferimento": 10,
+      "idced": 4017,
+      "quesito": "Quale figura mostra una cassa?"
+    },
+    {
+      "ID": 237,
+      "riferimento": 10,
+      "idced": 4018,
+      "quesito": "Quale figura mostra un sacco?"
+    },
+    {
+      "ID": 238,
+      "riferimento": 10,
+      "idced": 4019,
+      "quesito": "Quale figura mostra una bombola?"
+    },
+    {
+      "ID": 239,
+      "riferimento": 10,
+      "idced": 4020,
+      "quesito": "Qual è il nome dell'imballaggio rappresentato in figura n. 43?"
+    },
+    {
+      "ID": 240,
+      "riferimento": 10,
+      "idced": 4021,
+      "quesito": "Qual è il nome dell'imballaggio rappresentato in figura n. 39?"
+    },
+    {
+      "ID": 241,
+      "riferimento": 10,
+      "idced": 4022,
+      "quesito": "Qual è il nome dell'imballaggio rappresentato in figura n. 44?"
+    },
+    {
+      "ID": 242,
+      "riferimento": 10,
+      "idced": 4023,
+      "quesito": "Qual è il nome dell'imballaggio rappresentato in figura n. 45?"
+    },
+    {
+      "ID": 243,
+      "riferimento": 10,
+      "idced": 4024,
+      "quesito": "Cosa sono gli imballaggio di soccorso"
+    },
+    {
+      "ID": 244,
+      "riferimento": 10,
+      "idced": 4025,
+      "quesito": "La marcatura di omologazione degli imballaggi utilizzati per le merci ADR (escluse le classi 2 e 7) .."
+    },
+    {
+      "ID": 245,
+      "riferimento": 10,
+      "idced": 4026,
+      "quesito": "La marcatura di omologazione degli imballaggi per merci ADR (escluse le classi 2 e 7) .."
+    },
+    {
+      "ID": 246,
+      "riferimento": 10,
+      "idced": 4027,
+      "quesito": "Nella marcatura di omologazione degli imballaggi (eccetto le classi 2 e 7), si può trovare la lettera X, che significato ha?"
+    },
+    {
+      "ID": 247,
+      "riferimento": 10,
+      "idced": 4028,
+      "quesito": "Nella marcatura di omologazione degli imballaggi (eccetto le classi 2 e 7), si può trovare la lettera Y, che significato ha?"
+    },
+    {
+      "ID": 248,
+      "riferimento": 10,
+      "idced": 4029,
+      "quesito": "Nella marcatura di omologazione degli imballaggi (eccetto le classi 2 e 7), si può trovare la lettera Z, che significato ha?"
+    },
+    {
+      "ID": 249,
+      "riferimento": 10,
+      "idced": 4030,
+      "quesito": "I recipienti che contengono gas sono costruiti per resistere:"
+    },
+    {
+      "ID": 250,
+      "riferimento": 10,
+      "idced": 4031,
+      "quesito": "I recipienti che contengono gas devono essere maneggiati:"
+    },
+    {
+      "ID": 251,
+      "riferimento": 10,
+      "idced": 4032,
+      "quesito": "Cosa mostra la figura n. 56?"
+    },
+    {
+      "ID": 252,
+      "riferimento": 10,
+      "idced": 4033,
+      "quesito": "Cosa è un grande imballaggio di soccorso?"
+    },
+    {
+      "ID": 253,
+      "riferimento": 11,
+      "idced": 5101,
+      "quesito": "A cosa servono le segnalazioni di pericolo (pannelli di segnalazione arancio ed etichette)?"
+    },
+    {
+      "ID": 254,
+      "riferimento": 11,
+      "idced": 5102,
+      "quesito": "Che forma geometrica hanno i pannelli di segnalazione arancio?"
+    },
+    {
+      "ID": 255,
+      "riferimento": 11,
+      "idced": 5103,
+      "quesito": "Come possono essere i pannelli di segnalazione arancio?"
+    },
+    {
+      "ID": 256,
+      "riferimento": 11,
+      "idced": 5104,
+      "quesito": "Le unità di trasporto, contenenti merce pericolosa ADR in colli, devono essere munite dei seguenti pannelli di segnalazione arancio:"
+    },
+    {
+      "ID": 257,
+      "riferimento": 11,
+      "idced": 5105,
+      "quesito": "Una unità di trasporto, contenente merce pericolosa ADR alla rinfusa (ad esempio un autocarro con cassone ribaltabile), deve essere munita dei seguenti pannelli di segnalazione arancio:"
+    },
+    {
+      "ID": 258,
+      "riferimento": 11,
+      "idced": 5116,
+      "quesito": "L'etichetta di pericolo delle materie e oggetti esplosivi rappresenta:"
+    },
+    {
+      "ID": 259,
+      "riferimento": 11,
+      "idced": 5117,
+      "quesito": "L'etichetta con un recipiente (bombola di gas nera o bianca) su fondo verde, e con la cifra 2 nell'angolo inferiore, si riferisce alla classe:"
+    },
+    {
+      "ID": 260,
+      "riferimento": 11,
+      "idced": 5118,
+      "quesito": "L'etichetta di pericolo dei gas rappresenta:"
+    },
+    {
+      "ID": 261,
+      "riferimento": 11,
+      "idced": 5119,
+      "quesito": "L'etichetta con una fiamma (nera o bianca) su fondo rosso e con la cifra 3 nell'angolo inferiore, si riferisce alla classe:"
+    },
+    {
+      "ID": 262,
+      "riferimento": 11,
+      "idced": 5120,
+      "quesito": "L'etichetta di pericolo delle materie liquide infiammabili rappresenta:"
+    },
+    {
+      "ID": 263,
+      "riferimento": 11,
+      "idced": 5121,
+      "quesito": "L'etichetta con una fiamma nera su fondo a bande verticali alternativamente rosse e bianche, e con la cifra 4 nell'angolo inferiore, si riferisce alla classe:"
+    },
+    {
+      "ID": 264,
+      "riferimento": 11,
+      "idced": 5122,
+      "quesito": "L'etichetta di pericolo delle materie solide infiammabili rappresenta:"
+    },
+    {
+      "ID": 265,
+      "riferimento": 11,
+      "idced": 5123,
+      "quesito": "L'etichetta con una fiamma nera su fondo per metà (lato superiore) bianco e metà (lato inferiore) rosso, e con la cifra 4 nell'angolo inferiore, si riferisce alla classe:"
+    },
+    {
+      "ID": 266,
+      "riferimento": 11,
+      "idced": 5124,
+      "quesito": "L'etichetta di pericolo delle materie soggette ad accensione spontanea rappresenta:"
+    },
+    {
+      "ID": 267,
+      "riferimento": 11,
+      "idced": 5125,
+      "quesito": "L'etichetta con una fiamma nera o bianca su fondo azzurro-blu, e con la cifra 4 nell'angolo inferiore, si riferisce alla classe:"
+    },
+    {
+      "ID": 268,
+      "riferimento": 11,
+      "idced": 5126,
+      "quesito": "L'etichetta di pericolo delle materie che a contatto con l'acqua sviluppano gas infiammabili rappresenta:"
+    },
+    {
+      "ID": 269,
+      "riferimento": 11,
+      "idced": 5127,
+      "quesito": "L'etichetta con una fiamma nera al di sopra di un cerchietto nero, su fondo giallo, e con la cifra 5.1 nell'angolo inferiore, si riferisce alla classe:"
+    },
+    {
+      "ID": 270,
+      "riferimento": 11,
+      "idced": 5128,
+      "quesito": "L'etichetta di pericolo delle materie comburenti rappresenta:"
+    },
+    {
+      "ID": 271,
+      "riferimento": 11,
+      "idced": 5129,
+      "quesito": "L'etichetta di pericolo dei perossidi organici rappresenta:"
+    },
+    {
+      "ID": 272,
+      "riferimento": 11,
+      "idced": 5130,
+      "quesito": "L'etichetta con una testa di morto nera sopra 2 tibie nere su fondo bianco e con la cifra 6 nell'angolo inferiore, si riferisce alla classe:"
+    },
+    {
+      "ID": 273,
+      "riferimento": 11,
+      "idced": 5131,
+      "quesito": "L'etichetta di pericolo delle materie tossiche rappresenta:"
+    },
+    {
+      "ID": 274,
+      "riferimento": 11,
+      "idced": 5132,
+      "quesito": "L'etichetta con un cerchio su cui si sovrappongono 3 mezzelune, e con una cifra 6 nell'angolo inferiore, si riferisce alla classe:"
+    },
+    {
+      "ID": 275,
+      "riferimento": 11,
+      "idced": 5133,
+      "quesito": "L'etichetta di pericolo delle materie infettive rappresenta:"
+    },
+    {
+      "ID": 276,
+      "riferimento": 11,
+      "idced": 5134,
+      "quesito": "Le etichette con un “trifoglio nero superiore”, la scritta nera “radioattivo” e con la cifra 7 nella metà inferiore, si riferiscono alla classe:"
+    },
+    {
+      "ID": 277,
+      "riferimento": 11,
+      "idced": 5135,
+      "quesito": "L'etichetta di pericolo delle materie e oggetti radioattivi rappresenta:"
+    },
+    {
+      "ID": 278,
+      "riferimento": 11,
+      "idced": 5136,
+      "quesito": "L'etichetta con gocce che cadono da 2 provette, su una mano e su una placchetta nera su fondo bianco, e la metà inferiore nera, e con la cifra 8 nell'angolo inferiore, si riferisce alla classe:"
+    },
+    {
+      "ID": 279,
+      "riferimento": 11,
+      "idced": 5137,
+      "quesito": "L'etichetta di pericolo delle materie corrosive rappresenta:"
+    },
+    {
+      "ID": 280,
+      "riferimento": 11,
+      "idced": 5138,
+      "quesito": "L'etichetta a fondo bianco con sette bande verticali nere nella metà superiore, e la cifra 9 nella metà inferiore si riferisce alla classe:"
+    },
+    {
+      "ID": 281,
+      "riferimento": 11,
+      "idced": 5139,
+      "quesito": "L'etichetta di pericolo delle materie e oggetti pericolosi diversi rappresenta:"
+    },
+    {
+      "ID": 282,
+      "riferimento": 11,
+      "idced": 5140,
+      "quesito": "L'etichetta rettangolare con 2 frecce nere su fondo bianco indica:"
+    },
+    {
+      "ID": 283,
+      "riferimento": 11,
+      "idced": 5141,
+      "quesito": "L'etichetta di pericolo in figura n° 1 indica:"
+    },
+    {
+      "ID": 284,
+      "riferimento": 11,
+      "idced": 5142,
+      "quesito": "L'etichetta di pericolo in figura n° 6 indica:"
+    },
+    {
+      "ID": 285,
+      "riferimento": 11,
+      "idced": 5143,
+      "quesito": "L'etichetta di pericolo in figura n° 7 indica:"
+    },
+    {
+      "ID": 286,
+      "riferimento": 11,
+      "idced": 5144,
+      "quesito": "L'etichetta di pericolo in figura n° 8 indica:"
+    },
+    {
+      "ID": 287,
+      "riferimento": 11,
+      "idced": 5145,
+      "quesito": "L'etichetta di pericolo in figura n° 9 indica:"
+    },
+    {
+      "ID": 288,
+      "riferimento": 11,
+      "idced": 5146,
+      "quesito": "L'etichetta di pericolo in figura n° 10 indica:"
+    },
+    {
+      "ID": 289,
+      "riferimento": 11,
+      "idced": 5147,
+      "quesito": "L'etichetta di pericolo in figura n° 11 indica:"
+    },
+    {
+      "ID": 290,
+      "riferimento": 11,
+      "idced": 5148,
+      "quesito": "L'etichetta di pericolo in figura n° 12 indica:"
+    },
+    {
+      "ID": 291,
+      "riferimento": 11,
+      "idced": 5149,
+      "quesito": "L'etichetta di pericolo in figura n°13 indica:"
+    },
+    {
+      "ID": 292,
+      "riferimento": 11,
+      "idced": 5150,
+      "quesito": "L'etichetta di pericolo in figura n° 14 indica:"
+    },
+    {
+      "ID": 293,
+      "riferimento": 11,
+      "idced": 5151,
+      "quesito": "L'etichetta di pericolo in figura n° 15 indica:"
+    },
+    {
+      "ID": 294,
+      "riferimento": 11,
+      "idced": 5152,
+      "quesito": "Le etichette di pericolo nelle figure n° 32 e 33 indicano:"
+    },
+    {
+      "ID": 295,
+      "riferimento": 11,
+      "idced": 5153,
+      "quesito": "L'etichetta di pericolo in figura n° 17 indica:"
+    },
+    {
+      "ID": 296,
+      "riferimento": 11,
+      "idced": 5154,
+      "quesito": "L'etichetta di pericolo in figura n° 18 indica:"
+    },
+    {
+      "ID": 297,
+      "riferimento": 11,
+      "idced": 5155,
+      "quesito": "L'etichetta di pericolo in figura n° 19 indica:"
+    },
+    {
+      "ID": 298,
+      "riferimento": 11,
+      "idced": 5156,
+      "quesito": "L'etichetta di pericolo in figura n° 23 indica:"
+    },
+    {
+      "ID": 299,
+      "riferimento": 11,
+      "idced": 5157,
+      "quesito": "L'etichetta di pericolo in figura n° 24 indica:"
+    },
+    {
+      "ID": 300,
+      "riferimento": 11,
+      "idced": 5158,
+      "quesito": "La figura contraddistinta con il n° 29:"
+    },
+    {
+      "ID": 301,
+      "riferimento": 11,
+      "idced": 5159,
+      "quesito": "La figura contraddistinta con il n° 30:"
+    },
+    {
+      "ID": 302,
+      "riferimento": 11,
+      "idced": 5160,
+      "quesito": "La figura contraddistinta con il n° 36:"
+    },
+    {
+      "ID": 303,
+      "riferimento": 11,
+      "idced": 5161,
+      "quesito": "Il marchio delle materie pericolose per l'ambiente è rappresentato da:"
+    },
+    {
+      "ID": 304,
+      "riferimento": 11,
+      "idced": 5162,
+      "quesito": "Il simbolo raffigurante un pesce e un albero, nero su fondo bianco o contrastato, è:"
+    },
+    {
+      "ID": 305,
+      "riferimento": 11,
+      "idced": 5163,
+      "quesito": "La figura contraddistinta con il n° 42:"
+    },
+    {
+      "ID": 306,
+      "riferimento": 11,
+      "idced": 5164,
+      "quesito": "La figura contraddistinta con il n° 47:"
+    },
+    {
+      "ID": 307,
+      "riferimento": 12,
+      "idced": 5201,
+      "quesito": "Come devono essere segnalati i colli di merci pericolose ADR?"
+    },
+    {
+      "ID": 308,
+      "riferimento": 12,
+      "idced": 5202,
+      "quesito": "Da chi devono essere etichettati e marcati i colli di merci pericolose ADR?"
+    },
+    {
+      "ID": 309,
+      "riferimento": 12,
+      "idced": 5203,
+      "quesito": "Quali iscrizioni (vale a dire quale numero di identificazione) devono essere poste sui colli?"
+    },
+    {
+      "ID": 310,
+      "riferimento": 12,
+      "idced": 5204,
+      "quesito": "Quali iscrizioni (da intendere come segnalazioni) devono essere indicate sui recipienti della classe 2?"
+    },
+    {
+      "ID": 311,
+      "riferimento": 12,
+      "idced": 5205,
+      "quesito": "Quali iscrizioni (segnalazioni) devono essere indicate sui recipienti contenenti gas della classe 2?"
+    },
+    {
+      "ID": 312,
+      "riferimento": 12,
+      "idced": 5206,
+      "quesito": "La segnalazione dei colli (etichettatura):"
+    },
+    {
+      "ID": 313,
+      "riferimento": 12,
+      "idced": 5207,
+      "quesito": "L'etichettatura ADR dei colli:"
+    },
+    {
+      "ID": 314,
+      "riferimento": 12,
+      "idced": 5208,
+      "quesito": "Gli imballaggi vuoti, compresi gli IBC vuoti:"
+    },
+    {
+      "ID": 315,
+      "riferimento": 12,
+      "idced": 5209,
+      "quesito": "La segnalazione dei colli (numero ONU):"
+    },
+    {
+      "ID": 316,
+      "riferimento": 12,
+      "idced": 5210,
+      "quesito": "Come deve essere segnalato un autoveicolo cassonato /telonato/furgonato trasportante merci ADR in colli?"
+    },
+    {
+      "ID": 317,
+      "riferimento": 12,
+      "idced": 5211,
+      "quesito": "Un autoveicolo chiuso (furgonato) che trasporta solamente colli della classe 8 ADR, come sarà segnalato?"
+    },
+    {
+      "ID": 318,
+      "riferimento": 12,
+      "idced": 5212,
+      "quesito": "Un autoveicolo chiuso (furgonato) che trasporta solamente colli della classe 3 ADR, come sarà segnalato?"
+    },
+    {
+      "ID": 319,
+      "riferimento": 12,
+      "idced": 5213,
+      "quesito": "Come deve essere segnalato un container trasportante (su strada) merci ADR in colli?"
+    },
+    {
+      "ID": 320,
+      "riferimento": 12,
+      "idced": 5214,
+      "quesito": "Come deve essere segnalato un container per trasporto alla rinfusa caricato con una sola materia pericolosa?"
+    },
+    {
+      "ID": 321,
+      "riferimento": 12,
+      "idced": 5215,
+      "quesito": "Le frecce d'orientamento della figura n. 37 devono comparire sui due lati opposti dei seguenti colli:"
+    },
+    {
+      "ID": 322,
+      "riferimento": 12,
+      "idced": 5216,
+      "quesito": "Quali colli possono riportare il marchio di figura n. 38?"
+    },
+    {
+      "ID": 323,
+      "riferimento": 12,
+      "idced": 5217,
+      "quesito": "Cosa deve riportare il marchio di figura n. 38 applicato su un collo?"
+    },
+    {
+      "ID": 324,
+      "riferimento": 12,
+      "idced": 5218,
+      "quesito": "Il marchio di figura n.38 applicato sui colli:"
+    },
+    {
+      "ID": 325,
+      "riferimento": 12,
+      "idced": 5219,
+      "quesito": "Le misure del marchio di figura n. 36 applicato sui colli sono:"
+    },
+    {
+      "ID": 326,
+      "riferimento": 12,
+      "idced": 5220,
+      "quesito": "Un autocarro con cassone ribaltabile, trasportante merce pericolosa per l'ambiente alla rinfusa come deve essere segnalato?"
+    },
+    {
+      "ID": 327,
+      "riferimento": 12,
+      "idced": 5221,
+      "quesito": "Un collo costituito da una materia liquida infiammabile (classe 3) che è anche pericolosa per l’ambiente …."
+    },
+    {
+      "ID": 328,
+      "riferimento": 12,
+      "idced": 5222,
+      "quesito": "Dove può essere applicato il segnale di attenzione di figura n. 47?"
+    },
+    {
+      "ID": 329,
+      "riferimento": 12,
+      "idced": 5223,
+      "quesito": "Il segnale di attenzione di figura n. 47?"
+    },
+    {
+      "ID": 330,
+      "riferimento": 12,
+      "idced": 5224,
+      "quesito": "I colli contenenti “Pile al litio”:"
+    },
+    {
+      "ID": 331,
+      "riferimento": 13,
+      "idced": 6101,
+      "quesito": "Tra i documenti di bordo obbligatori ai fini ADR, esclusi i casi di esenzione, compaiono:"
+    },
+    {
+      "ID": 332,
+      "riferimento": 13,
+      "idced": 6102,
+      "quesito": "Quali documenti sono obbligatori per i trasporti di colli svolti in regime di esenzione 'parziale' (quantità limitata per unità di trasporto) di 1.1.3.6 ADR ?"
+    },
+    {
+      "ID": 333,
+      "riferimento": 13,
+      "idced": 6103,
+      "quesito": "I documenti di bordo di un'unità di trasporto, obbligatori per il trasporto di colli ADR, tranne i casi d'esenzione, comprendono:"
+    },
+    {
+      "ID": 334,
+      "riferimento": 13,
+      "idced": 6104,
+      "quesito": "I documenti di bordo di un'unità di trasporto specificatamente obbligatori per trasporto di colli ADR comprendono:"
+    },
+    {
+      "ID": 335,
+      "riferimento": 13,
+      "idced": 6105,
+      "quesito": "A cosa serve il documento di trasporto ai sensi dell'ADR?"
+    },
+    {
+      "ID": 336,
+      "riferimento": 13,
+      "idced": 6106,
+      "quesito": "Sul documento di trasporto relativo ad un carico di colli ADR, devono figurare:"
+    },
+    {
+      "ID": 337,
+      "riferimento": 13,
+      "idced": 6107,
+      "quesito": "Il documento di trasporto relativo alle merci pericolose:"
+    },
+    {
+      "ID": 338,
+      "riferimento": 13,
+      "idced": 6108,
+      "quesito": "Chi deve fornire le indicazioni di pericolosità della materia, riportate nel documento di trasporto?"
+    },
+    {
+      "ID": 339,
+      "riferimento": 13,
+      "idced": 6109,
+      "quesito": "La lettera di vettura internazionale (CMR) nel trasporto di merce pericolosa:"
+    },
+    {
+      "ID": 340,
+      "riferimento": 13,
+      "idced": 6110,
+      "quesito": "Chi ha l'obbligo di consegnare al conducente le istruzioni scritte?"
+    },
+    {
+      "ID": 341,
+      "riferimento": 13,
+      "idced": 6111,
+      "quesito": "Durante il viaggio di ritorno di imballaggi vuoti non ripuliti allo stesso speditore, occorre un documento di trasporto?"
+    },
+    {
+      "ID": 342,
+      "riferimento": 13,
+      "idced": 6112,
+      "quesito": "Durante i trasferimenti di imballaggi vuoti non ripuliti che hanno contenuto merci pericolose, occorre un documento di trasporto ai fini ADR?"
+    },
+    {
+      "ID": 343,
+      "riferimento": 13,
+      "idced": 6113,
+      "quesito": "Per il trasporto di imballaggi vuoti non ripuliti, il documento di trasporto deve riportare:"
+    },
+    {
+      "ID": 344,
+      "riferimento": 13,
+      "idced": 6114,
+      "quesito": "Quale gruppo di imballaggio può essere riportato sul documento di trasporto relativo ad un carico di colli marcato con la lettera 'X' ?"
+    },
+    {
+      "ID": 345,
+      "riferimento": 13,
+      "idced": 6115,
+      "quesito": "Quale gruppo di imballaggio può essere riportato sul documento di trasporto relativo ad un carico di colli marcato con la lettera 'Y' ?"
+    },
+    {
+      "ID": 346,
+      "riferimento": 13,
+      "idced": 6116,
+      "quesito": "Quale gruppo di imballaggio può essere riportato sul documento di trasporto relativo ad un carico di colli marcato con la lettera 'Z' ?"
+    },
+    {
+      "ID": 347,
+      "riferimento": 13,
+      "idced": 6117,
+      "quesito": "Quando un trasporto avviene in esenzione 'parziale' (quantità limitate per unità di trasporto), cosa compare sul DDT ?"
+    },
+    {
+      "ID": 348,
+      "riferimento": 13,
+      "idced": 6118,
+      "quesito": "Quando un trasporto avviene in esenzione 'totale' (quantità limitata per collo), cosa compare obbligatoriamente sul documento di trasporto ADR ?"
+    },
+    {
+      "ID": 349,
+      "riferimento": 13,
+      "idced": 6119,
+      "quesito": "Cosa deve riportare, tra l'altro, il documento di trasporto nel caso di veicolo trasportante merci pericolose ADR (ad esempio pitture infiammabili)?"
+    },
+    {
+      "ID": 350,
+      "riferimento": 14,
+      "idced": 6201,
+      "quesito": "Il certificato di formazione professionale del conducente (CFP) ADR, salvo i casi di esenzione:"
+    },
+    {
+      "ID": 351,
+      "riferimento": 14,
+      "idced": 6202,
+      "quesito": "Il certificato di formazione professionale (CFP) ADR:"
+    },
+    {
+      "ID": 352,
+      "riferimento": 14,
+      "idced": 6203,
+      "quesito": "Il certificato di formazione professionale del conducente (CFP) ADR:"
+    },
+    {
+      "ID": 353,
+      "riferimento": 14,
+      "idced": 6204,
+      "quesito": "Il certificato di formazione professionale del conducente (CFP) ADR:"
+    },
+    {
+      "ID": 354,
+      "riferimento": 14,
+      "idced": 6205,
+      "quesito": "Quali dei seguenti veicoli devono essere condotti da conducente munito di CFP ADR di tipo base?"
+    },
+    {
+      "ID": 355,
+      "riferimento": 14,
+      "idced": 6206,
+      "quesito": "Il certificato di formazione professionale (CFP) ADR, di tipo base..."
+    },
+    {
+      "ID": 356,
+      "riferimento": 14,
+      "idced": 6207,
+      "quesito": "Per quali dei seguenti veicoli che trasportano merci pericolose occorre che il conducente sia munito di CFP ADR specializzazione cisterne?"
+    },
+    {
+      "ID": 357,
+      "riferimento": 14,
+      "idced": 6208,
+      "quesito": "Il certificato di formazione professionale (CFP) ADR di specializzazione cisterna abilita il conducente …"
+    },
+    {
+      "ID": 358,
+      "riferimento": 14,
+      "idced": 6209,
+      "quesito": "Il certificato di formazione professionale (CFP) ADR di tipo base e specializzazione cisterna …"
+    },
+    {
+      "ID": 359,
+      "riferimento": 14,
+      "idced": 6210,
+      "quesito": "Il certificato di formazione professionale (CFP) ADR di specializzazione esplosivi (classe 1) …"
+    },
+    {
+      "ID": 360,
+      "riferimento": 14,
+      "idced": 6211,
+      "quesito": "Il certificato di formazione professionale (CFP) ADR di specializzazione radioattivi (classe 7) ..."
+    },
+    {
+      "ID": 361,
+      "riferimento": 14,
+      "idced": 6212,
+      "quesito": "Quali conducenti devono essere in possesso del CFP ADR di tipo base?"
+    },
+    {
+      "ID": 362,
+      "riferimento": 14,
+      "idced": 6213,
+      "quesito": "Con il CFP ADR di tipo base, quali dei seguenti trasporti si possono eseguire?"
+    },
+    {
+      "ID": 363,
+      "riferimento": 14,
+      "idced": 6214,
+      "quesito": "Con il CFP ADR di tipo base e specializzazione cisterne, quali dei seguenti trasporti si possono eseguire?"
+    },
+    {
+      "ID": 364,
+      "riferimento": 14,
+      "idced": 6215,
+      "quesito": "Con il CFP ADR di tipo base e specializzazione esplosivi, quali dei seguenti trasporti si possono eseguire?"
+    },
+    {
+      "ID": 365,
+      "riferimento": 14,
+      "idced": 6216,
+      "quesito": "Con il CFP ADR di tipo base e specializzazione radioattivi, quali dei seguenti trasporti si possono eseguire?"
+    },
+    {
+      "ID": 366,
+      "riferimento": 14,
+      "idced": 6217,
+      "quesito": "Con il CFP ADR di tipo base e specializzazioni esplosivi e radioattivi, quali dei seguenti trasporti si possono eseguire?"
+    },
+    {
+      "ID": 367,
+      "riferimento": 14,
+      "idced": 6218,
+      "quesito": "Il cronotachigrafo è obbligatorio:"
+    },
+    {
+      "ID": 368,
+      "riferimento": 14,
+      "idced": 6219,
+      "quesito": "Nel caso un incidente con un terzo abbia prodotto solo danni materiali ai veicoli (escluso le merci pericolose), il conducente:"
+    },
+    {
+      "ID": 369,
+      "riferimento": 14,
+      "idced": 6220,
+      "quesito": "Nel caso un incidente con un terzo abbia prodotto danni alle persone (escluso le merci pericolose), il conducente:"
+    },
+    {
+      "ID": 370,
+      "riferimento": 14,
+      "idced": 6221,
+      "quesito": "Durante i controlli relativi ai trasporti di merci pericolose, esclusi i casi di esenzione, quali delle infrazioni seguenti sono considerate gravi perché possono compromettere la sicurezza?"
+    },
+    {
+      "ID": 371,
+      "riferimento": 14,
+      "idced": 6222,
+      "quesito": "Durante i controlli relativi ai trasporti di merci pericolose, esclusi i casi di esenzione, quali delle seguenti infrazioni sono considerate gravi perché possono compromettere la sicurezza?"
+    },
+    {
+      "ID": 372,
+      "riferimento": 14,
+      "idced": 6223,
+      "quesito": "Durante i controlli relativi ai trasporti di merci pericolose, esclusi i casi di esenzione, quali tra le infrazioni seguenti sono da considerare gravi da compromettere la sicurezza?"
+    },
+    {
+      "ID": 373,
+      "riferimento": 14,
+      "idced": 6224,
+      "quesito": "Durante i controlli relativi ai trasporti di merci pericolose, esclusi i casi di esenzione, quali tra le seguenti sono considerate infrazioni gravi perché possono pregiudicare la sicurezza?"
+    },
+    {
+      "ID": 374,
+      "riferimento": 14,
+      "idced": 6225,
+      "quesito": "In Italia, quale norma contiene le sanzioni per le violazioni dell'ADR?"
+    },
+    {
+      "ID": 375,
+      "riferimento": 15,
+      "idced": 6301,
+      "quesito": "Cosa s'intende per trasporto multimodale?"
+    },
+    {
+      "ID": 376,
+      "riferimento": 15,
+      "idced": 6302,
+      "quesito": "Esistono norme relative al trasporto di merci pericolose per ferrovia? se sì, quali sono?"
+    },
+    {
+      "ID": 377,
+      "riferimento": 15,
+      "idced": 6303,
+      "quesito": "Esistono norme relative al trasporto di merci pericolose per via marittima? se sì, quali sono?"
+    },
+    {
+      "ID": 378,
+      "riferimento": 15,
+      "idced": 6304,
+      "quesito": "Esistono norme relative al trasporto di merci pericolose per via fluviale? se sì, quali sono?"
+    },
+    {
+      "ID": 379,
+      "riferimento": 15,
+      "idced": 6305,
+      "quesito": "Esistono norme relative al trasporto di merci pericolose per via aerea? se sì, quali sono?"
+    },
+    {
+      "ID": 380,
+      "riferimento": 15,
+      "idced": 6306,
+      "quesito": "Un veicolo che trasporta merci pericolose in colli:"
+    },
+    {
+      "ID": 381,
+      "riferimento": 15,
+      "idced": 6307,
+      "quesito": "I colli non completamente rispondenti alle prescrizioni di imballaggio dell'ADR , ma conformi alle prescrizioni marittime o aeree, possono essere trasportati su strada?"
+    },
+    {
+      "ID": 382,
+      "riferimento": 15,
+      "idced": 6308,
+      "quesito": "A chi compete l'apposizione delle placche (grandi etichette di 25 cm di lato) sulle pareti esterne di un container carico di colli ADR, spedito per ferrovia?"
+    },
+    {
+      "ID": 383,
+      "riferimento": 15,
+      "idced": 6309,
+      "quesito": "Nel trasporto intermodale:"
+    },
+    {
+      "ID": 384,
+      "riferimento": 16,
+      "idced": 7101,
+      "quesito": "In luogo pubblico abitato all'interno di agglomerati urbani:"
+    },
+    {
+      "ID": 385,
+      "riferimento": 16,
+      "idced": 7102,
+      "quesito": "Quali sono gli obblighi del conducente di un veicolo per colli ADR, al momento del carico?"
+    },
+    {
+      "ID": 386,
+      "riferimento": 16,
+      "idced": 7103,
+      "quesito": "Quali comportamenti / precauzioni deve osservare il conducente di veicoli per colli ADR, durante il carico?"
+    },
+    {
+      "ID": 387,
+      "riferimento": 16,
+      "idced": 7104,
+      "quesito": "Quali comportamenti / precauzioni deve osservare il conducente di veicoli cassonati ADR, durante il carico?"
+    },
+    {
+      "ID": 388,
+      "riferimento": 16,
+      "idced": 7105,
+      "quesito": "Quali comportamenti / precauzioni deve osservare il conducente di veicoli per colli ADR, durante il carico?"
+    },
+    {
+      "ID": 389,
+      "riferimento": 16,
+      "idced": 7106,
+      "quesito": "Quali comportamenti / precauzioni deve osservare il conducente di veicoli furgonati, durante il carico?"
+    },
+    {
+      "ID": 390,
+      "riferimento": 16,
+      "idced": 7107,
+      "quesito": "Quali comportamenti / precauzioni deve osservare il conducente di veicoli per colli ADR, durante il carico?"
+    },
+    {
+      "ID": 391,
+      "riferimento": 16,
+      "idced": 7108,
+      "quesito": "Quali comportamenti / precauzioni deve osservare il conducente di veicoli per colli ADR, durante il carico?"
+    },
+    {
+      "ID": 392,
+      "riferimento": 16,
+      "idced": 7109,
+      "quesito": "Perché il vano di carico di un'unità di trasporto deve essere pulito?"
+    },
+    {
+      "ID": 393,
+      "riferimento": 16,
+      "idced": 7110,
+      "quesito": "Gli imballaggi compresi gli IBC vuoti:"
+    },
+    {
+      "ID": 394,
+      "riferimento": 16,
+      "idced": 7111,
+      "quesito": "Cosa ritenete sia giusto fare se i colli da caricare sono sprovvisti di etichette ove prescritte?"
+    },
+    {
+      "ID": 395,
+      "riferimento": 16,
+      "idced": 7112,
+      "quesito": "Quali comportamenti / precauzioni deve osservare il conducente durante il carico di colli della classe 2?"
+    },
+    {
+      "ID": 396,
+      "riferimento": 16,
+      "idced": 7113,
+      "quesito": "Quali comportamenti / precauzioni deve osservare il conducente durante il carico di colli della classe 3?"
+    },
+    {
+      "ID": 397,
+      "riferimento": 16,
+      "idced": 7114,
+      "quesito": "Quali comportamenti / precauzioni deve osservare il conducente durante il carico di colli della classe 4.1?"
+    },
+    {
+      "ID": 398,
+      "riferimento": 16,
+      "idced": 7115,
+      "quesito": "Quali comportamenti / precauzioni deve osservare il conducente durante il carico di colli della classe 5.1?"
+    },
+    {
+      "ID": 399,
+      "riferimento": 16,
+      "idced": 7116,
+      "quesito": "Quali comportamenti / precauzioni deve osservare il conducente durante il carico di colli della classe 6.1?"
+    },
+    {
+      "ID": 400,
+      "riferimento": 16,
+      "idced": 7117,
+      "quesito": "Quali comportamenti / precauzioni deve osservare il conducente durante il carico di colli della classe 4.2?"
+    },
+    {
+      "ID": 401,
+      "riferimento": 16,
+      "idced": 7118,
+      "quesito": "Quali comportamenti / precauzioni deve osservare il conducente durante il carico di colli della classe 4.3?"
+    },
+    {
+      "ID": 402,
+      "riferimento": 16,
+      "idced": 7119,
+      "quesito": "Quali comportamenti / precauzioni deve osservare il conducente durante il carico di colli della classe 5.2?"
+    },
+    {
+      "ID": 403,
+      "riferimento": 16,
+      "idced": 7120,
+      "quesito": "Esistono merci ADR che devono essere trasportate a temperatura controllata?"
+    },
+    {
+      "ID": 404,
+      "riferimento": 16,
+      "idced": 7121,
+      "quesito": "Come vi comportate, dovendo trasportare colli contrassegnati dalla figura n° 37?"
+    },
+    {
+      "ID": 405,
+      "riferimento": 16,
+      "idced": 7122,
+      "quesito": "In un luogo pubblico all'interno degli agglomerati urbani:"
+    },
+    {
+      "ID": 406,
+      "riferimento": 16,
+      "idced": 7123,
+      "quesito": "Quali sono i comportamenti generali del conducente di veicoli trasportanti colli ADR, allo scarico?"
+    },
+    {
+      "ID": 407,
+      "riferimento": 16,
+      "idced": 7124,
+      "quesito": "Quali sono le precauzioni generali del conducente di veicoli trasportanti colli ADR, allo scarico?"
+    },
+    {
+      "ID": 408,
+      "riferimento": 16,
+      "idced": 7125,
+      "quesito": "Quali precauzioni deve osservare il conducente di veicoli trasportanti colli ADR, durante lo scarico?"
+    },
+    {
+      "ID": 409,
+      "riferimento": 16,
+      "idced": 7126,
+      "quesito": "Con un'unità di trasporto costituita da un autotreno, quale dei seguenti comportamenti vi sembra corretto quando i luoghi di scarico sono più d'uno?"
+    },
+    {
+      "ID": 410,
+      "riferimento": 16,
+      "idced": 7127,
+      "quesito": "Chi è definibile 'membro dell'equipaggio' e quindi può viaggiare a bordo dell’unità di trasporto ?"
+    },
+    {
+      "ID": 411,
+      "riferimento": 17,
+      "idced": 7201,
+      "quesito": "È vietato caricare in comune su uno stesso veicolo merci pericolose diverse?"
+    },
+    {
+      "ID": 412,
+      "riferimento": 17,
+      "idced": 7202,
+      "quesito": "Esistono divieti di carico in comune nel trasporto ADR?"
+    },
+    {
+      "ID": 413,
+      "riferimento": 17,
+      "idced": 7203,
+      "quesito": "Come è possibile rispettare i divieti di carico in comune nel trasporto ADR:"
+    },
+    {
+      "ID": 414,
+      "riferimento": 17,
+      "idced": 7204,
+      "quesito": "In generale, nel trasporto di merci ADR esistono limitazioni delle quantità trasportate nella stessa unità di trasporto?"
+    },
+    {
+      "ID": 415,
+      "riferimento": 17,
+      "idced": 7205,
+      "quesito": "Le limitazioni delle quantità trasportate di determinate classi di pericolo dell'ADR:"
+    },
+    {
+      "ID": 416,
+      "riferimento": 17,
+      "idced": 7206,
+      "quesito": "Quali delle classi di pericolo seguenti hanno (per alcune merci) limitazioni sulle quantità trasportate?"
+    },
+    {
+      "ID": 417,
+      "riferimento": 17,
+      "idced": 7207,
+      "quesito": "I divieti di carico in comune (tra merci ADR) devono essere osservati:"
+    },
+    {
+      "ID": 418,
+      "riferimento": 17,
+      "idced": 7208,
+      "quesito": "Per rispettare i divieti di carico in comune (tra merci ADR) occorre:"
+    },
+    {
+      "ID": 419,
+      "riferimento": 18,
+      "idced": 8101,
+      "quesito": "Quali danni possono provocare gli incidenti che coinvolgono le merci pericolose?"
+    },
+    {
+      "ID": 420,
+      "riferimento": 18,
+      "idced": 8102,
+      "quesito": "Quali provvedimenti prima dell'inizio del viaggio aumentano la sicurezza durante la circolazione?"
+    },
+    {
+      "ID": 421,
+      "riferimento": 18,
+      "idced": 8103,
+      "quesito": "I controlli sul veicolo prima della partenza ..."
+    },
+    {
+      "ID": 422,
+      "riferimento": 18,
+      "idced": 8104,
+      "quesito": "Un conducente di veicoli adibiti al trasporto di merci pericolose deve:"
+    },
+    {
+      "ID": 423,
+      "riferimento": 18,
+      "idced": 8105,
+      "quesito": "Durante la circolazione, in quale direzione si può spostare la merce?"
+    },
+    {
+      "ID": 424,
+      "riferimento": 18,
+      "idced": 8106,
+      "quesito": "Quali forze intervengono sul veicolo e sulla merce quando si percorre una curva?"
+    },
+    {
+      "ID": 425,
+      "riferimento": 18,
+      "idced": 8107,
+      "quesito": "Come devono comportarsi i conducenti di veicoli adibiti al trasporto di merci pericolose, in caso di cattiva visibilità per pioggia o nebbia?"
+    },
+    {
+      "ID": 426,
+      "riferimento": 18,
+      "idced": 8108,
+      "quesito": "Il segnale rappresentato in figura n. 28, indica:"
+    },
+    {
+      "ID": 427,
+      "riferimento": 18,
+      "idced": 8109,
+      "quesito": "Il segnale rappresentato in figura n. 26, indica:"
+    },
+    {
+      "ID": 428,
+      "riferimento": 18,
+      "idced": 8110,
+      "quesito": "Il segnale rappresentato in figura n. 27, indica:"
+    },
+    {
+      "ID": 429,
+      "riferimento": 18,
+      "idced": 8111,
+      "quesito": "Il segnale rappresentato in figura n. 25 indica:"
+    },
+    {
+      "ID": 430,
+      "riferimento": 18,
+      "idced": 8112,
+      "quesito": "Quale delle seguenti figure vieta il transito ai veicoli carichi di materie che possono contaminare l'acqua?"
+    },
+    {
+      "ID": 431,
+      "riferimento": 18,
+      "idced": 8113,
+      "quesito": "Quale delle seguenti figure vieta il transito ai veicoli carichi di materie pericolose?"
+    },
+    {
+      "ID": 432,
+      "riferimento": 18,
+      "idced": 8114,
+      "quesito": "Quale delle seguenti figure vieta il transito ai veicoli che trasportano esplosivi o prodotti facilmente infiammabili?"
+    },
+    {
+      "ID": 433,
+      "riferimento": 18,
+      "idced": 8115,
+      "quesito": "Quale delle seguenti figure indica un itinerario obbligatorio per i veicoli che trasportano merci pericolose?"
+    },
+    {
+      "ID": 434,
+      "riferimento": 18,
+      "idced": 8116,
+      "quesito": "Durante il trasporto di merci pericolose, quali dei seguenti comportamenti vi sembrano corretti?"
+    },
+    {
+      "ID": 435,
+      "riferimento": 18,
+      "idced": 8117,
+      "quesito": "Durante il trasporto di merci pericolose, quali dei seguenti comportamenti vi sembrano corretti?"
+    },
+    {
+      "ID": 436,
+      "riferimento": 18,
+      "idced": 8118,
+      "quesito": "Quali delle seguenti precauzioni, deve rispettare il conducente durante il trasporto di merci pericolose?"
+    },
+    {
+      "ID": 437,
+      "riferimento": 18,
+      "idced": 8119,
+      "quesito": "Per lo stazionamento di un'unità di trasporto per cui l'ADR richiede l'obbligo di sorveglianza:"
+    },
+    {
+      "ID": 438,
+      "riferimento": 18,
+      "idced": 8120,
+      "quesito": "Nel caso di stazionamento di un'unità di trasporto per cui l'ADR richiede l'obbligo di sorveglianza:"
+    },
+    {
+      "ID": 439,
+      "riferimento": 18,
+      "idced": 8121,
+      "quesito": "Cosa deve fare il conducente, quando la sosta o il parcheggio forzato della sua unità di trasporto procurano o possono procurare un rischio particolare?"
+    },
+    {
+      "ID": 440,
+      "riferimento": 18,
+      "idced": 8122,
+      "quesito": "Dove può essere parcheggiato un veicolo con merci ADR, per il quale l'ADR richiede la sorveglianza?"
+    },
+    {
+      "ID": 441,
+      "riferimento": 18,
+      "idced": 8123,
+      "quesito": "In caso di fermata o sosta, il conducente deve:"
+    },
+    {
+      "ID": 442,
+      "riferimento": 18,
+      "idced": 8124,
+      "quesito": "Quali delle seguenti affermazioni circa la sosta o lo stazionamento vi sembrano corrette?"
+    },
+    {
+      "ID": 443,
+      "riferimento": 18,
+      "idced": 8125,
+      "quesito": "Durante un trasporto su strada di materie pericolose ADR …"
+    },
+    {
+      "ID": 444,
+      "riferimento": 18,
+      "idced": 8126,
+      "quesito": "Per il transito delle merci pericolose nelle gallerie"
+    },
+    {
+      "ID": 445,
+      "riferimento": 18,
+      "idced": 8127,
+      "quesito": "Quando si accede all'ingresso di uno stabilimento per caricare o scaricare merci pericolose"
+    },
+    {
+      "ID": 446,
+      "riferimento": 18,
+      "idced": 8128,
+      "quesito": "Con riferimento all'ADR, il transito dei veicoli nelle gallerie"
+    },
+    {
+      "ID": 447,
+      "riferimento": 18,
+      "idced": 8129,
+      "quesito": "Quali delle seguenti affermazioni, circa i comportamenti del conducente durante il trasporto di merci pericolose, sono corrette?"
+    },
+    {
+      "ID": 448,
+      "riferimento": 19,
+      "idced": 8201,
+      "quesito": "Le istruzioni scritte:"
+    },
+    {
+      "ID": 449,
+      "riferimento": 19,
+      "idced": 8202,
+      "quesito": "Le tre informazioni più importanti da comunicare telefonicamente alle Autorità, in caso d'incidente sono:"
+    },
+    {
+      "ID": 450,
+      "riferimento": 19,
+      "idced": 8203,
+      "quesito": "Le istruzioni scritte:"
+    },
+    {
+      "ID": 451,
+      "riferimento": 19,
+      "idced": 8303,
+      "quesito": "Quali dei seguenti interventi di primo soccorso applicabili alle vittime di un incidente stradale vi sembrano corretti?"
+    },
+    {
+      "ID": 452,
+      "riferimento": 19,
+      "idced": 8304,
+      "quesito": "Quali delle seguenti misure di pronto intervento, nel caso che una o più persone si trovino in un ambiente chiuso parzialmente invaso da gas/vapori tossici, vi sembrano corrette?"
+    },
+    {
+      "ID": 453,
+      "riferimento": 19,
+      "idced": 8305,
+      "quesito": "Quali dei seguenti interventi di pronto soccorso, dopo aver allontanato da un luogo chiuso (recuperato) una o più persone intossicate da gas tossico, vi sembrano corretti?"
+    },
+    {
+      "ID": 454,
+      "riferimento": 19,
+      "idced": 8306,
+      "quesito": "Quali danni alla salute possono derivare dall'azione diretta dei gas, sul corpo umano?"
+    },
+    {
+      "ID": 455,
+      "riferimento": 19,
+      "idced": 8307,
+      "quesito": "Le azioni di primo soccorso contro gli effetti dei gas sono:"
+    },
+    {
+      "ID": 456,
+      "riferimento": 19,
+      "idced": 8308,
+      "quesito": "Gli idonei equipaggiamenti di protezione individuale contro gli effetti delle materie della classe 2 (gas) sono:"
+    },
+    {
+      "ID": 457,
+      "riferimento": 19,
+      "idced": 8309,
+      "quesito": "Primo soccorso: una parte del carico infiammabile si è incendiata e investe un altro utente della strada ..."
+    },
+    {
+      "ID": 458,
+      "riferimento": 19,
+      "idced": 8310,
+      "quesito": "Quali dei seguenti interventi di pronto soccorso, da portare ad una persona ustionata da fiamme o liquidi caldi, vi sembrano corretti?"
+    },
+    {
+      "ID": 459,
+      "riferimento": 19,
+      "idced": 8311,
+      "quesito": "Oltre alle ustioni termiche (per bruciatura), quali danni alla salute possono derivare dall'azione di una materia liquida infiammabile (o suoi vapori) sul corpo umano?"
+    },
+    {
+      "ID": 460,
+      "riferimento": 19,
+      "idced": 8312,
+      "quesito": "Le azioni di primo soccorso contro gli effetti delle materie della classe 3 (escluso l'incendio) sono:"
+    },
+    {
+      "ID": 461,
+      "riferimento": 19,
+      "idced": 8204,
+      "quesito": "In caso d'incidente, quali dei seguenti documenti devono essere consegnati alle autorità di soccorso da parte del conducente?"
+    },
+    {
+      "ID": 462,
+      "riferimento": 19,
+      "idced": 8205,
+      "quesito": "Le istruzioni scritte:"
+    },
+    {
+      "ID": 463,
+      "riferimento": 19,
+      "idced": 8206,
+      "quesito": "Le 'istruzioni scritte' :"
+    },
+    {
+      "ID": 464,
+      "riferimento": 19,
+      "idced": 8207,
+      "quesito": "In quale documento vengono fornite le informazioni sui rischi relativi ad una merce pericolosa ed il comportamento da adottare in caso d'incidente?"
+    },
+    {
+      "ID": 465,
+      "riferimento": 19,
+      "idced": 8208,
+      "quesito": "Responsabile dell'obbligo di consegnare al conducente le istruzioni scritte è:"
+    },
+    {
+      "ID": 466,
+      "riferimento": 19,
+      "idced": 8209,
+      "quesito": "Le schede di 'istruzioni scritte' che devono trovarsi a bordo dell'unità di trasporto sono :"
+    },
+    {
+      "ID": 467,
+      "riferimento": 19,
+      "idced": 8210,
+      "quesito": "Gli estintori a polvere che normalmente equipaggiano i veicoli adibiti al trasporto di merci pericolose, ..."
+    },
+    {
+      "ID": 468,
+      "riferimento": 19,
+      "idced": 8211,
+      "quesito": "Quali dei seguenti tipi di estintori sono comunemente utilizzabili?"
+    },
+    {
+      "ID": 469,
+      "riferimento": 19,
+      "idced": 8212,
+      "quesito": "Gli estintori di bordo ......"
+    },
+    {
+      "ID": 470,
+      "riferimento": 19,
+      "idced": 8213,
+      "quesito": "Quali ritenete siano gli interventi antincendio più adatti per combattere i seguenti principi d'incendio?"
+    },
+    {
+      "ID": 471,
+      "riferimento": 19,
+      "idced": 8214,
+      "quesito": "Un incendio di carburanti (idrocarburi più leggeri dell'acqua) , può essere spento ...."
+    },
+    {
+      "ID": 472,
+      "riferimento": 19,
+      "idced": 8215,
+      "quesito": "Per combattere efficacemente un incendio di liquidi infiammabili ...."
+    },
+    {
+      "ID": 473,
+      "riferimento": 19,
+      "idced": 8216,
+      "quesito": "Un incendio di gas, può essere spento ..."
+    },
+    {
+      "ID": 474,
+      "riferimento": 19,
+      "idced": 8217,
+      "quesito": "L'incendio di un pneumatico, può essere spento ...."
+    },
+    {
+      "ID": 475,
+      "riferimento": 19,
+      "idced": 8218,
+      "quesito": "L’incendio di materie della classe 4.3 …."
+    },
+    {
+      "ID": 476,
+      "riferimento": 19,
+      "idced": 8219,
+      "quesito": "Che funzione svolge l'estintore a polvere?"
+    },
+    {
+      "ID": 477,
+      "riferimento": 19,
+      "idced": 8220,
+      "quesito": "Gli estintori a polvere polivalente A, B, C che normalmente equipaggiano i veicoli adibiti al trasporto di merci pericolose ..."
+    },
+    {
+      "ID": 478,
+      "riferimento": 19,
+      "idced": 8221,
+      "quesito": "Per utilizzare in maniera corretta un estintore a polvere, bisogna ..."
+    },
+    {
+      "ID": 479,
+      "riferimento": 19,
+      "idced": 8222,
+      "quesito": "Come vi apprestate a spegnere un incendio con gli estintori di bordo (a polvere)?"
+    },
+    {
+      "ID": 480,
+      "riferimento": 19,
+      "idced": 8223,
+      "quesito": "Perché un pneumatico dopo l'uso di estintori a polvere può riprendere a bruciare?"
+    },
+    {
+      "ID": 481,
+      "riferimento": 19,
+      "idced": 8224,
+      "quesito": "Per spegnere definitivamente l'incendio di un pneumatico, dopo un primo intervento con l'estintore a polvere occorre?"
+    },
+    {
+      "ID": 482,
+      "riferimento": 19,
+      "idced": 8225,
+      "quesito": "Quali tra le seguenti misure, adottate in caso di leggere perdite di materie pericolose ritenete siano corrette?"
+    },
+    {
+      "ID": 483,
+      "riferimento": 19,
+      "idced": 8226,
+      "quesito": "Quali dei seguenti comportamenti a seguito di perdite di materie pericolose vi sembrano corretti?"
+    },
+    {
+      "ID": 484,
+      "riferimento": 19,
+      "idced": 8227,
+      "quesito": "Quali dei seguenti comportamenti, in base al tipo di materia persa o versata, vi sembrano corretti?"
+    },
+    {
+      "ID": 485,
+      "riferimento": 19,
+      "idced": 8228,
+      "quesito": "Le istruzioni scritte:"
+    },
+    {
+      "ID": 486,
+      "riferimento": 19,
+      "idced": 8229,
+      "quesito": "In caso di fuoriuscita da un contenitore di liquidi corrosivi senza altri rischi secondari"
+    },
+    {
+      "ID": 487,
+      "riferimento": 19,
+      "idced": 8230,
+      "quesito": "Le istruzioni scritte:"
+    },
+    {
+      "ID": 488,
+      "riferimento": 20,
+      "idced": 8301,
+      "quesito": "Un conducente di veicoli trasportanti merci pericolose deve ...."
+    },
+    {
+      "ID": 489,
+      "riferimento": 20,
+      "idced": 8302,
+      "quesito": "Quali dei seguenti interventi di primo soccorso applicabili alle vittime di un incidente stradale vi sembrano corretti?"
+    },
+    {
+      "ID": 490,
+      "riferimento": 20,
+      "idced": 8313,
+      "quesito": "Gli idonei equipaggiamenti di protezione individuale prescritti dalle istruzioni scritte contro gli effetti delle materie della classe 3 sono:"
+    },
+    {
+      "ID": 491,
+      "riferimento": 20,
+      "idced": 8314,
+      "quesito": "Quali danni alla salute possono derivare dall'azione diretta di una materia comburente (o di una grande liberazione di ossigeno), sul corpo umano?"
+    },
+    {
+      "ID": 492,
+      "riferimento": 20,
+      "idced": 8315,
+      "quesito": "Gli idonei equipaggiamenti di protezione individuale prescritti dalle istruzioni scritte contro gli effetti delle materie della classe 5.1 sono:"
+    },
+    {
+      "ID": 493,
+      "riferimento": 20,
+      "idced": 8316,
+      "quesito": "L'avvelenamento o intossicazione ..."
+    },
+    {
+      "ID": 494,
+      "riferimento": 20,
+      "idced": 8317,
+      "quesito": "L'intossicazione o avvelenamento ...."
+    },
+    {
+      "ID": 495,
+      "riferimento": 20,
+      "idced": 8318,
+      "quesito": "Le materie tossiche possono essere...."
+    },
+    {
+      "ID": 496,
+      "riferimento": 20,
+      "idced": 8319,
+      "quesito": "Le materie tossiche possono entrare nel corpo umano...."
+    },
+    {
+      "ID": 497,
+      "riferimento": 20,
+      "idced": 8320,
+      "quesito": "Quali danni alla salute possono derivare dall'azione diretta di una materia tossica (o suoi vapori tossici), sul corpo umano?"
+    },
+    {
+      "ID": 498,
+      "riferimento": 20,
+      "idced": 8321,
+      "quesito": "Gli effetti delle materie tossiche...."
+    },
+    {
+      "ID": 499,
+      "riferimento": 20,
+      "idced": 8322,
+      "quesito": "Le azioni di primo soccorso contro gli effetti delle materie della classe 6.1 sono:"
+    },
+    {
+      "ID": 500,
+      "riferimento": 20,
+      "idced": 8323,
+      "quesito": "Gli idonei equipaggiamenti di protezione individuale prescritti dalle istruzioni scritte contro gli effetti delle materie della classe 6.1 sono:"
+    },
+    {
+      "ID": 501,
+      "riferimento": 20,
+      "idced": 8324,
+      "quesito": "Primo soccorso: quali danni alla salute possono derivare dall'azione diretta di una materia corrosiva (o suoi vapori corrosivi), sul corpo umano?"
+    },
+    {
+      "ID": 502,
+      "riferimento": 20,
+      "idced": 8325,
+      "quesito": "Primo soccorso: una fuoriuscita di prodotto basico (soda caustica della classe 8) investe l'addetto al carico sprovvisto di protezioni, come vi comportate?"
+    },
+    {
+      "ID": 503,
+      "riferimento": 20,
+      "idced": 8326,
+      "quesito": "Primo soccorso: un getto d'acido (della classe 8) colpisce la faccia e parti del corpo (non protette) durante lo scarico, cosa fare?"
+    },
+    {
+      "ID": 504,
+      "riferimento": 20,
+      "idced": 8327,
+      "quesito": "Gli idonei equipaggiamenti di protezione individuale prescritti dalle istruzioni scritte contro gli effetti delle materie della classe 8 sono:"
+    },
+    {
+      "ID": 505,
+      "riferimento": 20,
+      "idced": 8328,
+      "quesito": "Primo soccorso: quali danni alla salute possono derivare dall'azione diretta di una materia della classe 9 (o suoi fumi o vapori), sul corpo umano?"
+    },
+    {
+      "ID": 506,
+      "riferimento": 20,
+      "idced": 8329,
+      "quesito": "La maschera di evacuazione di emergenza (antigas) con idoneo filtro...."
+    },
+    {
+      "ID": 507,
+      "riferimento": 20,
+      "idced": 8330,
+      "quesito": "Dove sono indicati gli equipaggiamenti di sicurezza che devono essere presenti a bordo del veicolo?"
+    },
+    {
+      "ID": 508,
+      "riferimento": 21,
+      "idced": 10102,
+      "quesito": "Vi sono merci pericolose che non sono ammesse al trasporto in cisterna ADR?"
+    },
+    {
+      "ID": 509,
+      "riferimento": 21,
+      "idced": 10103,
+      "quesito": "Lo stato fisico delle materie trasportate in cisterna può essere:"
+    },
+    {
+      "ID": 510,
+      "riferimento": 21,
+      "idced": 10104,
+      "quesito": "Un container cisterna è:"
+    },
+    {
+      "ID": 511,
+      "riferimento": 21,
+      "idced": 10105,
+      "quesito": "Secondo l'ADR, una cassa mobile cisterna è:"
+    },
+    {
+      "ID": 512,
+      "riferimento": 21,
+      "idced": 10106,
+      "quesito": "Una cisterna fissa è:"
+    },
+    {
+      "ID": 513,
+      "riferimento": 21,
+      "idced": 10107,
+      "quesito": "Quale di questi è un veicolo cisterna?"
+    },
+    {
+      "ID": 514,
+      "riferimento": 21,
+      "idced": 10108,
+      "quesito": "Per veicolo batteria si può intendere:"
+    },
+    {
+      "ID": 515,
+      "riferimento": 21,
+      "idced": 10109,
+      "quesito": "Una cisterna smontabile è:"
+    },
+    {
+      "ID": 516,
+      "riferimento": 21,
+      "idced": 10110,
+      "quesito": "Quale figura rappresenta un veicolo cisterna?"
+    },
+    {
+      "ID": 517,
+      "riferimento": 21,
+      "idced": 10111,
+      "quesito": "Quale figura rappresenta un container cisterna?"
+    },
+    {
+      "ID": 518,
+      "riferimento": 21,
+      "idced": 10112,
+      "quesito": "Quale figura rappresenta un veicolo batteria?"
+    },
+    {
+      "ID": 519,
+      "riferimento": 21,
+      "idced": 10113,
+      "quesito": "La figura n. 57 rappresenta"
+    },
+    {
+      "ID": 520,
+      "riferimento": 21,
+      "idced": 10114,
+      "quesito": "Il veicolo rappresentato in figura n. 55 è un …."
+    },
+    {
+      "ID": 521,
+      "riferimento": 21,
+      "idced": 10115,
+      "quesito": "Il veicolo rappresentato in figura n. 58 è un …."
+    },
+    {
+      "ID": 522,
+      "riferimento": 21,
+      "idced": 10201,
+      "quesito": "Un autoveicolo con cisterna per trasporto di materie molto infiammabili deve essere obbligatoriamente munito di:"
+    },
+    {
+      "ID": 523,
+      "riferimento": 21,
+      "idced": 10202,
+      "quesito": "Un autoveicolo con cisterna per trasporto di materie molto infiammabili, deve essere obbligatoriamente munito:"
+    },
+    {
+      "ID": 524,
+      "riferimento": 21,
+      "idced": 10203,
+      "quesito": "Gli autoveicoli cisterna nuovi, di massa complessiva maggiore di 16 t, utilizzati per il trasporto di merci pericolose, devono essere muniti:"
+    },
+    {
+      "ID": 525,
+      "riferimento": 21,
+      "idced": 10204,
+      "quesito": "Gli autoveicoli cisterna, di massa complessiva maggiore di 16 t, utilizzati per il trasporto di merci pericolose, devono essere muniti:"
+    },
+    {
+      "ID": 526,
+      "riferimento": 21,
+      "idced": 10205,
+      "quesito": "Secondo l'ADR, un autoveicolo porta-container cisterna di capacità maggiore di 3000 litri, di massa complessiva maggiore di 16 t, deve essere munito di ..."
+    },
+    {
+      "ID": 527,
+      "riferimento": 21,
+      "idced": 10206,
+      "quesito": "Secondo l'ADR, un rimorchio o semirimorchio porta-container cisterna di capacità maggiore di 3000 litri, di massa complessiva maggiore di 10 t , deve essere munito di..."
+    },
+    {
+      "ID": 528,
+      "riferimento": 22,
+      "idced": 11137,
+      "quesito": "Il simbolo rappresentato in figura n° 31 indica:"
+    },
+    {
+      "ID": 529,
+      "riferimento": 22,
+      "idced": 11138,
+      "quesito": "Le cariche elettrostatiche possono essere create ..."
+    },
+    {
+      "ID": 530,
+      "riferimento": 22,
+      "idced": 11139,
+      "quesito": "S'intendono per gradi di riempimento di un veicolo-cisterna:"
+    },
+    {
+      "ID": 531,
+      "riferimento": 22,
+      "idced": 11140,
+      "quesito": "Il grado di minimo riempimento"
+    },
+    {
+      "ID": 532,
+      "riferimento": 22,
+      "idced": 11141,
+      "quesito": "Il grado di minimo riempimento"
+    },
+    {
+      "ID": 533,
+      "riferimento": 22,
+      "idced": 11142,
+      "quesito": "Il grado di riempimento minimo delle cisterne per il trasporto di liquidi, aventi sezioni di capacità superiore a 7.500 litri"
+    },
+    {
+      "ID": 534,
+      "riferimento": 22,
+      "idced": 11143,
+      "quesito": "Il grado di massimo riempimento"
+    },
+    {
+      "ID": 535,
+      "riferimento": 22,
+      "idced": 11144,
+      "quesito": "Come si può individuare esattamente una cisterna?"
+    },
+    {
+      "ID": 536,
+      "riferimento": 22,
+      "idced": 11145,
+      "quesito": "Tra le indicazioni che devono obbligatoriamente comparire sulla targhetta di una cisterna, vi sono anche ..."
+    },
+    {
+      "ID": 537,
+      "riferimento": 22,
+      "idced": 10207,
+      "quesito": "Secondo l'ADR, un trattore per semirimorchi di massa complessiva maggiore di 16 t, destinato al traino di semirimorchi porta-container cisterna con capacità maggiore di 3000 litri, deve essere munito di…"
+    },
+    {
+      "ID": 538,
+      "riferimento": 22,
+      "idced": 10208,
+      "quesito": "Quali delle seguenti indicazioni devono comparire sui veicoli cisterna (escluso i veicoli porta cisterne smontabili)?"
+    },
+    {
+      "ID": 539,
+      "riferimento": 23,
+      "idced": 11101,
+      "quesito": "Che cosa è una cisterna fissa?"
+    },
+    {
+      "ID": 540,
+      "riferimento": 23,
+      "idced": 11102,
+      "quesito": "Gli elementi di struttura interni di una cisterna sono:"
+    },
+    {
+      "ID": 541,
+      "riferimento": 23,
+      "idced": 11103,
+      "quesito": "Che cos'è un diaframma aperto, o diaframma frangiflutti o paratia di una cisterna?"
+    },
+    {
+      "ID": 542,
+      "riferimento": 23,
+      "idced": 11104,
+      "quesito": "Che cos'è un diaframma chiuso, o diaframma stagno di una cisterna?"
+    },
+    {
+      "ID": 543,
+      "riferimento": 23,
+      "idced": 11105,
+      "quesito": "Quale è la sezione di una cisterna che determina minore stabilità durante la circolazione?"
+    },
+    {
+      "ID": 544,
+      "riferimento": 23,
+      "idced": 11106,
+      "quesito": "La suddivisione di una cisterna in scomparti avviene per mezzo ...."
+    },
+    {
+      "ID": 545,
+      "riferimento": 23,
+      "idced": 11107,
+      "quesito": "La pressione di esercizio di una cisterna fissa ..."
+    },
+    {
+      "ID": 546,
+      "riferimento": 23,
+      "idced": 11108,
+      "quesito": "Fanno parte dell'equipaggiamento di servizio di una cisterna fissa ..."
+    },
+    {
+      "ID": 547,
+      "riferimento": 23,
+      "idced": 11109,
+      "quesito": "La presenza di almeno un passo d'uomo è"
+    },
+    {
+      "ID": 548,
+      "riferimento": 23,
+      "idced": 11110,
+      "quesito": "Quanti passi d'uomo sono obbligatori per una cisterna a 3 scomparti di cui uno con 1 diaframma frangiflutti?"
+    },
+    {
+      "ID": 549,
+      "riferimento": 23,
+      "idced": 11111,
+      "quesito": "I coperchi dei passi d'uomo e/o delle bocche di lavaggio possono rimanere aperti ..."
+    },
+    {
+      "ID": 550,
+      "riferimento": 23,
+      "idced": 11112,
+      "quesito": "Una valvola (fase liquida) di diametro nominale 80 mm, posta nella parte superiore della cisterna ..."
+    },
+    {
+      "ID": 551,
+      "riferimento": 23,
+      "idced": 11113,
+      "quesito": "Una valvola (fase liquida) di diametro nominale 80 mm collegata ad un tubo pescante (cioè munita inferiormente di tubo pescante) ..."
+    },
+    {
+      "ID": 552,
+      "riferimento": 23,
+      "idced": 11114,
+      "quesito": "Una valvola (fase gas) di diametro nominale compreso tra 25 mm e 40 mm posta nella parte superiore della cisterna ..."
+    },
+    {
+      "ID": 553,
+      "riferimento": 23,
+      "idced": 11115,
+      "quesito": "Una valvola (fase gas) di diametro nominale compreso tra 25 mm e 40 mm posta nella parte superiore della cisterna ..."
+    },
+    {
+      "ID": 554,
+      "riferimento": 23,
+      "idced": 11116,
+      "quesito": "Il dispositivo di aerazione o di ventilazione ..."
+    },
+    {
+      "ID": 555,
+      "riferimento": 23,
+      "idced": 11117,
+      "quesito": "Il dispositivo di ventilazione o aerazione ..."
+    },
+    {
+      "ID": 556,
+      "riferimento": 23,
+      "idced": 11118,
+      "quesito": "Il dispositivo di aerazione o di ventilazione ..."
+    },
+    {
+      "ID": 557,
+      "riferimento": 23,
+      "idced": 11119,
+      "quesito": "Il dispositivo di ventilazione o aerazione ..."
+    },
+    {
+      "ID": 558,
+      "riferimento": 23,
+      "idced": 11120,
+      "quesito": "La valvola di sicurezza ..."
+    },
+    {
+      "ID": 559,
+      "riferimento": 23,
+      "idced": 11121,
+      "quesito": "La valvola di sicurezza ..."
+    },
+    {
+      "ID": 560,
+      "riferimento": 23,
+      "idced": 11122,
+      "quesito": "Il disco di rottura ..."
+    },
+    {
+      "ID": 561,
+      "riferimento": 23,
+      "idced": 11123,
+      "quesito": "La valvola di fondo ..."
+    },
+    {
+      "ID": 562,
+      "riferimento": 23,
+      "idced": 11124,
+      "quesito": "La valvola di fondo ..."
+    },
+    {
+      "ID": 563,
+      "riferimento": 23,
+      "idced": 11125,
+      "quesito": "La valvola di fondo ..."
+    },
+    {
+      "ID": 564,
+      "riferimento": 23,
+      "idced": 11126,
+      "quesito": "La valvola di fondo ..."
+    },
+    {
+      "ID": 565,
+      "riferimento": 23,
+      "idced": 11127,
+      "quesito": "Come può essere comandata l'apertura delle valvole di fondo?"
+    },
+    {
+      "ID": 566,
+      "riferimento": 23,
+      "idced": 11128,
+      "quesito": "La valvola di scarico ..."
+    },
+    {
+      "ID": 567,
+      "riferimento": 23,
+      "idced": 11129,
+      "quesito": "La valvola di scarico posta in basso e all'estremità della tubazione di scarico …"
+    },
+    {
+      "ID": 568,
+      "riferimento": 23,
+      "idced": 11130,
+      "quesito": "Il tappo cieco o flangia cieca sulla valvola di scarico ..."
+    },
+    {
+      "ID": 569,
+      "riferimento": 23,
+      "idced": 11131,
+      "quesito": "Lo strato di isolamento termico (coibentazione) ..."
+    },
+    {
+      "ID": 570,
+      "riferimento": 23,
+      "idced": 11132,
+      "quesito": "I sistemi di riscaldamento delle cisterne ..."
+    },
+    {
+      "ID": 571,
+      "riferimento": 23,
+      "idced": 11133,
+      "quesito": "Gli strumenti di controllo che generalmente vengono posti sulle cisterne, possono essere:"
+    },
+    {
+      "ID": 572,
+      "riferimento": 23,
+      "idced": 11134,
+      "quesito": "Le protezioni antinfortunistiche contro la caduta dall'alto sui veicoli cisterna ..."
+    },
+    {
+      "ID": 573,
+      "riferimento": 23,
+      "idced": 11135,
+      "quesito": "La messa a terra ..."
+    },
+    {
+      "ID": 574,
+      "riferimento": 23,
+      "idced": 11136,
+      "quesito": "La messa a terra ..."
+    },
+    {
+      "ID": 575,
+      "riferimento": 23,
+      "idced": 11321,
+      "quesito": "Cosa significa il numero '6' quale prima cifra del numero d'identificazione del pericolo ?"
+    },
+    {
+      "ID": 576,
+      "riferimento": 23,
+      "idced": 11322,
+      "quesito": "Che significato ha il numero del pericolo 66?"
+    },
+    {
+      "ID": 577,
+      "riferimento": 23,
+      "idced": 11323,
+      "quesito": "Cosa significa il numero '8' quale prima cifra del numero d'identificazione del pericolo ?"
+    },
+    {
+      "ID": 578,
+      "riferimento": 23,
+      "idced": 11324,
+      "quesito": "Che significato ha una 'X' posta prima del numero di identificazione del pericolo ?"
+    },
+    {
+      "ID": 579,
+      "riferimento": 23,
+      "idced": 11325,
+      "quesito": "Che significato ha il numero del pericolo X338?"
+    },
+    {
+      "ID": 580,
+      "riferimento": 23,
+      "idced": 11326,
+      "quesito": "Che significato ha il numero del pericolo 663?"
+    },
+    {
+      "ID": 581,
+      "riferimento": 23,
+      "idced": 11327,
+      "quesito": "Che significato ha il numero del pericolo 883?"
+    },
+    {
+      "ID": 582,
+      "riferimento": 23,
+      "idced": 11328,
+      "quesito": "Che significato ha il numero del pericolo 90?"
+    },
+    {
+      "ID": 583,
+      "riferimento": 23,
+      "idced": 11315,
+      "quesito": "Che significato ha il numero del pericolo 23?"
+    },
+    {
+      "ID": 584,
+      "riferimento": 23,
+      "idced": 11316,
+      "quesito": "Cosa significa il numero '3' quale prima cifra del numero d'identificazione del pericolo ?"
+    },
+    {
+      "ID": 585,
+      "riferimento": 23,
+      "idced": 11317,
+      "quesito": "Cosa significa il numero di pericolo 30?"
+    },
+    {
+      "ID": 586,
+      "riferimento": 23,
+      "idced": 11318,
+      "quesito": "Che significato ha il numero di pericolo 33?"
+    },
+    {
+      "ID": 587,
+      "riferimento": 23,
+      "idced": 11319,
+      "quesito": "Che significato ha il numero del pericolo 40?"
+    },
+    {
+      "ID": 588,
+      "riferimento": 23,
+      "idced": 11320,
+      "quesito": "Cosa significa il numero '5' quale prima cifra del numero d'identificazione del pericolo ?"
+    },
+    {
+      "ID": 589,
+      "riferimento": 23,
+      "idced": 11343,
+      "quesito": "Un trattore + semirimorchio cisterna con 2 scomparti ha carichi il 1°scomparto con la materia A) e il 2°scomparto è vuoto bonificato: con quali pannelli di segnalazione arancio sarà segnalato?"
+    },
+    {
+      "ID": 590,
+      "riferimento": 23,
+      "idced": 11344,
+      "quesito": "Un trattore + semirimorchio cisterna con 2 scomparti ha carichi il 1°scomparto con la materia A) e il 2°scomparto con la materia B): con quali pannelli di segnalazione arancio sarà segnalato?"
+    },
+    {
+      "ID": 591,
+      "riferimento": 23,
+      "idced": 11345,
+      "quesito": "Un trattore + semirimorchio cisterna con 3 scomparti ha carico il 2°scomparto con la materia A) e il 1°+3° scomparto sono vuoti bonificati: con quali pannelli di segnalazione arancio sarà segnalato?"
+    },
+    {
+      "ID": 592,
+      "riferimento": 23,
+      "idced": 11346,
+      "quesito": "Un trattore + semirimorchio cisterna con 3 scomparti ha carichi il 1° e il 3°scomparto con materia A) e B), il 2°scomparto è vuoto bonificato: con quali pannelli di segnalazione arancio sarà segnalato?"
+    },
+    {
+      "ID": 593,
+      "riferimento": 23,
+      "idced": 11347,
+      "quesito": "Un trattore + semirimorchio cisterna con 3 scomparti, ha carichi il 1°- 2°-3° scomparto rispettivamente con materie A) - B) - C): con quali pannelli di segnalazione arancio sarà segnalato?"
+    },
+    {
+      "ID": 594,
+      "riferimento": 23,
+      "idced": 11348,
+      "quesito": "Un autotreno con 2 cisterne monoscomparto ha carichi sia la motrice che il rimorchio con la materia A): con quali pannelli di segnalazione arancio sarà segnalato?"
+    },
+    {
+      "ID": 595,
+      "riferimento": 23,
+      "idced": 11349,
+      "quesito": "Un autotreno con 2 cisterne monoscomparto ha caricato la motrice con materia A) e il rimorchio con materia B): con quali pannelli di segnalazione arancio sarà segnalato?"
+    },
+    {
+      "ID": 596,
+      "riferimento": 23,
+      "idced": 11350,
+      "quesito": "La placcatura dei veicoli con cisterna fissa monoscomparto può essere costituita da:"
+    },
+    {
+      "ID": 597,
+      "riferimento": 23,
+      "idced": 21002,
+      "quesito": "I tipi di imballaggio generalmente utilizzati per il trasporto di materie esplosive sono:"
+    },
+    {
+      "ID": 598,
+      "riferimento": 23,
+      "idced": 21003,
+      "quesito": "Quali sono le caratteristiche principali riguardanti gli imballaggi della classe 1:"
+    },
+    {
+      "ID": 599,
+      "riferimento": 23,
+      "idced": 21004,
+      "quesito": "Cosa s'intende per sovrimballaggio nell'ambito della classe 1?"
+    },
+    {
+      "ID": 600,
+      "riferimento": 23,
+      "idced": 21005,
+      "quesito": "Gli imballaggi vuoti che hanno contenuto materie o oggetti esplosivi:"
+    },
+    {
+      "ID": 601,
+      "riferimento": 23,
+      "idced": 22017,
+      "quesito": "Secondo l'ADR, un container di materie della classe 1 ..."
+    },
+    {
+      "ID": 602,
+      "riferimento": 23,
+      "idced": 22018,
+      "quesito": "Di quali equipaggiamenti diversi ADR, devono essere provviste le unità di trasporto della classe 1?"
+    },
+    {
+      "ID": 603,
+      "riferimento": 23,
+      "idced": 22019,
+      "quesito": "Come devono essere segnalati gli autoveicoli trasportanti merci della classe 1?"
+    },
+    {
+      "ID": 604,
+      "riferimento": 23,
+      "idced": 22020,
+      "quesito": "Come deve essere segnalata un'unità di trasporto costituita da un autoveicolo con container carico di colli della classe 1?"
+    },
+    {
+      "ID": 605,
+      "riferimento": 23,
+      "idced": 22021,
+      "quesito": "Un autoveicolo viaggia a carico completo con materia della classe 1, come sarà segnalato?"
+    },
+    {
+      "ID": 606,
+      "riferimento": 23,
+      "idced": 22022,
+      "quesito": "Come deve essere segnalato un container trasportante (su strada) merci esplosive in colli?"
+    },
+    {
+      "ID": 607,
+      "riferimento": 23,
+      "idced": 11329,
+      "quesito": "Di quanti pannelli di segnalazione arancio deve essere munito un autoveicolo con cisterna monoscomparto?"
+    },
+    {
+      "ID": 608,
+      "riferimento": 23,
+      "idced": 11330,
+      "quesito": "Un trattore + semirimorchio con cisterna monoscomparto, di quanti pannelli di segnalazione arancio deve essere munito?"
+    },
+    {
+      "ID": 609,
+      "riferimento": 23,
+      "idced": 11331,
+      "quesito": "Di quanti pannelli di segnalazione arancio deve essere munito un autoveicolo con cisterna a 2 scomparti, tutti e due carichi con 2 materie diverse?"
+    },
+    {
+      "ID": 610,
+      "riferimento": 23,
+      "idced": 11332,
+      "quesito": "Di quanti pannelli di segnalazione arancio deve essere munito un autoveicolo con cisterna a 3 scomparti, tutti e tre carichi con 3 materie diverse?"
+    },
+    {
+      "ID": 611,
+      "riferimento": 23,
+      "idced": 11333,
+      "quesito": "Di quanti pannelli di segnalazione arancio deve essere munito un trattore + semirimorchio con cisterna a 3 scomparti, tutti e tre carichi con 3 materie diverse?"
+    },
+    {
+      "ID": 612,
+      "riferimento": 23,
+      "idced": 11334,
+      "quesito": "Una unità di trasporto (trattore con semirimorchio cisterna) a più scompartimenti per trasporto esclusivo di carburanti con n. ONU 1202 gasolio, 1203 benzina, 1223 cherosene:"
+    },
+    {
+      "ID": 613,
+      "riferimento": 23,
+      "idced": 11335,
+      "quesito": "I veicoli cisterna a più scomparti, trasportanti 2 o più carburanti con n. ONU 1202 gasolio, 1203 benzina, 1223 cherosene, ma senza nessun altra materia pericolosa:"
+    },
+    {
+      "ID": 614,
+      "riferimento": 23,
+      "idced": 11336,
+      "quesito": "I container cisterna devono essere muniti di pannelli di segnalazione arancio?"
+    },
+    {
+      "ID": 615,
+      "riferimento": 23,
+      "idced": 11337,
+      "quesito": "Di quanti pannelli di segnalazione arancio deve essere munito un autoveicolo con container cisterna monoscomparto carico?"
+    },
+    {
+      "ID": 616,
+      "riferimento": 23,
+      "idced": 11338,
+      "quesito": "Di quanti pannelli di segnalazione arancio deve essere munito un autoveicolo cisterna a 2 scomparti carico interamente con la materia A)"
+    },
+    {
+      "ID": 617,
+      "riferimento": 23,
+      "idced": 11339,
+      "quesito": "Un autoveicolo cisterna con 2 scomparti ha carichi il 1°scomparto con la materia A), e il 2°scomparto è vuoto bonificato: con quali pannelli di segnalazione arancio sarà segnalato?"
+    },
+    {
+      "ID": 618,
+      "riferimento": 23,
+      "idced": 11340,
+      "quesito": "Un autoveicolo cisterna con 2 scomparti ha carichi il 1°scomparto con la materia A) e il 2°scomparto con la materia B): con quali pannelli di segnalazione arancio sarà segnalato?"
+    },
+    {
+      "ID": 619,
+      "riferimento": 23,
+      "idced": 11341,
+      "quesito": "Un autoveicolo cisterna con 3 scomparti ha carichi il 1° e 3° scomparto con la materia A), e il 2°scomparto è vuoto bonificato: con quali pannelli di segnalazione arancio sarà segnalato?"
+    },
+    {
+      "ID": 620,
+      "riferimento": 23,
+      "idced": 11342,
+      "quesito": "Un autoveicolo cisterna con 3 scomparti ha carichi il 1° e 3° scomparto con la materia A), e il 2° scomparto con la materia B): con quali pannelli di segnalazione arancio sarà segnalato?"
+    },
+    {
+      "ID": 621,
+      "riferimento": 23,
+      "idced": 13027,
+      "quesito": "Durante lo scarico a cielo aperto, dall'alto a mezzo pompa di una cisterna il conducente..."
+    },
+    {
+      "ID": 622,
+      "riferimento": 23,
+      "idced": 13028,
+      "quesito": "Durante lo scarico di una cisterna dall'alto sottopressione il conducente ..."
+    },
+    {
+      "ID": 623,
+      "riferimento": 23,
+      "idced": 13029,
+      "quesito": "Il carico o lo scarico di ossigeno liquido (gas comburente) ..."
+    },
+    {
+      "ID": 624,
+      "riferimento": 23,
+      "idced": 13030,
+      "quesito": "In caso di eccessivo riempimento di un serbatoio fisso (di stoccaggio del cliente) con un gas liquefatto infiammabile, bisogna..."
+    },
+    {
+      "ID": 625,
+      "riferimento": 23,
+      "idced": 13031,
+      "quesito": "La bonifica (lavaggio e degasaggio) delle cisterne ..."
+    },
+    {
+      "ID": 626,
+      "riferimento": 23,
+      "idced": 13032,
+      "quesito": "Quando è necessario bonificare (lavare e degassare) le cisterne?"
+    },
+    {
+      "ID": 627,
+      "riferimento": 29,
+      "idced": 14001,
+      "quesito": "Quali sono le maggiori cause d'instabilità dei veicoli cisterna?"
+    },
+    {
+      "ID": 628,
+      "riferimento": 29,
+      "idced": 14002,
+      "quesito": "Quali sono le cause del movimento del liquido durante la marcia di un veicolo cisterna?"
+    },
+    {
+      "ID": 629,
+      "riferimento": 29,
+      "idced": 14003,
+      "quesito": "In quali situazioni la stabilità dei veicoli cisterna è maggiormente influenzata dal movimento del liquido?"
+    },
+    {
+      "ID": 630,
+      "riferimento": 29,
+      "idced": 14004,
+      "quesito": "Come si comportano i liquidi all'interno di una cisterna?"
+    },
+    {
+      "ID": 631,
+      "riferimento": 29,
+      "idced": 11146,
+      "quesito": "Osservando le informazioni riportate sulla targhetta di una cisterna, un buon conducente è in grado di capire ..."
+    },
+    {
+      "ID": 632,
+      "riferimento": 29,
+      "idced": 11147,
+      "quesito": "Tra le indicazioni che possono essere riportate sulla targhetta di una cisterna fissa (veicolo-cisterna), vi sono anche ..."
+    },
+    {
+      "ID": 633,
+      "riferimento": 29,
+      "idced": 11148,
+      "quesito": "Tra le indicazioni che devono obbligatoriamente comparire su un veicolo cisterna, vi sono anche ..."
+    },
+    {
+      "ID": 634,
+      "riferimento": 29,
+      "idced": 11149,
+      "quesito": "Tra le indicazioni che devono obbligatoriamente comparire sulla targhetta di un container cisterna, vi sono anche ..."
+    },
+    {
+      "ID": 635,
+      "riferimento": 29,
+      "idced": 11150,
+      "quesito": "Tra le indicazioni che devono obbligatoriamente comparire sulla targhetta di una cisterna fissa (veicolo cisterna), vi sono anche ..."
+    },
+    {
+      "ID": 636,
+      "riferimento": 29,
+      "idced": 11151,
+      "quesito": "Osservando le informazioni contenute nella targhetta di un container cisterna, un buon conducente è in grado di capire ..."
+    },
+    {
+      "ID": 637,
+      "riferimento": 29,
+      "idced": 11152,
+      "quesito": "Tra le indicazioni che devono obbligatoriamente comparire su un container cisterna, vi sono anche:"
+    },
+    {
+      "ID": 638,
+      "riferimento": 29,
+      "idced": 11153,
+      "quesito": "Le cisterne ed i container cisterna per merci pericolose devono essere sottoposti a prove periodiche?"
+    },
+    {
+      "ID": 639,
+      "riferimento": 29,
+      "idced": 11154,
+      "quesito": "A quali intervalli devono essere effettuate le prove periodiche delle cisterne fisse (veicoli cisterna)?"
+    },
+    {
+      "ID": 640,
+      "riferimento": 29,
+      "idced": 11155,
+      "quesito": "La prova triennale della cisterna fissa ..."
+    },
+    {
+      "ID": 641,
+      "riferimento": 29,
+      "idced": 11156,
+      "quesito": "La prova sessennale della cisterna fissa ..."
+    },
+    {
+      "ID": 642,
+      "riferimento": 29,
+      "idced": 11157,
+      "quesito": "A quali intervalli devono essere provati i container cisterna?"
+    },
+    {
+      "ID": 643,
+      "riferimento": 29,
+      "idced": 11158,
+      "quesito": "La prova intermedia (30 mesi) dei container cisterna ..."
+    },
+    {
+      "ID": 644,
+      "riferimento": 29,
+      "idced": 11159,
+      "quesito": "La prova quinquennale dei container cisterna ..."
+    },
+    {
+      "ID": 645,
+      "riferimento": 29,
+      "idced": 11160,
+      "quesito": "I materiali con cui vengono costruite le cisterne possono essere:"
+    },
+    {
+      "ID": 646,
+      "riferimento": 29,
+      "idced": 11161,
+      "quesito": "Le cisterne per trasporto prodotti petroliferi (carburanti), aventi sezione ellittica o policentrica ..."
+    },
+    {
+      "ID": 647,
+      "riferimento": 29,
+      "idced": 11162,
+      "quesito": "Che cosa caratterizza una cisterna 'atmosferica' ?"
+    },
+    {
+      "ID": 648,
+      "riferimento": 29,
+      "idced": 11163,
+      "quesito": "La prova quinquennale dei container cisterna ..."
+    },
+    {
+      "ID": 649,
+      "riferimento": 29,
+      "idced": 11164,
+      "quesito": "Per trasportare alcune materie altamente corrosive per i metalli (per esempio acido cloridrico - acido fluoridrico- cloruro ferrico), occorre ..."
+    },
+    {
+      "ID": 650,
+      "riferimento": 24,
+      "idced": 11201,
+      "quesito": "Le cisterne fisse per trasporto di gas liquefatti ..."
+    },
+    {
+      "ID": 651,
+      "riferimento": 24,
+      "idced": 11202,
+      "quesito": "Le cisterne fisse per trasporto di gas liquefatti ..."
+    },
+    {
+      "ID": 652,
+      "riferimento": 24,
+      "idced": 11203,
+      "quesito": "Le cisterne fisse per trasporto di gas liquefatti ..."
+    },
+    {
+      "ID": 653,
+      "riferimento": 24,
+      "idced": 11204,
+      "quesito": "Quali dispositivi per il controllo dei gradi di riempimento, possono equipaggiare le cisterne per trasporto di gas liquefatti?"
+    },
+    {
+      "ID": 654,
+      "riferimento": 24,
+      "idced": 11205,
+      "quesito": "Quali strumenti possono equipaggiare le cisterne per trasporto di gas liquefatti?"
+    },
+    {
+      "ID": 655,
+      "riferimento": 24,
+      "idced": 11206,
+      "quesito": "Come deve essere segnalato un veicolo cisterna per gas liquefatti?"
+    },
+    {
+      "ID": 656,
+      "riferimento": 24,
+      "idced": 11207,
+      "quesito": "In genere quali sono le caratteristiche delle cisterne per il trasporto di gas liquefatti fortemente refrigerati?"
+    },
+    {
+      "ID": 657,
+      "riferimento": 24,
+      "idced": 11208,
+      "quesito": "Il superamento del grado di riempimento delle cisterne per gas liquefatti"
+    },
+    {
+      "ID": 658,
+      "riferimento": 24,
+      "idced": 11209,
+      "quesito": "Il superamento della pressione massima di esercizio di una cisterna per gas"
+    },
+    {
+      "ID": 659,
+      "riferimento": 25,
+      "idced": 11301,
+      "quesito": "Le segnalazioni di pericolo (pannelli di segnalazione arancio e placche - grandi etichette di 25 cm di lato) dei veicoli cisterna ..."
+    },
+    {
+      "ID": 660,
+      "riferimento": 25,
+      "idced": 11302,
+      "quesito": "Una unità di trasporto con cisterna ..."
+    },
+    {
+      "ID": 661,
+      "riferimento": 25,
+      "idced": 11303,
+      "quesito": "La segnalazione dei veicoli cisterna può avvenire:"
+    },
+    {
+      "ID": 662,
+      "riferimento": 25,
+      "idced": 11304,
+      "quesito": "La segnalazione dei veicoli cisterna può avvenire:"
+    },
+    {
+      "ID": 663,
+      "riferimento": 25,
+      "idced": 11305,
+      "quesito": "Quanti gruppi di numeri contiene il pannello di segnalazione arancio?"
+    },
+    {
+      "ID": 664,
+      "riferimento": 25,
+      "idced": 11306,
+      "quesito": "Le cifre contenute nel pannello di segnalazione arancio identificano:"
+    },
+    {
+      "ID": 665,
+      "riferimento": 25,
+      "idced": 11307,
+      "quesito": "Che cosa identificano le cifre contenute nel pannello di segnalazione arancio?"
+    },
+    {
+      "ID": 666,
+      "riferimento": 25,
+      "idced": 11308,
+      "quesito": "Quale è l'utilità del numero superiore del pannello di segnalazione arancio?"
+    },
+    {
+      "ID": 667,
+      "riferimento": 25,
+      "idced": 11309,
+      "quesito": "Cosa segnala la prima cifra del numero superiore del pannello di segnalazione arancio?"
+    },
+    {
+      "ID": 668,
+      "riferimento": 25,
+      "idced": 11310,
+      "quesito": "Quale è l'utilità del numero inferiore del pannello di segnalazione arancio?"
+    },
+    {
+      "ID": 669,
+      "riferimento": 25,
+      "idced": 11311,
+      "quesito": "Le cifre che costituiscono il numero d'identificazione del pericolo, in linea generale indicano:"
+    },
+    {
+      "ID": 670,
+      "riferimento": 25,
+      "idced": 11312,
+      "quesito": "Nel numero d'identificazione del pericolo, il raddoppio di una cifra indica:"
+    },
+    {
+      "ID": 671,
+      "riferimento": 25,
+      "idced": 11313,
+      "quesito": "Nel numero d'identificazione del pericolo, la cifra zero:"
+    },
+    {
+      "ID": 672,
+      "riferimento": 25,
+      "idced": 11314,
+      "quesito": "Cosa significa il numero '2' quale prima cifra del numero d'identificazione del pericolo ?"
+    },
+    {
+      "ID": 673,
+      "riferimento": 25,
+      "idced": 11351,
+      "quesito": "Le placche (grandi etichette di 25 cm di lato) ..."
+    },
+    {
+      "ID": 674,
+      "riferimento": 25,
+      "idced": 11352,
+      "quesito": "In quali casi si deve utilizzare il marchio di materie trasportate a caldo, rappresentato in figura n. 54?"
+    },
+    {
+      "ID": 675,
+      "riferimento": 25,
+      "idced": 11353,
+      "quesito": "Qualora sia dovuto, in quale posizione un veicolo cisterna deve esporre il marchio di materie trasportate a caldo, rappresentato in figura n.54?"
+    },
+    {
+      "ID": 676,
+      "riferimento": 25,
+      "idced": 11354,
+      "quesito": "Qualora sia dovuto, il marchio di forma triangolare di materie trasportate a caldo, rappresentato in figura n.54, deve essere applicato sui container cisterna ….:"
+    },
+    {
+      "ID": 677,
+      "riferimento": 26,
+      "idced": 12101,
+      "quesito": "I documenti di bordo (di un veicolo cisterna) specificatamente obbligatori per un trasporto internazionale di merci pericolose sono:"
+    },
+    {
+      "ID": 678,
+      "riferimento": 26,
+      "idced": 12102,
+      "quesito": "Il certificato d'approvazione ADR (cosiddetto 'barrato rosa') per i veicoli cisterna che trasportano merci pericolose ..."
+    },
+    {
+      "ID": 679,
+      "riferimento": 26,
+      "idced": 12103,
+      "quesito": "I documenti di bordo di un veicolo cisterna specificatamente obbligatori per il trasporto di merci pericolose sul territorio nazionale sono:"
+    },
+    {
+      "ID": 680,
+      "riferimento": 26,
+      "idced": 12104,
+      "quesito": "Quali indicazioni devono comparire sul documento di trasporto di veicoli cisterna, cisterne smontabili o container cisterna vuoti, non bonificati?"
+    },
+    {
+      "ID": 681,
+      "riferimento": 26,
+      "idced": 12105,
+      "quesito": "Durante i controlli relativi ai trasporti di merci pericolose, quali tra le seguenti sono considerate infrazioni gravi, perché possono pregiudicare la sicurezza?"
+    },
+    {
+      "ID": 682,
+      "riferimento": 26,
+      "idced": 12106,
+      "quesito": "Durante il viaggio di ritorno allo speditore di un veicolo cisterna vuoto non ripulito, occorre sempre un documento di trasporto?"
+    },
+    {
+      "ID": 683,
+      "riferimento": 26,
+      "idced": 12107,
+      "quesito": "Cosa deve riportare Il certificato d'approvazione ADR (cosiddetto 'barrato rosa') di un veicolo cisterna di capacità superiore a 1.000 litri che trasporta merci pericolose ADR ?"
+    },
+    {
+      "ID": 684,
+      "riferimento": 26,
+      "idced": 12108,
+      "quesito": "Una unità di trasporto (trattore con semirimorchio cisterna) trasportante merci pericolose, di capacità superiore a 1.000 litri, deve essere munito di certificato d'approvazione ADR (cosiddetto 'barrato rosa') ?"
+    },
+    {
+      "ID": 685,
+      "riferimento": 26,
+      "idced": 12109,
+      "quesito": "Un autocarro con rimorchio trasportante cisterne contenenti merci pericolose, di capacità superiore a 1.000 litri, deve essere munito di certificato d'approvazione ADR (cosiddetto 'barrato rosa') ?"
+    },
+    {
+      "ID": 686,
+      "riferimento": 27,
+      "idced": 12201,
+      "quesito": "Un veicolo cisterna trasportante merci pericolose ..."
+    },
+    {
+      "ID": 687,
+      "riferimento": 27,
+      "idced": 12202,
+      "quesito": "Un container cisterna trasportante merci pericolose ..."
+    },
+    {
+      "ID": 688,
+      "riferimento": 27,
+      "idced": 12203,
+      "quesito": "Durante un trasporto intermodale mare + strada …"
+    },
+    {
+      "ID": 689,
+      "riferimento": 27,
+      "idced": 12204,
+      "quesito": "Se un semirimorchio-cisterna viene separato dal suo trattore per essere caricato a bordo di una nave …"
+    },
+    {
+      "ID": 690,
+      "riferimento": 28,
+      "idced": 13001,
+      "quesito": "In una cisterna per merci pericolose, possono essere caricate:"
+    },
+    {
+      "ID": 691,
+      "riferimento": 28,
+      "idced": 13002,
+      "quesito": "Se a fine carico, vi rendete conto (leggendo il documento di trasporto datovi dal mittente) che la materia non può essere trasportata dal vostro veicolo cisterna, cosa fate?"
+    },
+    {
+      "ID": 692,
+      "riferimento": 28,
+      "idced": 13003,
+      "quesito": "Quali sono gli obblighi del conducente di un veicolo cisterna al carico?"
+    },
+    {
+      "ID": 693,
+      "riferimento": 28,
+      "idced": 13004,
+      "quesito": "Quali sono gli obblighi del conducente di un veicolo cisterna al carico?"
+    },
+    {
+      "ID": 694,
+      "riferimento": 28,
+      "idced": 13005,
+      "quesito": "Quali sono i doveri del conducente al carico di un veicolo cisterna?"
+    },
+    {
+      "ID": 695,
+      "riferimento": 28,
+      "idced": 13006,
+      "quesito": "Precauzioni/comportamento generale del conducente di veicoli cisterna durante il carico:"
+    },
+    {
+      "ID": 696,
+      "riferimento": 28,
+      "idced": 13007,
+      "quesito": "Quali delle seguenti precauzioni/comportamenti del conducente di veicoli cisterna vi sembrano corretti, durante il carico?"
+    },
+    {
+      "ID": 697,
+      "riferimento": 28,
+      "idced": 14005,
+      "quesito": "Quali conseguenze si hanno dal comportamento dei liquidi all'interno di una cisterna durante le frenate in curva?"
+    },
+    {
+      "ID": 698,
+      "riferimento": 28,
+      "idced": 14006,
+      "quesito": "Per diminuire le forze che causano l'instabilità dei veicoli cisterna occorre:"
+    },
+    {
+      "ID": 699,
+      "riferimento": 28,
+      "idced": 14007,
+      "quesito": "Il conducente può causare i movimenti del liquido in un veicolo cisterna o un container cisterna?"
+    },
+    {
+      "ID": 700,
+      "riferimento": 28,
+      "idced": 14008,
+      "quesito": "Percorrendo una curva stretta con un veicolo cisterna, quale sarà la vostra velocità in funzione della quantità di liquido?"
+    },
+    {
+      "ID": 701,
+      "riferimento": 28,
+      "idced": 14009,
+      "quesito": "Quale tipo di cisterna è più sicura rispetto al pericolo di ribaltamento in curva?"
+    },
+    {
+      "ID": 702,
+      "riferimento": 28,
+      "idced": 14010,
+      "quesito": "Quale comportamento deve tenere il conducente al carico di merci pericolose in cisterna?"
+    },
+    {
+      "ID": 703,
+      "riferimento": 28,
+      "idced": 14011,
+      "quesito": "Nel caso di perdite da un veicolo cisterna, oltre alle misure generali, quali operazioni tecniche deve mettere in atto il conducente?"
+    },
+    {
+      "ID": 704,
+      "riferimento": 28,
+      "idced": 14012,
+      "quesito": "In caso di perdite da un veicolo cisterna, oltre alle misure generali, quali operazioni tecniche deve mettere in atto il conducente?"
+    },
+    {
+      "ID": 705,
+      "riferimento": 30,
+      "idced": 20001,
+      "quesito": "Cosa s'intende per materia esplosiva?"
+    },
+    {
+      "ID": 706,
+      "riferimento": 30,
+      "idced": 20002,
+      "quesito": "Cosa s'intende per materia o oggetto pirotecnico?"
+    },
+    {
+      "ID": 707,
+      "riferimento": 30,
+      "idced": 13008,
+      "quesito": "Quali delle seguenti precauzioni/comportamenti del conducente di veicoli cisterna vi sembrano corretti, durante il carico?"
+    },
+    {
+      "ID": 708,
+      "riferimento": 30,
+      "idced": 13009,
+      "quesito": "Che funzione compie lo staccabatterie, quando viene azionato?"
+    },
+    {
+      "ID": 709,
+      "riferimento": 30,
+      "idced": 13010,
+      "quesito": "Durante il carico a cielo aperto dal passo d'uomo ..."
+    },
+    {
+      "ID": 710,
+      "riferimento": 30,
+      "idced": 13011,
+      "quesito": "Durante il carico dall'alto in ciclo chiuso, il conducente ..."
+    },
+    {
+      "ID": 711,
+      "riferimento": 30,
+      "idced": 13012,
+      "quesito": "Durante il carico dal basso in ciclo chiuso, il conducente..."
+    },
+    {
+      "ID": 712,
+      "riferimento": 30,
+      "idced": 13013,
+      "quesito": "Durante il carico di un gas liquefatto, come può il conducente controllare / determinare la quantità caricata?"
+    },
+    {
+      "ID": 713,
+      "riferimento": 30,
+      "idced": 13014,
+      "quesito": "Quali delle seguenti precauzioni/comportamenti del conducente di veicoli cisterna allo scarico vi sembrano corretti?"
+    },
+    {
+      "ID": 714,
+      "riferimento": 30,
+      "idced": 13015,
+      "quesito": "Quali delle seguenti precauzioni/comportamenti deve adottare il conducente di veicoli cisterna allo scarico?"
+    },
+    {
+      "ID": 715,
+      "riferimento": 30,
+      "idced": 13016,
+      "quesito": "Le precauzioni/comportamenti del conducente di veicoli cisterna allo scarico sono:"
+    },
+    {
+      "ID": 716,
+      "riferimento": 30,
+      "idced": 13017,
+      "quesito": "Le precauzioni/comportamenti del conducente di veicoli cisterna allo scarico sono:"
+    },
+    {
+      "ID": 717,
+      "riferimento": 30,
+      "idced": 13018,
+      "quesito": "Le precauzioni/comportamenti del conducente di veicoli cisterna allo scarico sono:"
+    },
+    {
+      "ID": 718,
+      "riferimento": 30,
+      "idced": 13019,
+      "quesito": "Quali precauzioni/comportamenti deve osservare il conducente di un autoarticolato cisterna (3 scomparti) allo scarico in tre località differenti?"
+    },
+    {
+      "ID": 719,
+      "riferimento": 30,
+      "idced": 13020,
+      "quesito": "Dovendo utilizzare il tubo flessibile in dotazione all'unità di trasporto ..."
+    },
+    {
+      "ID": 720,
+      "riferimento": 30,
+      "idced": 13021,
+      "quesito": "Quando un tubo flessibile è danneggiato ..."
+    },
+    {
+      "ID": 721,
+      "riferimento": 30,
+      "idced": 13022,
+      "quesito": "Lo scarico in ciclo chiuso o circuito chiuso ..."
+    },
+    {
+      "ID": 722,
+      "riferimento": 30,
+      "idced": 13023,
+      "quesito": "Alla fine dello scarico in ciclo chiuso di un veicolo cisterna ..."
+    },
+    {
+      "ID": 723,
+      "riferimento": 30,
+      "idced": 13024,
+      "quesito": "Lo scarico in ciclo chiuso ..."
+    },
+    {
+      "ID": 724,
+      "riferimento": 30,
+      "idced": 13025,
+      "quesito": "Durante lo scarico a cielo aperto e per gravità di una cisterna, il conducente …"
+    },
+    {
+      "ID": 725,
+      "riferimento": 30,
+      "idced": 13026,
+      "quesito": "Durante lo scarico a cielo aperto, dal basso e a mezzo pompa di una cisterna, il conducente ..."
+    },
+    {
+      "ID": 726,
+      "riferimento": 30,
+      "idced": 20003,
+      "quesito": "Che cosa sono gli oggetti esplosivi?"
+    },
+    {
+      "ID": 727,
+      "riferimento": 30,
+      "idced": 20004,
+      "quesito": "La classe 1 è ripartita:"
+    },
+    {
+      "ID": 728,
+      "riferimento": 30,
+      "idced": 20005,
+      "quesito": "Quali materie ed oggetti esplosivi possono comportare il rischio di esplosione in massa?"
+    },
+    {
+      "ID": 729,
+      "riferimento": 30,
+      "idced": 20006,
+      "quesito": "Quali materie ed oggetti esplosivi possono comportare il rischio di proiezione di frammenti ma senza rischio di esplosione in massa?"
+    },
+    {
+      "ID": 730,
+      "riferimento": 30,
+      "idced": 20007,
+      "quesito": "Le materie e gli oggetti esplosivi della divisione 1.1"
+    },
+    {
+      "ID": 731,
+      "riferimento": 30,
+      "idced": 20008,
+      "quesito": "Le materie e gli oggetti esplosivi delle divisioni 1.2 e 1.3"
+    },
+    {
+      "ID": 732,
+      "riferimento": 30,
+      "idced": 20009,
+      "quesito": "Le materie e gli oggetti esplosivi della divisione 1.4"
+    },
+    {
+      "ID": 733,
+      "riferimento": 30,
+      "idced": 20010,
+      "quesito": "Le materie esplosive della divisione 1.5"
+    },
+    {
+      "ID": 734,
+      "riferimento": 30,
+      "idced": 20011,
+      "quesito": "Gli oggetti esplosivi della divisione 1.6"
+    },
+    {
+      "ID": 735,
+      "riferimento": 30,
+      "idced": 20012,
+      "quesito": "Tra i seguenti quale è l'ordine corretto di pericolosità delle differenti divisioni?"
+    },
+    {
+      "ID": 736,
+      "riferimento": 30,
+      "idced": 20013,
+      "quesito": "Il gruppo di compatibilità di una materia o oggetto esplosivo ..."
+    },
+    {
+      "ID": 737,
+      "riferimento": 30,
+      "idced": 20014,
+      "quesito": "Il codice di classificazione degli esplosivi ..."
+    },
+    {
+      "ID": 738,
+      "riferimento": 30,
+      "idced": 20015,
+      "quesito": "L'esplosione ..."
+    },
+    {
+      "ID": 739,
+      "riferimento": 30,
+      "idced": 20016,
+      "quesito": "In linea generale, quando può avvenire l'esplosione delle materie esplosive?"
+    },
+    {
+      "ID": 740,
+      "riferimento": 30,
+      "idced": 20017,
+      "quesito": "La combustione /esplosione di una materia esplosiva è ottenuta:"
+    },
+    {
+      "ID": 741,
+      "riferimento": 30,
+      "idced": 20018,
+      "quesito": "Come possono suddividersi gli esplosivi, in base ai loro diversi modi di esplodere?"
+    },
+    {
+      "ID": 742,
+      "riferimento": 30,
+      "idced": 20019,
+      "quesito": "Un esplosivo primario è:"
+    },
+    {
+      "ID": 743,
+      "riferimento": 30,
+      "idced": 20020,
+      "quesito": "Il punto di deflagrazione è:"
+    },
+    {
+      "ID": 744,
+      "riferimento": 30,
+      "idced": 20021,
+      "quesito": "La flemmatizzazione (diminuzione della sensibilità) di un esplosivo è ottenuta generalmente:"
+    },
+    {
+      "ID": 745,
+      "riferimento": 30,
+      "idced": 20022,
+      "quesito": "Perché sono pericolosi gli urti o gli sfregamenti delle materie e oggetti esplosivi?"
+    },
+    {
+      "ID": 746,
+      "riferimento": 30,
+      "idced": 20023,
+      "quesito": "Per prevenire una esplosione durante la movimentazione di materie della classe 1 occorre …"
+    },
+    {
+      "ID": 747,
+      "riferimento": 30,
+      "idced": 20024,
+      "quesito": "Perché sono pericolosi gli imballaggi vuoti (non bonificati) che hanno contenuto materie esplosive?"
+    },
+    {
+      "ID": 748,
+      "riferimento": 30,
+      "idced": 20025,
+      "quesito": "Le materie e oggetti della classe 1, devono essere trasportate/i …"
+    },
+    {
+      "ID": 749,
+      "riferimento": 31,
+      "idced": 21001,
+      "quesito": "Quali tipi di imballaggi possono essere utilizzati per il trasporto delle merci della classe 1?"
+    },
+    {
+      "ID": 750,
+      "riferimento": 31,
+      "idced": 22023,
+      "quesito": "Quali delle seguenti affermazioni riguardanti la segnalazione dei container carichi di colli della classe 1 vi sembrano corrette?"
+    },
+    {
+      "ID": 751,
+      "riferimento": 31,
+      "idced": 22024,
+      "quesito": "Se materie o oggetti esplosivi appartenenti a differenti divisioni (con differenti etichettatura) sono trasportate in una stessa unità di trasporto, quali etichette devono essere esposte?"
+    },
+    {
+      "ID": 752,
+      "riferimento": 31,
+      "idced": 22025,
+      "quesito": "Come deve essere segnalato un veicolo chiuso che viaggia a carico completo con merci della classe 1 aventi codice di classificazione 1.4G e 1.2C?"
+    },
+    {
+      "ID": 753,
+      "riferimento": 31,
+      "idced": 22026,
+      "quesito": "I documenti di bordo specificatamente obbligatori per un trasporto internazionale di merci esplosive sono:"
+    },
+    {
+      "ID": 754,
+      "riferimento": 31,
+      "idced": 21006,
+      "quesito": "Quali iscrizioni (segnalazioni) devono avere i colli di merci pericolose della classe 1 ADR?"
+    },
+    {
+      "ID": 755,
+      "riferimento": 31,
+      "idced": 21007,
+      "quesito": "Cosa devono contenere le etichette di pericolo dei colli di merci pericolose della classe 1 ADR?"
+    },
+    {
+      "ID": 756,
+      "riferimento": 31,
+      "idced": 21008,
+      "quesito": "Sui colli di merci pericolose della classe 1 ADR:"
+    },
+    {
+      "ID": 757,
+      "riferimento": 31,
+      "idced": 21009,
+      "quesito": "L'etichettatura dei colli di merci pericolose della classe 1 ADR ..."
+    },
+    {
+      "ID": 758,
+      "riferimento": 31,
+      "idced": 21010,
+      "quesito": "L'etichetta di pericolo delle materie o oggetti esplosivi appartenenti alle divisioni 1.1 - 1.2 - 1.3:"
+    },
+    {
+      "ID": 759,
+      "riferimento": 31,
+      "idced": 21011,
+      "quesito": "L'etichetta di pericolo delle materie o oggetti appartenenti alle divisioni 1.4 - 1.5 - 1.6:"
+    },
+    {
+      "ID": 760,
+      "riferimento": 31,
+      "idced": 21012,
+      "quesito": "Quali delle etichette rappresentate in 'figura' si riferiscono alle materie della classe 1 ?"
+    },
+    {
+      "ID": 761,
+      "riferimento": 31,
+      "idced": 21013,
+      "quesito": "L'etichetta di pericolo in figura n. 1 può indicare:"
+    },
+    {
+      "ID": 762,
+      "riferimento": 31,
+      "idced": 21014,
+      "quesito": "L'etichetta di pericolo in figura n. 2 può indicare:"
+    },
+    {
+      "ID": 763,
+      "riferimento": 31,
+      "idced": 21015,
+      "quesito": "L'etichetta di pericolo in figura n. 3 può indicare:"
+    },
+    {
+      "ID": 764,
+      "riferimento": 31,
+      "idced": 21016,
+      "quesito": "L'etichetta di pericolo in figura n. 4 può indicare:"
+    },
+    {
+      "ID": 765,
+      "riferimento": 31,
+      "idced": 21017,
+      "quesito": "Secondo l'ADR, il carico di materie della classe 1 con derrate alimentari o oggetti di consumo e alimenti per animali:"
+    },
+    {
+      "ID": 766,
+      "riferimento": 31,
+      "idced": 21018,
+      "quesito": "Secondo l'ADR, i divieti di carico in comune sullo stesso veicolo di colli appartenenti a divisioni differenti della classe 1 ..."
+    },
+    {
+      "ID": 767,
+      "riferimento": 31,
+      "idced": 21019,
+      "quesito": "Quando diversi colli muniti di etichette conformi alle figure n. 1, n. 2, n. 3 e n. 4 possono essere caricati in comune (contemporaneamente) sulla stessa unità di trasporto?"
+    },
+    {
+      "ID": 768,
+      "riferimento": 31,
+      "idced": 21020,
+      "quesito": "In generale, nel trasporto di merci della classe 1, esistono limitazioni delle quantità trasportate dalle unità di trasporto?"
+    },
+    {
+      "ID": 769,
+      "riferimento": 31,
+      "idced": 21021,
+      "quesito": "Le limitazioni delle quantità trasportate (limiti di carico utile) delle materie o oggetti esplosivi in una stessa unità di trasporto:"
+    },
+    {
+      "ID": 770,
+      "riferimento": 31,
+      "idced": 21022,
+      "quesito": "Quali sono le principali avvertenze che il conducente deve osservare quando stiva i colli esplosivi?"
+    },
+    {
+      "ID": 771,
+      "riferimento": 31,
+      "idced": 21023,
+      "quesito": "Il trasporto di materie e oggetti della classe 1 può avvalersi dell'esenzione parziale 1.1.3.6?"
+    },
+    {
+      "ID": 772,
+      "riferimento": 31,
+      "idced": 21024,
+      "quesito": "Nel caso di trasporto di materie e oggetti della classe 1 in esenzione parziale 1.1.3.6:"
+    },
+    {
+      "ID": 773,
+      "riferimento": 32,
+      "idced": 22001,
+      "quesito": "Secondo l'ADR, quali materie esplosive devono essere accettate al trasporto?"
+    },
+    {
+      "ID": 774,
+      "riferimento": 32,
+      "idced": 22002,
+      "quesito": "In quali modi possono essere trasportate le materie e oggetti esplosivi?"
+    },
+    {
+      "ID": 775,
+      "riferimento": 32,
+      "idced": 22003,
+      "quesito": "Quali materie ed oggetti della classe 1 trasportate in container per colli devono essere trasportate esclusivamente a carico completo?"
+    },
+    {
+      "ID": 776,
+      "riferimento": 32,
+      "idced": 22004,
+      "quesito": "Le unità di trasporto autorizzate (secondo l'ADR) al trasporto di materie e oggetti esplosivi sono:"
+    },
+    {
+      "ID": 777,
+      "riferimento": 32,
+      "idced": 22005,
+      "quesito": "Le unità di trasporto di tipo 'EX/II' :"
+    },
+    {
+      "ID": 778,
+      "riferimento": 32,
+      "idced": 22006,
+      "quesito": "Le unità di trasporto di tipo 'EX/II' devono essere munite :"
+    },
+    {
+      "ID": 779,
+      "riferimento": 32,
+      "idced": 22007,
+      "quesito": "Le unità di trasporto di tipo 'EX/III' :"
+    },
+    {
+      "ID": 780,
+      "riferimento": 32,
+      "idced": 22008,
+      "quesito": "I veicoli a motore di tipo 'EX/III' adibiti al trasporto di materie esplosive, devono essere muniti :"
+    },
+    {
+      "ID": 781,
+      "riferimento": 32,
+      "idced": 22009,
+      "quesito": "I veicoli a motore di tipo 'EX/III' adibiti al trasporto di materie esplosive, devono essere muniti :"
+    },
+    {
+      "ID": 782,
+      "riferimento": 32,
+      "idced": 22010,
+      "quesito": "I veicoli a motore di tipo 'EX/III' adibiti al trasporto di materie esplosive, devono essere equipaggiati :"
+    },
+    {
+      "ID": 783,
+      "riferimento": 32,
+      "idced": 22011,
+      "quesito": "I rimorchi o semirimorchi di tipo 'EX/III', adibiti al trasporto di materie esplosive, devono essere muniti :"
+    },
+    {
+      "ID": 784,
+      "riferimento": 32,
+      "idced": 22012,
+      "quesito": "I veicoli caricati con materie o oggetti esplosivi sotto i limiti di esenzione in quantità limitata per unità di trasporto (secondo 1.1.3.6 ADR) …."
+    },
+    {
+      "ID": 785,
+      "riferimento": 32,
+      "idced": 22013,
+      "quesito": "Un'unità di trasporto ADR per materie della classe 1, deve essere munita almeno dei seguenti mezzi antincendio:"
+    },
+    {
+      "ID": 786,
+      "riferimento": 32,
+      "idced": 22014,
+      "quesito": "Secondo l'ADR, un autoveicolo di massa complessiva maggiore di 16 t, che trasporta un container di materie della classe 1, deve essere munito:"
+    },
+    {
+      "ID": 787,
+      "riferimento": 32,
+      "idced": 22015,
+      "quesito": "Secondo l'ADR, un rimorchio o semirimorchio di massa complessiva maggiore di 10 t , destinato a trasportare container carichi di materie della classe 1, deve essere munito:"
+    },
+    {
+      "ID": 788,
+      "riferimento": 32,
+      "idced": 22016,
+      "quesito": "Secondo l'ADR, un trattore per semirimorchi di massa complessiva maggiore di 16 t, destinato al traino di semirimorchi porta-container contenenti materie della classe 1, deve essere munito:"
+    },
+    {
+      "ID": 789,
+      "riferimento": 32,
+      "idced": 30025,
+      "quesito": "Le radiazioni X e gamma ...."
+    },
+    {
+      "ID": 790,
+      "riferimento": 32,
+      "idced": 30026,
+      "quesito": "Le radiazioni gamma …."
+    },
+    {
+      "ID": 791,
+      "riferimento": 32,
+      "idced": 30027,
+      "quesito": "Le radiazioni sono pericolose perché …"
+    },
+    {
+      "ID": 792,
+      "riferimento": 32,
+      "idced": 30028,
+      "quesito": "Quale è il rischio associato al trasporto senza incidenti di materie radioattive?"
+    },
+    {
+      "ID": 793,
+      "riferimento": 32,
+      "idced": 30029,
+      "quesito": "Quali rischi si corrono nel maneggiare colli contaminati sulla superficie esterna?"
+    },
+    {
+      "ID": 794,
+      "riferimento": 32,
+      "idced": 30030,
+      "quesito": "Quali danni possono provocare le radiazioni ionizzanti?"
+    },
+    {
+      "ID": 795,
+      "riferimento": 32,
+      "idced": 30031,
+      "quesito": "Quali effetti possono provocare sul corpo umano le radiazioni ionizzanti?"
+    },
+    {
+      "ID": 796,
+      "riferimento": 32,
+      "idced": 30032,
+      "quesito": "Quali sono gli organi del corpo umano più sensibili alle radiazioni elettromagnetiche X e gamma?"
+    },
+    {
+      "ID": 797,
+      "riferimento": 32,
+      "idced": 30033,
+      "quesito": "Quali azioni sono utili per aumentare la protezione dalle radiazioni?"
+    },
+    {
+      "ID": 798,
+      "riferimento": 32,
+      "idced": 30034,
+      "quesito": "Indicare le cose giuste da fare per proteggersi dalle radiazioni"
+    },
+    {
+      "ID": 799,
+      "riferimento": 32,
+      "idced": 30035,
+      "quesito": "Quali sono i principi più importanti della radioprotezione?"
+    },
+    {
+      "ID": 800,
+      "riferimento": 32,
+      "idced": 30036,
+      "quesito": "Quale è l'unità di misura della dose equivalente?"
+    },
+    {
+      "ID": 801,
+      "riferimento": 34,
+      "idced": 31001,
+      "quesito": "Cos'è un imballaggio per materiali radioattivi?"
+    },
+    {
+      "ID": 802,
+      "riferimento": 34,
+      "idced": 31002,
+      "quesito": "Quale imballaggio è usato per le materie della classe 7?"
+    },
+    {
+      "ID": 803,
+      "riferimento": 34,
+      "idced": 31003,
+      "quesito": "Quali sono le caratteristiche degli imballaggi per il trasporto di materie della classe 7?"
+    },
+    {
+      "ID": 804,
+      "riferimento": 34,
+      "idced": 31004,
+      "quesito": "Cosa si intende per sovrimballaggio nel caso di trasporto di materie della classe 7?"
+    },
+    {
+      "ID": 805,
+      "riferimento": 34,
+      "idced": 31005,
+      "quesito": "Come può essere marcato un imballaggio utilizzato per materie della classe 7?"
+    },
+    {
+      "ID": 806,
+      "riferimento": 34,
+      "idced": 22027,
+      "quesito": "Secondo l'ADR, il documento di trasporto relativo ad un carico di materie o oggetti esplosivi ..."
+    },
+    {
+      "ID": 807,
+      "riferimento": 34,
+      "idced": 22028,
+      "quesito": "Che indicazioni deve contenere (secondo le norme ADR) il documento di trasporto relativo a merci esplosive?"
+    },
+    {
+      "ID": 808,
+      "riferimento": 34,
+      "idced": 22029,
+      "quesito": "Quando si trasportano materie e oggetti esplosivi appartenenti a una rubrica n.a.s. (non altrimenti specificata), il documento di trasporto ..."
+    },
+    {
+      "ID": 809,
+      "riferimento": 34,
+      "idced": 22030,
+      "quesito": "Il certificato d'approvazione ADR (cosiddetto 'barrato rosa') per le unità di trasporto del tipo 'EX/II' o 'EX/III' trasportanti merci pericolose della classe 1 ..."
+    },
+    {
+      "ID": 810,
+      "riferimento": 34,
+      "idced": 22031,
+      "quesito": "Il certificato d'approvazione ADR (cosiddetto 'barrato rosa') per i veicoli trasportanti merci pericolose"
+    },
+    {
+      "ID": 811,
+      "riferimento": 34,
+      "idced": 22032,
+      "quesito": "Il certificato d'approvazione ADR (cosiddetto 'barrato rosa') per i veicoli trasportanti merci pericolose della classe 1 :"
+    },
+    {
+      "ID": 812,
+      "riferimento": 34,
+      "idced": 22033,
+      "quesito": "Il certificato d'approvazione ADR (cosiddetto 'barrato rosa') per i veicoli trasportanti merci pericolose della classe 1 :"
+    },
+    {
+      "ID": 813,
+      "riferimento": 34,
+      "idced": 22034,
+      "quesito": "Quali comportamenti/precauzioni deve adottare un conducente al carico?"
+    },
+    {
+      "ID": 814,
+      "riferimento": 34,
+      "idced": 22035,
+      "quesito": "Quali comportamenti/precauzioni deve adottare un conducente al carico?"
+    },
+    {
+      "ID": 815,
+      "riferimento": 34,
+      "idced": 22036,
+      "quesito": "Quali operazioni deve assicurare il conducente al carico di colli esplosivi in un veicolo?"
+    },
+    {
+      "ID": 816,
+      "riferimento": 34,
+      "idced": 22037,
+      "quesito": "Durante il trasporto di esplosivi è obbligatoria la presenza a bordo del veicolo di un agente riconosciuto?"
+    },
+    {
+      "ID": 817,
+      "riferimento": 34,
+      "idced": 22038,
+      "quesito": "Quali comportamenti/precauzioni deve adottare il conducente durante il trasporto di colli della classe 1?"
+    },
+    {
+      "ID": 818,
+      "riferimento": 34,
+      "idced": 22039,
+      "quesito": "I veicoli che trasportano materie esplosive possono effettuare soste?"
+    },
+    {
+      "ID": 819,
+      "riferimento": 34,
+      "idced": 22040,
+      "quesito": "Come deve comportarsi il conducente relativamente alle soste e/o stazionamenti delle unità di trasporto della classe 1?"
+    },
+    {
+      "ID": 820,
+      "riferimento": 34,
+      "idced": 22041,
+      "quesito": "Durante il percorso, il conducente di un'unità di trasporto della classe 1:"
+    },
+    {
+      "ID": 821,
+      "riferimento": 34,
+      "idced": 22042,
+      "quesito": "Come bisogna comportarsi in caso di rovesciamento di un collo contenente materiale della classe 1, con fuori uscita di materia esplosiva?"
+    },
+    {
+      "ID": 822,
+      "riferimento": 34,
+      "idced": 22043,
+      "quesito": "Quando il conducente deve togliere dal veicolo o mascherare le segnalazioni (placche - grandi etichette di 25 cm di lato) e pannelli di segnalazione arancio senza numeri)?"
+    },
+    {
+      "ID": 823,
+      "riferimento": 34,
+      "idced": 22044,
+      "quesito": "Durante i controlli relativi ai trasporti di merci pericolose con veicoli tipo EX/II o EX/III, quali tra le seguenti sono considerate infrazioni gravi, perché possono pregiudicare la sicurezza?"
+    },
+    {
+      "ID": 824,
+      "riferimento": 34,
+      "idced": 22045,
+      "quesito": "Il certificato di formazione professionale ADR specializzazione esplosivi è obbligatorio (eccetto i trasporti sotto i limiti di esenzione in 1.1.3.6. ADR):"
+    },
+    {
+      "ID": 825,
+      "riferimento": 34,
+      "idced": 22046,
+      "quesito": "Cosa s'intende per MEMU?"
+    },
+    {
+      "ID": 826,
+      "riferimento": 34,
+      "idced": 22047,
+      "quesito": "Quali condizioni richiede l'ADR per la circolazione delle MEMU?"
+    },
+    {
+      "ID": 827,
+      "riferimento": 33,
+      "idced": 30001,
+      "quesito": "Secondo l'ADR, cosa si intende per materiale radioattivo?"
+    },
+    {
+      "ID": 828,
+      "riferimento": 33,
+      "idced": 30002,
+      "quesito": "Che cosa è la radioattività?"
+    },
+    {
+      "ID": 829,
+      "riferimento": 33,
+      "idced": 30003,
+      "quesito": "Che cosa è l'attività di una sorgente?"
+    },
+    {
+      "ID": 830,
+      "riferimento": 33,
+      "idced": 30004,
+      "quesito": "Come è possibile riconoscere la presenza di radiazioni ionizzanti?"
+    },
+    {
+      "ID": 831,
+      "riferimento": 33,
+      "idced": 30005,
+      "quesito": "Che significa tempo di dimezzamento (mezza vita) di una materia radioattiva?"
+    },
+    {
+      "ID": 832,
+      "riferimento": 33,
+      "idced": 30006,
+      "quesito": "Cosa è la dose?"
+    },
+    {
+      "ID": 833,
+      "riferimento": 33,
+      "idced": 30007,
+      "quesito": "Cosa è la dose equivalente?"
+    },
+    {
+      "ID": 834,
+      "riferimento": 33,
+      "idced": 30008,
+      "quesito": "Come si può conoscere la quantità di radiazioni assorbite dal corpo umano?"
+    },
+    {
+      "ID": 835,
+      "riferimento": 33,
+      "idced": 30009,
+      "quesito": "Quale tra le seguenti situazioni determina una contaminazione radioattiva?"
+    },
+    {
+      "ID": 836,
+      "riferimento": 33,
+      "idced": 30010,
+      "quesito": "Cos'è il contenuto radioattivo di un imballaggio?"
+    },
+    {
+      "ID": 837,
+      "riferimento": 33,
+      "idced": 30011,
+      "quesito": "Il materiale radioattivo ...."
+    },
+    {
+      "ID": 838,
+      "riferimento": 33,
+      "idced": 30012,
+      "quesito": "L'energia delle radiazioni ...."
+    },
+    {
+      "ID": 839,
+      "riferimento": 33,
+      "idced": 30013,
+      "quesito": "Le radiazioni naturali cosmiche ...."
+    },
+    {
+      "ID": 840,
+      "riferimento": 33,
+      "idced": 30014,
+      "quesito": "Che cosa determina il fondo naturale di radiazioni?"
+    },
+    {
+      "ID": 841,
+      "riferimento": 33,
+      "idced": 30015,
+      "quesito": "Quali conseguenze si hanno nel trasporto di una sorgente radioattiva di attività elevata?"
+    },
+    {
+      "ID": 842,
+      "riferimento": 33,
+      "idced": 30016,
+      "quesito": "Quali delle seguenti materie appartengono alla classe 7?"
+    },
+    {
+      "ID": 843,
+      "riferimento": 33,
+      "idced": 30017,
+      "quesito": "Che cosa si intende per modello?"
+    },
+    {
+      "ID": 844,
+      "riferimento": 33,
+      "idced": 30018,
+      "quesito": "L'ADR si applica al trasporto di:"
+    },
+    {
+      "ID": 845,
+      "riferimento": 33,
+      "idced": 30019,
+      "quesito": "Quali tra le seguenti particelle fanno parte dell'atomo?"
+    },
+    {
+      "ID": 846,
+      "riferimento": 33,
+      "idced": 30020,
+      "quesito": "Quali tipi di radiazioni sono emesse dalle materie della classe 7?"
+    },
+    {
+      "ID": 847,
+      "riferimento": 33,
+      "idced": 30021,
+      "quesito": "Le radiazioni alfa ...."
+    },
+    {
+      "ID": 848,
+      "riferimento": 33,
+      "idced": 30022,
+      "quesito": "Cosa sono le radiazioni alfa?"
+    },
+    {
+      "ID": 849,
+      "riferimento": 33,
+      "idced": 30023,
+      "quesito": "Cosa sono le radiazioni beta?"
+    },
+    {
+      "ID": 850,
+      "riferimento": 33,
+      "idced": 30024,
+      "quesito": "Le radiazioni beta ...."
+    },
+    {
+      "ID": 851,
+      "riferimento": 33,
+      "idced": 31006,
+      "quesito": "Quali dei seguenti tipi di imballaggio sono usati per il trasporto delle materie della classe 7?"
+    },
+    {
+      "ID": 852,
+      "riferimento": 33,
+      "idced": 31007,
+      "quesito": "Quali iscrizioni o etichette sono presenti sull'esterno dei colli che contengono le materie della classe 7?"
+    },
+    {
+      "ID": 853,
+      "riferimento": 33,
+      "idced": 31008,
+      "quesito": "Quali iscrizioni (segnalazioni) devono essere apposte sui colli per le materie della classe 7?"
+    },
+    {
+      "ID": 854,
+      "riferimento": 33,
+      "idced": 31009,
+      "quesito": "Gli imballaggi vuoti che hanno contenuto materie o oggetti radioattivi ..."
+    },
+    {
+      "ID": 855,
+      "riferimento": 33,
+      "idced": 31010,
+      "quesito": "Un collo esente ..."
+    },
+    {
+      "ID": 856,
+      "riferimento": 33,
+      "idced": 31011,
+      "quesito": "L'etichettatura dei colli di materie radioattive della classe 7 ADR ..."
+    },
+    {
+      "ID": 857,
+      "riferimento": 33,
+      "idced": 31012,
+      "quesito": "Quali etichette si applicano ai colli di materie della classe 7"
+    },
+    {
+      "ID": 858,
+      "riferimento": 33,
+      "idced": 31013,
+      "quesito": "Che cosa indica l'etichetta della figura n. 19?"
+    },
+    {
+      "ID": 859,
+      "riferimento": 33,
+      "idced": 31014,
+      "quesito": "Che cosa indica l'etichetta della figura n. 20?"
+    },
+    {
+      "ID": 860,
+      "riferimento": 33,
+      "idced": 32037,
+      "quesito": "Come possono essere classificati i conducenti ai fini del rischio da radiazioni?"
+    },
+    {
+      "ID": 861,
+      "riferimento": 33,
+      "idced": 31015,
+      "quesito": "Che cosa indica la figura n. 21?"
+    },
+    {
+      "ID": 862,
+      "riferimento": 33,
+      "idced": 31016,
+      "quesito": "Che cosa indica la figura n. 22?"
+    },
+    {
+      "ID": 863,
+      "riferimento": 33,
+      "idced": 31017,
+      "quesito": "Quali sono le dimensioni delle etichette e delle placche (grandi etichette di 25 cm di lato) usate per la classe 7?"
+    },
+    {
+      "ID": 864,
+      "riferimento": 33,
+      "idced": 31018,
+      "quesito": "Quali etichette sono usate per i colli di materie della classe 7?"
+    },
+    {
+      "ID": 865,
+      "riferimento": 33,
+      "idced": 31019,
+      "quesito": "Dove si deve applicare l'etichetta di figura n. 19?"
+    },
+    {
+      "ID": 866,
+      "riferimento": 33,
+      "idced": 31020,
+      "quesito": "Dove si deve applicare l'etichetta di figura n. 20?"
+    },
+    {
+      "ID": 867,
+      "riferimento": 33,
+      "idced": 31021,
+      "quesito": "Dove si deve applicare l'etichetta di figura n. 21?"
+    },
+    {
+      "ID": 868,
+      "riferimento": 33,
+      "idced": 31022,
+      "quesito": "Dove si deve applicare la placca (grande etichetta di 25 cm di lato) rappresentata in figura n. 22?"
+    },
+    {
+      "ID": 869,
+      "riferimento": 33,
+      "idced": 31023,
+      "quesito": "Dove si devono applicare le etichette di pericolo delle figure n. 19, n. 20, n. 21 e n. 35 aventi il lato di 100 mm?"
+    },
+    {
+      "ID": 870,
+      "riferimento": 33,
+      "idced": 31024,
+      "quesito": "Cos'è l'Indice di Trasporto (IT)?"
+    },
+    {
+      "ID": 871,
+      "riferimento": 33,
+      "idced": 31025,
+      "quesito": "Quali sono le informazioni fornite dall'indice di trasporto?"
+    },
+    {
+      "ID": 872,
+      "riferimento": 33,
+      "idced": 31026,
+      "quesito": "Quali categorie assegnate ad un collo sono giuste?"
+    },
+    {
+      "ID": 873,
+      "riferimento": 33,
+      "idced": 31027,
+      "quesito": "Su quali etichette di pericolo è riportato l'Indice di Trasporto?"
+    },
+    {
+      "ID": 874,
+      "riferimento": 33,
+      "idced": 31028,
+      "quesito": "Quali etichettature sono giuste?"
+    },
+    {
+      "ID": 875,
+      "riferimento": 33,
+      "idced": 31029,
+      "quesito": "Quali sono le informazioni date dall'etichetta di figura n. 19 (categoria I-BIANCA)?"
+    },
+    {
+      "ID": 876,
+      "riferimento": 33,
+      "idced": 31030,
+      "quesito": "Quali sono le informazioni date dall'etichetta di figura n. 20 (categoria II-GIALLA)?"
+    },
+    {
+      "ID": 877,
+      "riferimento": 33,
+      "idced": 31031,
+      "quesito": "Quali sono le informazioni date dall'etichetta di figura n. 21 (categoria III-GIALLA)?"
+    },
+    {
+      "ID": 878,
+      "riferimento": 33,
+      "idced": 31032,
+      "quesito": "Quando si deve classificare un collo o un sovrimballaggio nella categoria III-GIALLA (etichetta di figura n. 21)?"
+    },
+    {
+      "ID": 879,
+      "riferimento": 33,
+      "idced": 31033,
+      "quesito": "Che significato ha il numero del pericolo 70?"
+    },
+    {
+      "ID": 880,
+      "riferimento": 33,
+      "idced": 31034,
+      "quesito": "Che significato ha il numero del pericolo 78?"
+    },
+    {
+      "ID": 881,
+      "riferimento": 33,
+      "idced": 31035,
+      "quesito": "Dove è meglio posizionare i colli delle categorie II e III-GIALLA?"
+    },
+    {
+      "ID": 882,
+      "riferimento": 33,
+      "idced": 31036,
+      "quesito": "Quali colli contenenti altre merci pericolose possono essere caricati insieme ai colli di materie radioattive aventi le etichette delle figure n. 19, n. 20 e n. 21?"
+    },
+    {
+      "ID": 883,
+      "riferimento": 33,
+      "idced": 31037,
+      "quesito": "I colli radioattivi aventi l’etichetta di figura 21 possono essere caricati in comune con …"
+    },
+    {
+      "ID": 884,
+      "riferimento": 33,
+      "idced": 31038,
+      "quesito": "Che cosa è l'indice di sicurezza per la criticità (CSI)?"
+    },
+    {
+      "ID": 885,
+      "riferimento": 33,
+      "idced": 31039,
+      "quesito": "Quali iscrizioni o etichette sono presenti sull'esterno dei colli esenti?"
+    },
+    {
+      "ID": 886,
+      "riferimento": 33,
+      "idced": 31040,
+      "quesito": "Quale è il significato del numero di identificazione del pericolo “768”?"
+    },
+    {
+      "ID": 887,
+      "riferimento": 35,
+      "idced": 32001,
+      "quesito": "Quali materie o oggetti sono materie della classe 7?"
+    },
+    {
+      "ID": 888,
+      "riferimento": 35,
+      "idced": 32002,
+      "quesito": "Cos'è un trasporto in accordo speciale?"
+    },
+    {
+      "ID": 889,
+      "riferimento": 35,
+      "idced": 32003,
+      "quesito": "Cosa si intende per trasporto in uso esclusivo?"
+    },
+    {
+      "ID": 890,
+      "riferimento": 35,
+      "idced": 32004,
+      "quesito": "Il trasporto di materie radioattive in uso esclusivo significa che:"
+    },
+    {
+      "ID": 891,
+      "riferimento": 35,
+      "idced": 32005,
+      "quesito": "I veicoli che trasportano materie radioattive in colli ..."
+    },
+    {
+      "ID": 892,
+      "riferimento": 35,
+      "idced": 32006,
+      "quesito": "I veicoli che trasportano materie radioattive in colli diversi dai colli esenti, devono essere dotati:"
+    },
+    {
+      "ID": 893,
+      "riferimento": 35,
+      "idced": 32007,
+      "quesito": "Quali equipaggiamenti devono essere presenti a bordo di veicoli che trasportano materie radioattive in colli diversi dai colli esenti?"
+    },
+    {
+      "ID": 894,
+      "riferimento": 35,
+      "idced": 32008,
+      "quesito": "I veicoli con a bordo solo colli esenti"
+    },
+    {
+      "ID": 895,
+      "riferimento": 35,
+      "idced": 32009,
+      "quesito": "Le segnalazioni e l'etichettatura dei veicoli che trasportano colli radioattivi, esclusi quelli che trasportano solo colli esenti:"
+    },
+    {
+      "ID": 896,
+      "riferimento": 35,
+      "idced": 32010,
+      "quesito": "Quali segnalazioni devono essere presenti sui veicoli che trasportano materie radioattive, esclusi i veicoli che trasportano solo colli esenti?"
+    },
+    {
+      "ID": 897,
+      "riferimento": 35,
+      "idced": 32011,
+      "quesito": "I pannelli di segnalazione arancio devono essere fissati:"
+    },
+    {
+      "ID": 898,
+      "riferimento": 35,
+      "idced": 32012,
+      "quesito": "Come può essere segnalato un veicolo chiuso (furgonato) per trasporto di colli radioattivi diversi dai colli esenti?"
+    },
+    {
+      "ID": 899,
+      "riferimento": 35,
+      "idced": 32013,
+      "quesito": "Come può essere segnalato un container per colli radioattivi diversi dai colli esenti?"
+    },
+    {
+      "ID": 900,
+      "riferimento": 35,
+      "idced": 32014,
+      "quesito": "Quando il conducente deve staccare dal veicolo i pannelli di segnalazione arancio?"
+    },
+    {
+      "ID": 901,
+      "riferimento": 35,
+      "idced": 32015,
+      "quesito": "Quali documenti d'accompagnamento devono essere a bordo del veicolo durante un trasporto di colli radioattivi?"
+    },
+    {
+      "ID": 902,
+      "riferimento": 35,
+      "idced": 32016,
+      "quesito": "Quali informazioni deve contenere il documento di trasporto relativo a materie radioattive trasportate in colli esenti?"
+    },
+    {
+      "ID": 903,
+      "riferimento": 35,
+      "idced": 32017,
+      "quesito": "Quali informazioni deve contenere il documento di trasporto relativo a materie radioattive trasportate in colli radioattivi diversi dai colli esenti?"
+    },
+    {
+      "ID": 904,
+      "riferimento": 35,
+      "idced": 32018,
+      "quesito": "Cosa riportano le istruzioni scritte relative al trasporto di materie radioattive?"
+    },
+    {
+      "ID": 905,
+      "riferimento": 35,
+      "idced": 32019,
+      "quesito": "Che cosa deve fare il conducente durante le operazioni di carico di colli radioattivi?"
+    },
+    {
+      "ID": 906,
+      "riferimento": 35,
+      "idced": 32020,
+      "quesito": "Che cosa deve fare il conducente prima del trasporto di colli radioattivi, diversi dai colli esenti?"
+    },
+    {
+      "ID": 907,
+      "riferimento": 35,
+      "idced": 32021,
+      "quesito": "In che modo il conducente può diminuire l'assorbimento di dose da radiazioni?"
+    },
+    {
+      "ID": 908,
+      "riferimento": 35,
+      "idced": 32022,
+      "quesito": "Come ci si deve comportare durante il maneggio/stivaggio di un collo con etichetta modello 'III-GIALLA' e indice di trasporto = 9 ?"
+    },
+    {
+      "ID": 909,
+      "riferimento": 35,
+      "idced": 32023,
+      "quesito": "Quali comportamenti/precauzioni deve adottare il conducente durante il trasporto di colli radioattivi?"
+    },
+    {
+      "ID": 910,
+      "riferimento": 35,
+      "idced": 32024,
+      "quesito": "I veicoli che trasportano colli radioattivi, appartenenti alla categoria III-GIALLA possono effettuare soste?"
+    },
+    {
+      "ID": 911,
+      "riferimento": 35,
+      "idced": 32025,
+      "quesito": "Come deve comportarsi il conducente in caso di soste del veicolo con colli radioattivi a bordo?"
+    },
+    {
+      "ID": 912,
+      "riferimento": 35,
+      "idced": 32026,
+      "quesito": "Che cosa fare in caso di sosta prolungata quando si trasportano colli di categoria II-GIALLA o III-GIALLA?"
+    },
+    {
+      "ID": 913,
+      "riferimento": 35,
+      "idced": 32027,
+      "quesito": "Come bisogna comportarsi in caso di rovesciamento di un collo radioattivo, con fuoriuscita di liquido?"
+    },
+    {
+      "ID": 914,
+      "riferimento": 35,
+      "idced": 32028,
+      "quesito": "Come ci si deve comportare se si rovescia un collo con etichetta 'I-BIANCA', senza fuoriuscita di liquido ?"
+    },
+    {
+      "ID": 915,
+      "riferimento": 35,
+      "idced": 32029,
+      "quesito": "Quali azioni riducono eventuali danni, dopo un incidente con rilascio di materie radioattive?"
+    },
+    {
+      "ID": 916,
+      "riferimento": 35,
+      "idced": 32030,
+      "quesito": "Quali sono le giuste azioni fatte dal conducente nel trasporto di colli radioattivi?"
+    },
+    {
+      "ID": 917,
+      "riferimento": 35,
+      "idced": 32031,
+      "quesito": "Il certificato di formazione professionale ADR con specializzazione radioattivi è obbligatorio per la guida di:"
+    },
+    {
+      "ID": 918,
+      "riferimento": 35,
+      "idced": 32032,
+      "quesito": "Esiste un pericolo di contaminazione a seguito di un incidente durante il trasporto di colli radioattivi?"
+    },
+    {
+      "ID": 919,
+      "riferimento": 35,
+      "idced": 32033,
+      "quesito": "Come ci si deve comportare in caso di contaminazione radioattiva delle mani?"
+    },
+    {
+      "ID": 920,
+      "riferimento": 35,
+      "idced": 32034,
+      "quesito": "Quali delle seguenti azioni diminuiscono i rischi da radiazione?"
+    },
+    {
+      "ID": 921,
+      "riferimento": 35,
+      "idced": 32035,
+      "quesito": "Quale deve essere il comportamento corretto del conducente per una buona radioprotezione?"
+    },
+    {
+      "ID": 922,
+      "riferimento": 35,
+      "idced": 32036,
+      "quesito": "Quali strumenti possono essere utilizzati per la rilevazione e la misura delle radiazioni ionizzanti?"
+    }
+  ]
+}

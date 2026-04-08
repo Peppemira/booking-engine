@@ -1,0 +1,37 @@
+{
+  "name": "booking-engine",
+  "version": "1.0.0",
+  "main": "src/engine.js",
+  "scripts": {
+    "start": "node src/engine.js",
+    "api": "node src/server.js",
+    "backend": "npm start --prefix gestionale/backend",
+    "deploy:ready": "node gestionale/scripts/check-deploy-readiness.js",
+    "smoke:all": "npm run smoke:payment-actions && npm run smoke:payment-history:readonly",
+    "smoke:all:noninteractive": "node scripts/smokeAllNonInteractive.js",
+    "smoke:payment-actions": "npm --prefix gestionale/backend run smoke:payment-actions",
+    "smoke:payment-history:readonly": "npm --prefix gestionale/backend run smoke:payment-history:readonly",
+    "backfill:waitlist": "node src/backfillWaitlistCandidateId.js",
+    "backfill:waitlist:apply": "node src/backfillWaitlistCandidateId.js --apply",
+    "backfill:waitlist:placeholders": "node src/backfillWaitlistCandidateId.js --create-placeholders",
+    "backfill:waitlist:placeholders:apply": "node src/backfillWaitlistCandidateId.js --create-placeholders --apply",
+    "import:portal": "node -e \"require('dotenv').config(); const axios=require('axios'); axios.post('http://localhost:3000/api/portal/import-candidates').then(r=>console.log(JSON.stringify(r.data,null,2))).catch(e=>console.error(e.response?.data||e.message));\""
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.99.1",
+    "axios": "^1.13.6",
+    "axios-cookiejar-support": "^6.0.5",
+    "cheerio": "^1.2.0",
+    "cors": "^2.8.6",
+    "csv-parser": "^3.2.0",
+    "dotenv": "^17.3.1",
+    "express": "^4.22.1",
+    "form-data": "^4.0.5",
+    "fs-extra": "^11.3.4",
+    "mysql2": "^3.20.0",
+    "node-cron": "^4.2.1",
+    "playwright": "^1.58.2",
+    "puppeteer": "^24.39.1",
+    "tough-cookie": "^5.1.2"
+  }
+}

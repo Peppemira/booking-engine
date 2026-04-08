@@ -1,0 +1,50 @@
+{
+  "exported_at": "2026-03-25T14:50:28.701472",
+  "databases": {
+    "quizm": {
+      "ArgomAB": 25,
+      "ArgomABRev": 10,
+      "ArgomADR": 35,
+      "ArgomAM": 10,
+      "ArgomAMRev": 10,
+      "ArgomC": 18,
+      "ArgomC197": 6,
+      "ArgomC197Rev": 12,
+      "ArgomCQC": 16,
+      "ArgomCRev": 13,
+      "ArgomD": 16,
+      "ArgomDRev": 13,
+      "ArgomKB": 19,
+      "Quizab": 3000,
+      "Quizabrev": 1826,
+      "Quizadr": 922,
+      "Quizam": 2050,
+      "Quizamrev": 1593,
+      "Quizc": 3000,
+      "Quizc1": 1296,
+      "Quizc197": 663,
+      "Quizcqc": 3000,
+      "Quizd": 2958,
+      "Quizd1": 1125,
+      "Quizec": 1900,
+      "Quized": 1833,
+      "Quizkb": 515,
+      "Quizsuprev": 2731,
+      "Risposteadr": 3000,
+      "Rispostekb": 1545,
+      "Tipiquiz": 42,
+      "argomPN": 19,
+      "quizPN": 2514,
+      "rispostePN": 3000
+    },
+    "citta": {
+      "cittaecod": 3000,
+      "esteri": 289,
+      "province": 114
+    },
+    "annotazioni": {
+      "annotazioni": 22
+    }
+  },
+  "total_rows": 42160
+}

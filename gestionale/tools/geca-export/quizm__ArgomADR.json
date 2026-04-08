@@ -1,0 +1,244 @@
+{
+  "source_file": "C:\\AFSoft\\GeCAFuture\\data\\quizm.mdb",
+  "table": "ArgomADR",
+  "count": 35,
+  "exported_at": "2026-03-25T14:50:26.448596",
+  "schema": [
+    {
+      "field": "idargom",
+      "type": "SMALLINT",
+      "size": 5,
+      "nullable": true
+    },
+    {
+      "field": "idced",
+      "type": "SMALLINT",
+      "size": 5,
+      "nullable": true
+    },
+    {
+      "field": "argomento",
+      "type": "VARCHAR",
+      "size": 255,
+      "nullable": true
+    },
+    {
+      "field": "img",
+      "type": "VARCHAR",
+      "size": 255,
+      "nullable": true
+    }
+  ],
+  "rows": [
+    {
+      "idargom": 1,
+      "idced": 1,
+      "argomento": "Prescrizioni generali internazionali applicabili al trasporto di merci pericolose",
+      "img": null
+    },
+    {
+      "idargom": 2,
+      "idced": 2,
+      "argomento": "Prescrizioni generali nazionali applicabili al trasporto di merci pericolose",
+      "img": null
+    },
+    {
+      "idargom": 3,
+      "idced": 3,
+      "argomento": "Principali tipi di rischio (rischi principali, secondari e loro classificazione)",
+      "img": null
+    },
+    {
+      "idargom": 4,
+      "idced": 4,
+      "argomento": "Principali tipi di rischio (pericoli, misure di prevenzione e sicurezza appropriate ai diversi tipi di rischio)",
+      "img": null
+    },
+    {
+      "idargom": 5,
+      "idced": 5,
+      "argomento": "Principali tipi di rischio (proprietà chimico-fisiche)",
+      "img": null
+    },
+    {
+      "idargom": 6,
+      "idced": 6,
+      "argomento": "Principali tipi di rischio (i gas)",
+      "img": null
+    },
+    {
+      "idargom": 7,
+      "idced": 7,
+      "argomento": "Informazioni sulla protezione dell'ambiente e il trasferimento dei rifiuti",
+      "img": null
+    },
+    {
+      "idargom": 8,
+      "idced": 8,
+      "argomento": "Mezzi di trasporto per colli in generale",
+      "img": null
+    },
+    {
+      "idargom": 9,
+      "idced": 9,
+      "argomento": "Natura e funzionamento degli equipaggiamenti tecnici dei veicoli per trasporto di colli",
+      "img": null
+    },
+    {
+      "idargom": 10,
+      "idced": 10,
+      "argomento": "Tipi di imballaggio, manutenzione e ammarraggio dei colli",
+      "img": null
+    },
+    {
+      "idargom": 11,
+      "idced": 11,
+      "argomento": "Etichettatura e segnalazione dei pericoli in generale",
+      "img": null
+    },
+    {
+      "idargom": 12,
+      "idced": 12,
+      "argomento": "Etichettatura e segnalazione dei pericoli sul materiale di trasporto per colli e rinfusa",
+      "img": null
+    },
+    {
+      "idargom": 13,
+      "idced": 13,
+      "argomento": "Documenti di bordo e di trasporto",
+      "img": null
+    },
+    {
+      "idargom": 14,
+      "idced": 14,
+      "argomento": "Informazioni generali di responsabilità civile",
+      "img": null
+    },
+    {
+      "idargom": 15,
+      "idced": 15,
+      "argomento": "Informazioni generali sul trasporto multimodale",
+      "img": null
+    },
+    {
+      "idargom": 16,
+      "idced": 16,
+      "argomento": "Precauzioni/comportamento durante il carico e lo scarico + ciò che un conducente deve o non deve fare + manutenzione e ammarraggio dei colli",
+      "img": null
+    },
+    {
+      "idargom": 17,
+      "idced": 17,
+      "argomento": "Divieti di carico in comune e limiti di carico",
+      "img": null
+    },
+    {
+      "idargom": 18,
+      "idced": 18,
+      "argomento": "Precauzioni/comportamento generale durante il trasporto (spostamenti merce/ segnali/soste)",
+      "img": null
+    },
+    {
+      "idargom": 19,
+      "idced": 19,
+      "argomento": "Precauzioni/comportamento generale durante il trasporto (istruzioni scritte/ incendio/perdite)",
+      "img": null
+    },
+    {
+      "idargom": 20,
+      "idced": 20,
+      "argomento": "Primo soccorso ed equipaggiamenti di protezione individuale",
+      "img": null
+    },
+    {
+      "idargom": 21,
+      "idced": 21,
+      "argomento": "Prescrizioni generali internazionali e definizioni cisterne",
+      "img": null
+    },
+    {
+      "idargom": 22,
+      "idced": 22,
+      "argomento": "Oggetto e funzionamento dell'equipaggiamento tecnico dei veicoli cisterna e porta-container cisterne",
+      "img": null
+    },
+    {
+      "idargom": 23,
+      "idced": 23,
+      "argomento": "Cisterne per carburanti e prodotti chimici",
+      "img": null
+    },
+    {
+      "idargom": 24,
+      "idced": 24,
+      "argomento": "Cisterne per gas",
+      "img": null
+    },
+    {
+      "idargom": 25,
+      "idced": 25,
+      "argomento": "Etichettaggio e segnalazione per cisterne",
+      "img": null
+    },
+    {
+      "idargom": 26,
+      "idced": 26,
+      "argomento": "Documenti di bordo e di trasporto per cisterne",
+      "img": null
+    },
+    {
+      "idargom": 27,
+      "idced": 27,
+      "argomento": "Informazioni sul trasporto multimodale in cisterna",
+      "img": null
+    },
+    {
+      "idargom": 28,
+      "idced": 28,
+      "argomento": "Precauzioni/comportamento durante il carico e lo scarico + ciò che un conducente deve o non deve fare (cisterne)",
+      "img": null
+    },
+    {
+      "idargom": 29,
+      "idced": 29,
+      "argomento": "Precauzioni/comportamento durante la marcia dei veicoli cisterna",
+      "img": null
+    },
+    {
+      "idargom": 30,
+      "idced": 30,
+      "argomento": "Rischi propri delle materie esplosive e pirotecniche",
+      "img": null
+    },
+    {
+      "idargom": 31,
+      "idced": 31,
+      "argomento": "Prescrizioni particolari concernenti gli imballaggi, l'etichettatura e i divieti di carico comune (classe 1)",
+      "img": null
+    },
+    {
+      "idargom": 32,
+      "idced": 32,
+      "argomento": "Veicoli e loro segnalazioni, incidenti, primo soccorso (classe 1)",
+      "img": null
+    },
+    {
+      "idargom": 33,
+      "idced": 33,
+      "argomento": "Rischi propri delle radiazioni ionizzanti/fisica elementare/rischi della classe 7",
+      "img": null
+    },
+    {
+      "idargom": 34,
+      "idced": 34,
+      "argomento": "Prescrizioni imballaggi/ etichettatura/ carico+trasporto+scarico/ divieti carico in comune (classe 7)",
+      "img": null
+    },
+    {
+      "idargom": 35,
+      "idced": 35,
+      "argomento": "Veicoli e loro segnalazione/incidenti e primo soccorso (classe 7)",
+      "img": null
+    }
+  ]
+}

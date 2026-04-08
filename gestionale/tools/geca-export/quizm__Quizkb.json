@@ -1,0 +1,3124 @@
+{
+  "source_file": "C:\\AFSoft\\GeCAFuture\\data\\quizm.mdb",
+  "table": "Quizkb",
+  "count": 515,
+  "exported_at": "2026-03-25T14:50:27.263464",
+  "schema": [
+    {
+      "field": "ID",
+      "type": "INTEGER",
+      "size": 10,
+      "nullable": true
+    },
+    {
+      "field": "riferimento",
+      "type": "SMALLINT",
+      "size": 5,
+      "nullable": true
+    },
+    {
+      "field": "idced",
+      "type": "SMALLINT",
+      "size": 5,
+      "nullable": true
+    },
+    {
+      "field": "quesito",
+      "type": "LONGCHAR",
+      "size": 1073741823,
+      "nullable": true
+    }
+  ],
+  "rows": [
+    {
+      "ID": 1,
+      "riferimento": 18,
+      "idced": 1,
+      "quesito": "Gli Pneumatici con lesioni sui fianchi che interessano le tele"
+    },
+    {
+      "ID": 2,
+      "riferimento": 18,
+      "idced": 2,
+      "quesito": "Gli Pneumatici con lesioni sui fianchi che interessano le tele"
+    },
+    {
+      "ID": 3,
+      "riferimento": 18,
+      "idced": 3,
+      "quesito": "Viaggiando con pneumatici dello stesso asse gonfiati a pressioni diverse"
+    },
+    {
+      "ID": 4,
+      "riferimento": 18,
+      "idced": 4,
+      "quesito": "Viaggiando con pneumatici dello stesso asse gonfiati a pressioni diverse"
+    },
+    {
+      "ID": 5,
+      "riferimento": 18,
+      "idced": 5,
+      "quesito": "Viaggiando con pneumatici dello stesso asse gonfiati a pressioni diverse"
+    },
+    {
+      "ID": 6,
+      "riferimento": 18,
+      "idced": 6,
+      "quesito": "Gli pneumatici  dei veicoli con battistrada eccessivamente usurato"
+    },
+    {
+      "ID": 7,
+      "riferimento": 18,
+      "idced": 7,
+      "quesito": "Gli pneumatici  dei veicoli con battistrada eccessivamente usurato"
+    },
+    {
+      "ID": 8,
+      "riferimento": 18,
+      "idced": 8,
+      "quesito": "Gli pneumatici dei veicoli con battistrada con intagli profondi meno di 1,6 mm"
+    },
+    {
+      "ID": 9,
+      "riferimento": 18,
+      "idced": 9,
+      "quesito": "La squilibratura dei freni puo' dipendere da"
+    },
+    {
+      "ID": 10,
+      "riferimento": 18,
+      "idced": 10,
+      "quesito": "La squilibratura dei freni puo' dipendere da"
+    },
+    {
+      "ID": 11,
+      "riferimento": 18,
+      "idced": 11,
+      "quesito": "Con freni squilibrati, puo' avvenire in frenata"
+    },
+    {
+      "ID": 12,
+      "riferimento": 18,
+      "idced": 12,
+      "quesito": "Con freni squilibrati, puo' avvenire in frenata"
+    },
+    {
+      "ID": 13,
+      "riferimento": 18,
+      "idced": 13,
+      "quesito": "Una frenatura poco efficiente o squilibrata, puo' essere causata"
+    },
+    {
+      "ID": 14,
+      "riferimento": 18,
+      "idced": 14,
+      "quesito": "Una frenatura poco efficiente o squilibrata, puo' essere causata"
+    },
+    {
+      "ID": 15,
+      "riferimento": 18,
+      "idced": 15,
+      "quesito": "Una frenatura poco efficiente o squilibrata, puo' essere causata"
+    },
+    {
+      "ID": 16,
+      "riferimento": 18,
+      "idced": 16,
+      "quesito": "Una frenatura poco efficiente o squilibrata, puo' essere causata"
+    },
+    {
+      "ID": 17,
+      "riferimento": 18,
+      "idced": 17,
+      "quesito": "Se lo sterzo si presenta piu' duro del normale, puo' dipendere"
+    },
+    {
+      "ID": 18,
+      "riferimento": 18,
+      "idced": 18,
+      "quesito": "Se lo sterzo si presenta piu' duro del normale, puo' dipendere"
+    },
+    {
+      "ID": 19,
+      "riferimento": 18,
+      "idced": 19,
+      "quesito": "Se lo sterzo sfarfalla vibrando fortemente"
+    },
+    {
+      "ID": 20,
+      "riferimento": 18,
+      "idced": 20,
+      "quesito": "Se lo sterzo sfarfalla vibrando fortemente"
+    },
+    {
+      "ID": 21,
+      "riferimento": 17,
+      "idced": 21,
+      "quesito": "Per ridurre l'inquinamento dell'aria provocato dalla circolazione dei veicoli azionati da motore a scoppio , l'automobilista deve"
+    },
+    {
+      "ID": 22,
+      "riferimento": 17,
+      "idced": 22,
+      "quesito": "L'inquinamento atmosferico prodotto dai veicoli a motore puo' esssere ridotto"
+    },
+    {
+      "ID": 23,
+      "riferimento": 3,
+      "idced": 23,
+      "quesito": "Le frecce direzionali segnate sulla carreggiata"
+    },
+    {
+      "ID": 24,
+      "riferimento": 2,
+      "idced": 24,
+      "quesito": "Le strade extraurbane principali"
+    },
+    {
+      "ID": 25,
+      "riferimento": 8,
+      "idced": 25,
+      "quesito": "Per adattarsi alle condizioni avverse del tempo e prevenire incidenti stradali occorre"
+    },
+    {
+      "ID": 26,
+      "riferimento": 2,
+      "idced": 26,
+      "quesito": "La corsia puo' essere"
+    },
+    {
+      "ID": 27,
+      "riferimento": 8,
+      "idced": 27,
+      "quesito": "Agli imbocchi o sbocchi delle gallerie stradali è opportuno"
+    },
+    {
+      "ID": 28,
+      "riferimento": 8,
+      "idced": 28,
+      "quesito": "In presenza di tratti di strada ghiacciati è opportuno"
+    },
+    {
+      "ID": 29,
+      "riferimento": 5,
+      "idced": 29,
+      "quesito": "Allorchè ci accingiamo a scendere dall'autoveicolo dobbiamo tra l'altro"
+    },
+    {
+      "ID": 30,
+      "riferimento": 2,
+      "idced": 30,
+      "quesito": "Su un'autostrada"
+    },
+    {
+      "ID": 31,
+      "riferimento": 5,
+      "idced": 31,
+      "quesito": "La sosta di autoveicoli in doppia fila"
+    },
+    {
+      "ID": 32,
+      "riferimento": 6,
+      "idced": 32,
+      "quesito": "I conducenti di veicoli a motore sono obbligati ad azionare la segnalazione luminosa di pericolo (lampeggio simultaneo di tutti gli indiocatori luminosi di direzione)"
+    },
+    {
+      "ID": 33,
+      "riferimento": 3,
+      "idced": 33,
+      "quesito": "Le frecce di rientro"
+    },
+    {
+      "ID": 34,
+      "riferimento": 10,
+      "idced": 34,
+      "quesito": "Chi è penalmente e civilmente responsabile di un sinistro stradale"
+    },
+    {
+      "ID": 35,
+      "riferimento": 17,
+      "idced": 35,
+      "quesito": "All'arrivo della stagione invernale conviene"
+    },
+    {
+      "ID": 36,
+      "riferimento": 3,
+      "idced": 36,
+      "quesito": "La doppia striscia longitudinale continua"
+    },
+    {
+      "ID": 37,
+      "riferimento": 6,
+      "idced": 37,
+      "quesito": "I dispositivi di segnalazione acustica non si debbono usare"
+    },
+    {
+      "ID": 38,
+      "riferimento": 7,
+      "idced": 38,
+      "quesito": "Cio' che contraddistingue gli addetti ai servizi di polizia stradale è"
+    },
+    {
+      "ID": 39,
+      "riferimento": 5,
+      "idced": 39,
+      "quesito": "Non è consentita la sosta a tutti i veicoli"
+    },
+    {
+      "ID": 40,
+      "riferimento": 19,
+      "idced": 40,
+      "quesito": "Per garantire la sicurezza della circolazione ed evitare incidenti è necessario, fra l'altro"
+    },
+    {
+      "ID": 41,
+      "riferimento": 8,
+      "idced": 41,
+      "quesito": "Chi guida un veicolo ad elevate prestazioni, deve"
+    },
+    {
+      "ID": 42,
+      "riferimento": 9,
+      "idced": 42,
+      "quesito": "Per individuare conducenti e veicoli in un incidente stradale"
+    },
+    {
+      "ID": 43,
+      "riferimento": 13,
+      "idced": 43,
+      "quesito": "La revoca della patente puo' essere disposta"
+    },
+    {
+      "ID": 44,
+      "riferimento": 9,
+      "idced": 44,
+      "quesito": "In caso di incidente stradale, il conducente"
+    },
+    {
+      "ID": 45,
+      "riferimento": 4,
+      "idced": 45,
+      "quesito": "La distanza di sicurezza"
+    },
+    {
+      "ID": 46,
+      "riferimento": 4,
+      "idced": 46,
+      "quesito": "Lo spazio minimo di arresto di un veicolo lanciato ad una determinata velocita'"
+    },
+    {
+      "ID": 47,
+      "riferimento": 4,
+      "idced": 47,
+      "quesito": "La distanza di sicurezza dipende"
+    },
+    {
+      "ID": 48,
+      "riferimento": 4,
+      "idced": 48,
+      "quesito": "Per non costituire pericolo od intralcio alla circolazione, è necessario"
+    },
+    {
+      "ID": 49,
+      "riferimento": 10,
+      "idced": 49,
+      "quesito": "La responsabilita' penale connessa al sinistro stradale sorge"
+    },
+    {
+      "ID": 50,
+      "riferimento": 8,
+      "idced": 50,
+      "quesito": "Per adattarsi alle condizioni contrarie del tempo e prevenire incidenti stradali occorre"
+    },
+    {
+      "ID": 51,
+      "riferimento": 18,
+      "idced": 51,
+      "quesito": "Lo spessore minimo del battistrada degli autoveicoli"
+    },
+    {
+      "ID": 52,
+      "riferimento": 18,
+      "idced": 52,
+      "quesito": "Per garantire la sicurezza della circolazione ed evitare incidenti, è necessario, fra l'altro"
+    },
+    {
+      "ID": 53,
+      "riferimento": 18,
+      "idced": 53,
+      "quesito": "La pressione di gonfiaggio degli pneumatici"
+    },
+    {
+      "ID": 54,
+      "riferimento": 2,
+      "idced": 54,
+      "quesito": "Nelle aree pedonali urbane possono transitare"
+    },
+    {
+      "ID": 55,
+      "riferimento": 18,
+      "idced": 55,
+      "quesito": "Sulla stabilita' del veicolo in marcia influisce positivamente"
+    },
+    {
+      "ID": 56,
+      "riferimento": 2,
+      "idced": 56,
+      "quesito": "La corsia di decelerazione"
+    },
+    {
+      "ID": 57,
+      "riferimento": 8,
+      "idced": 57,
+      "quesito": "Il triangolo mobile di pericolo deve essere obbligatoriamente usato per segnalare il veicolo che debba restare fermo"
+    },
+    {
+      "ID": 58,
+      "riferimento": 17,
+      "idced": 58,
+      "quesito": "Per ridurre l'inquinamento provocato dai veicoli con motore diesel bisogna"
+    },
+    {
+      "ID": 59,
+      "riferimento": 7,
+      "idced": 59,
+      "quesito": "Il conducente del veicolo da sorpassare ha l'obbligo di"
+    },
+    {
+      "ID": 60,
+      "riferimento": 18,
+      "idced": 60,
+      "quesito": "Gli pneumatici con battistrada eccessivamente usurato"
+    },
+    {
+      "ID": 61,
+      "riferimento": 17,
+      "idced": 61,
+      "quesito": "Per ridurre i consumi di carburante"
+    },
+    {
+      "ID": 62,
+      "riferimento": 19,
+      "idced": 62,
+      "quesito": "Per garantire la sicurezza della circolazione ed evitare incidenti è necessario, fra l'altro"
+    },
+    {
+      "ID": 63,
+      "riferimento": 9,
+      "idced": 63,
+      "quesito": "Il conducente coinvolto in un incidente stradale con danni a persone"
+    },
+    {
+      "ID": 64,
+      "riferimento": 9,
+      "idced": 64,
+      "quesito": "Allorche' si è coinvolti in un incidente stradale, è obbligatorio soccorrere gli infortunati"
+    },
+    {
+      "ID": 65,
+      "riferimento": 9,
+      "idced": 65,
+      "quesito": "Si deve chiamare la polizia a seguito di incidente stradale"
+    },
+    {
+      "ID": 66,
+      "riferimento": 9,
+      "idced": 66,
+      "quesito": "Dopo un incidente stradale occorre"
+    },
+    {
+      "ID": 67,
+      "riferimento": 18,
+      "idced": 67,
+      "quesito": "Gli pneumatici con lesioni sui fianchi che interessano le tele"
+    },
+    {
+      "ID": 68,
+      "riferimento": 7,
+      "idced": 68,
+      "quesito": "Il Carico deve essere sistemato sul veicolo in modo da"
+    },
+    {
+      "ID": 69,
+      "riferimento": 18,
+      "idced": 69,
+      "quesito": "La frenatura poco efficiente o squilibrata puo' essere causata"
+    },
+    {
+      "ID": 70,
+      "riferimento": 10,
+      "idced": 70,
+      "quesito": "Il veicolo, dopo un incidente stradale, puo' essere spostato"
+    },
+    {
+      "ID": 71,
+      "riferimento": 9,
+      "idced": 71,
+      "quesito": "In caso di incidente, si deve segnalare il pericolo ai veicoli che sopraggiungono"
+    },
+    {
+      "ID": 72,
+      "riferimento": 16,
+      "idced": 72,
+      "quesito": "Nelle Carte Geografiche, la scala cosa indica?"
+    },
+    {
+      "ID": 73,
+      "riferimento": 11,
+      "idced": 73,
+      "quesito": "Qual è la formula assicurativa R.C.A. che premia l'assicurato che nel corso dell'anno non ha provocato danni a terzi?"
+    },
+    {
+      "ID": 74,
+      "riferimento": 10,
+      "idced": 74,
+      "quesito": "Il proprietario di un veicolo, che ha provocato il danno a persone e/o cose, è responsabile in solido con il conducente?"
+    },
+    {
+      "ID": 75,
+      "riferimento": 11,
+      "idced": 75,
+      "quesito": "Quali sono i criteri con i quali si determinano, la tariffa annua ed i massimali minimi per l'assicurazione R.C.A.?"
+    },
+    {
+      "ID": 76,
+      "riferimento": 10,
+      "idced": 76,
+      "quesito": "Le lesioni a persone, o le conseguenze derivanti, danno luogo a responsabilita' penali a carico del proprietario del veicolo, quando quest'ultimo non conduca il veicolo stesso?"
+    },
+    {
+      "ID": 77,
+      "riferimento": 11,
+      "idced": 77,
+      "quesito": "E' obbligatoria per gli autoveicoli circolanti sulla pubblica strada l'assicurazione R.C.A. in base al decreto legislativo 7 settembre 2005, n. 209?"
+    },
+    {
+      "ID": 78,
+      "riferimento": 11,
+      "idced": 78,
+      "quesito": "Quando la societa' di assicurazione puo' esercitare il diritto di rivalsa nei confronti del proprietario e del conducente il veicolo che ha causato il danno?"
+    },
+    {
+      "ID": 79,
+      "riferimento": 13,
+      "idced": 79,
+      "quesito": "La licenza taxi puo' essere attribuita"
+    },
+    {
+      "ID": 80,
+      "riferimento": 13,
+      "idced": 80,
+      "quesito": "In quale caso è ammesso il cumulo di licenza taxi ed autorizzazione NCC?"
+    },
+    {
+      "ID": 81,
+      "riferimento": 11,
+      "idced": 81,
+      "quesito": "L'assicurazione per la responsabilita' civile auto (R.C.A.), obbligatoria per legge, comprende"
+    },
+    {
+      "ID": 82,
+      "riferimento": 11,
+      "idced": 82,
+      "quesito": "Quale di queste sanzioni accessorie è prevista per i conducenti di veicoli, circolanti sulla pubblica strada, privi di assicurazione R.C.A.?"
+    },
+    {
+      "ID": 83,
+      "riferimento": 11,
+      "idced": 83,
+      "quesito": "Quale di queste sanzioni è prevista per i conducenti di veicoli, circolanti sulla pubblica strada, privi di assicurazione R.C.A.?"
+    },
+    {
+      "ID": 84,
+      "riferimento": 10,
+      "idced": 84,
+      "quesito": "Il conducente è presunto responsabile nei confronti dei trasportati?"
+    },
+    {
+      "ID": 85,
+      "riferimento": 12,
+      "idced": 85,
+      "quesito": "Come sono definiti i servizi di trasporto che si svolgono su determinati itinerari prestabiliti e con concessione amministrativa?"
+    },
+    {
+      "ID": 86,
+      "riferimento": 11,
+      "idced": 86,
+      "quesito": "La polizza di assicurazione per la responsabilita' civile auto (R.C.A.) copre"
+    },
+    {
+      "ID": 87,
+      "riferimento": 11,
+      "idced": 87,
+      "quesito": "La polizza di assicurazione per la responsabilita' civile auto (R.C.A.) copre"
+    },
+    {
+      "ID": 88,
+      "riferimento": 11,
+      "idced": 88,
+      "quesito": "La polizza di assicurazione per la responsabilita' civile auto (R.C.A.) copre"
+    },
+    {
+      "ID": 89,
+      "riferimento": 11,
+      "idced": 89,
+      "quesito": "La polizza di assicurazione per la responsabilita' civile auto (R.C.A.) obbligatoria per legge comprende"
+    },
+    {
+      "ID": 90,
+      "riferimento": 11,
+      "idced": 90,
+      "quesito": "In relazione al contratto di assicurazione R.C.A. stipulato, l'impresa assicuratrice deve rilasciare al contraente"
+    },
+    {
+      "ID": 91,
+      "riferimento": 11,
+      "idced": 91,
+      "quesito": "In relazione al contratto di assicurazione R.C.A. stipulato, l'impresa assicuratrice deve rilasciare al contraente"
+    },
+    {
+      "ID": 92,
+      "riferimento": 11,
+      "idced": 92,
+      "quesito": "I massimali della polizza di assicurazione R.C.A."
+    },
+    {
+      "ID": 93,
+      "riferimento": 11,
+      "idced": 93,
+      "quesito": "I massimali della polizza di assicurazione R.C.A."
+    },
+    {
+      "ID": 94,
+      "riferimento": 11,
+      "idced": 94,
+      "quesito": "Nell'assicurazione R.C.A. il contratto con la formula 'bonus-malus'"
+    },
+    {
+      "ID": 95,
+      "riferimento": 11,
+      "idced": 95,
+      "quesito": "Nell'assicurazione R.C.A. il contratto con la formula 'bonus-malus'"
+    },
+    {
+      "ID": 96,
+      "riferimento": 11,
+      "idced": 96,
+      "quesito": "Nell'assicurazione R.C.A. il contratto con la formula 'bonus-malus'"
+    },
+    {
+      "ID": 97,
+      "riferimento": 16,
+      "idced": 97,
+      "quesito": "Nelle carte geografiche il NORD geografico è posto"
+    },
+    {
+      "ID": 98,
+      "riferimento": 16,
+      "idced": 98,
+      "quesito": "Nelle carte geografiche l'OVEST è posto"
+    },
+    {
+      "ID": 99,
+      "riferimento": 16,
+      "idced": 99,
+      "quesito": "La scala della carta geografica rappresenta"
+    },
+    {
+      "ID": 100,
+      "riferimento": 16,
+      "idced": 100,
+      "quesito": "La scala della carta geografica 1:10.000 individua"
+    },
+    {
+      "ID": 101,
+      "riferimento": 16,
+      "idced": 101,
+      "quesito": "La scala della carta geografica 1:10.000 individua"
+    },
+    {
+      "ID": 102,
+      "riferimento": 16,
+      "idced": 102,
+      "quesito": "La scala della carta geografica 1:10.000"
+    },
+    {
+      "ID": 103,
+      "riferimento": 16,
+      "idced": 103,
+      "quesito": "La scala della carta geografica 1:10.000"
+    },
+    {
+      "ID": 104,
+      "riferimento": 16,
+      "idced": 104,
+      "quesito": "Per valutare la distanza tra due citta' su una carta geografica stradale"
+    },
+    {
+      "ID": 105,
+      "riferimento": 16,
+      "idced": 105,
+      "quesito": "La legenda di una carta geografica"
+    },
+    {
+      "ID": 106,
+      "riferimento": 16,
+      "idced": 106,
+      "quesito": "Le autostrade sono indicate sulle carte geografiche stradali"
+    },
+    {
+      "ID": 107,
+      "riferimento": 13,
+      "idced": 107,
+      "quesito": "In un contratto, con cui la parte si obbliga a trasportare persone, si possono validamente inserire clausole che escludano la responsabilita' civile per dolo o colpa grave per sinistri che arrechino danno al trasportato o alle cose che quest'ultimo porta con se'?"
+    },
+    {
+      "ID": 108,
+      "riferimento": 13,
+      "idced": 108,
+      "quesito": "In un contratto, con cui la parte si obbliga a trasportare persone, si possono validamente inserire clausole che escludano la responsabilita' civile per dolo o colpa grave per sinistri che arrechino danno al trasportato o alle cose che quest'ultimo porta con se'?"
+    },
+    {
+      "ID": 109,
+      "riferimento": 13,
+      "idced": 109,
+      "quesito": "I contratti per il trasporto di persone sono disciplinati per quanto riguarda"
+    },
+    {
+      "ID": 110,
+      "riferimento": 12,
+      "idced": 110,
+      "quesito": "Quali sono per legge definiti servizi pubblici non di linea?"
+    },
+    {
+      "ID": 111,
+      "riferimento": 14,
+      "idced": 111,
+      "quesito": "Alle esigenze di chi si rivolge il servizio Taxi?"
+    },
+    {
+      "ID": 112,
+      "riferimento": 15,
+      "idced": 112,
+      "quesito": "Il Noleggio con Conducente"
+    },
+    {
+      "ID": 113,
+      "riferimento": 14,
+      "idced": 113,
+      "quesito": "In quale di questi casi il titolare di licenza taxi puo' farsi sostituire nella guida del Taxi?"
+    },
+    {
+      "ID": 114,
+      "riferimento": 13,
+      "idced": 114,
+      "quesito": "Nel contratto di trasporto di persone"
+    },
+    {
+      "ID": 115,
+      "riferimento": 13,
+      "idced": 115,
+      "quesito": "Nel contratto di trasporto di persone"
+    },
+    {
+      "ID": 116,
+      "riferimento": 2,
+      "idced": 116,
+      "quesito": "Cos'è una corsia riservata?"
+    },
+    {
+      "ID": 117,
+      "riferimento": 2,
+      "idced": 117,
+      "quesito": "Cos'è' una zona a traffico limitato?"
+    },
+    {
+      "ID": 118,
+      "riferimento": 13,
+      "idced": 118,
+      "quesito": "E' possibile installare su veicoli adibiti a servizi pubblici non di linea scritte o insegne pubblicitarie luminose?"
+    },
+    {
+      "ID": 119,
+      "riferimento": 13,
+      "idced": 119,
+      "quesito": "E' possibile installare su veicoli adibiti a servizi pubblici non di linea scritte o insegne pubblicitarie rifrangenti?"
+    },
+    {
+      "ID": 120,
+      "riferimento": 1,
+      "idced": 120,
+      "quesito": "Quanti posti possono avere al massimo le autovetture?"
+    },
+    {
+      "ID": 121,
+      "riferimento": 15,
+      "idced": 121,
+      "quesito": "Quali veicoli possono essere adibiti a servizio di noleggio con conducente per trasporto di persone?"
+    },
+    {
+      "ID": 122,
+      "riferimento": 13,
+      "idced": 122,
+      "quesito": "In base a cosa viene rilasciata la carta di circolazione dei veicoli adibiti a servizio di noleggio con conducente per trasporto di persone?"
+    },
+    {
+      "ID": 123,
+      "riferimento": 14,
+      "idced": 123,
+      "quesito": "Il servizio di piazza con autovetture"
+    },
+    {
+      "ID": 124,
+      "riferimento": 13,
+      "idced": 124,
+      "quesito": "Di norma ogni quanto devono essere sottoposti a revisione le autovetture in servizio di noleggio con conducente per trasporto di persone?"
+    },
+    {
+      "ID": 125,
+      "riferimento": 13,
+      "idced": 125,
+      "quesito": "Le autovetture, da adibire a servizio di NCC o Taxi, devono essere individualmente soggetti a verifica dei requisiti di idoneita' alla circolazione?"
+    },
+    {
+      "ID": 126,
+      "riferimento": 12,
+      "idced": 126,
+      "quesito": "Cosa si intende per destinazione di un veicolo"
+    },
+    {
+      "ID": 127,
+      "riferimento": 12,
+      "idced": 127,
+      "quesito": "Cosa si intende per uso del veicolo"
+    },
+    {
+      "ID": 128,
+      "riferimento": 12,
+      "idced": 128,
+      "quesito": "Quali sono i tipi di uso di un veicolo, come definisce il Codice della Strada?"
+    },
+    {
+      "ID": 129,
+      "riferimento": 12,
+      "idced": 129,
+      "quesito": "Come viene definito l'uso di terzi per un veicolo?"
+    },
+    {
+      "ID": 130,
+      "riferimento": 12,
+      "idced": 130,
+      "quesito": "Come viene definito l'uso proprio per un veicolo?"
+    },
+    {
+      "ID": 131,
+      "riferimento": 12,
+      "idced": 131,
+      "quesito": "Come viene definito l'uso di un veicolo adibito a servizio di piazza o Taxi?"
+    },
+    {
+      "ID": 132,
+      "riferimento": 12,
+      "idced": 132,
+      "quesito": "Dove sono definiti gli usi di un veicolo che rientrano nella categoria 'uso di terzi'"
+    },
+    {
+      "ID": 133,
+      "riferimento": 12,
+      "idced": 133,
+      "quesito": "Come viene definito l'uso di in veicolo adibito a servizio di noleggio con conducente?"
+    },
+    {
+      "ID": 134,
+      "riferimento": 15,
+      "idced": 134,
+      "quesito": "Quale sanzione si applica a chi adibisce un veicolo a una destinazione o a un uso diversi da quelli indicati nella carta di circolazione?"
+    },
+    {
+      "ID": 135,
+      "riferimento": 14,
+      "idced": 135,
+      "quesito": "Quale sanzione si applica al conducente di taxi dotato di licenza che impiega in servizio un veicolo non destinato a tale uso?"
+    },
+    {
+      "ID": 136,
+      "riferimento": 13,
+      "idced": 136,
+      "quesito": "Quale è il titolo necessario per il rilascio della carta di circolazione di un veicolo destinato ad effettuare servizio di NCC per trasporto di persone?"
+    },
+    {
+      "ID": 137,
+      "riferimento": 15,
+      "idced": 137,
+      "quesito": "Quale sanzione si applica a chi adibisce a servizio di noleggio con conducente per trasporto di persone un veicolo (esclusi gli autobus) non destinato a tale uso?"
+    },
+    {
+      "ID": 138,
+      "riferimento": 15,
+      "idced": 138,
+      "quesito": "Che sanzione subisce chi, pur avendo l'autorizzazione, guida una vettura adibita al servizio di NCC senza osservare le norme o le condizioni dell'autorizzazione?"
+    },
+    {
+      "ID": 139,
+      "riferimento": 12,
+      "idced": 139,
+      "quesito": "A quale normativa fa rinvio il Codice della Strada per la disciplina del servizio di piazza con autovetture con conducente o Taxi?"
+    },
+    {
+      "ID": 140,
+      "riferimento": 14,
+      "idced": 140,
+      "quesito": "Quale sanzione si applica al conducente di un Taxi privo della licenza comunale?"
+    },
+    {
+      "ID": 141,
+      "riferimento": 14,
+      "idced": 141,
+      "quesito": "E' possibile utilizzare per uso proprio un'autovettura adibita a servizio di Taxi?"
+    },
+    {
+      "ID": 142,
+      "riferimento": 13,
+      "idced": 142,
+      "quesito": "In caso di acquisto in leasing di un veicolo a motore da adibire a servizi pubblici non di linea, a nome di chi esso viene immatricolato?"
+    },
+    {
+      "ID": 143,
+      "riferimento": 13,
+      "idced": 143,
+      "quesito": "In caso di acquisto in leasing di un veicolo a motore da adibire a servizi pubblici non di linea, per quale uso viene immatricolato il veicolo?"
+    },
+    {
+      "ID": 144,
+      "riferimento": 13,
+      "idced": 144,
+      "quesito": "Quali sono i titoli della disponibilita' giuridica di un veicolo a motore, che ne consentono l'immatricolazione e il rilascio della relativa carta di circolazione?"
+    },
+    {
+      "ID": 145,
+      "riferimento": 13,
+      "idced": 145,
+      "quesito": "Il rilascio della carta di circolazione per un veicolo a motore da adibire ad uso terzi per servizi pubblici non di linea richiede particolari formalita'?"
+    },
+    {
+      "ID": 146,
+      "riferimento": 13,
+      "idced": 146,
+      "quesito": "Qual è l'eta' minima per poter guidare autovetture adibite a servizio di piazza o di noleggio con conducente?"
+    },
+    {
+      "ID": 147,
+      "riferimento": 13,
+      "idced": 147,
+      "quesito": "Cosa serve per condurre autovetture in servizio di noleggio con conducente e Taxi?"
+    },
+    {
+      "ID": 148,
+      "riferimento": 13,
+      "idced": 148,
+      "quesito": "Quanti punti possono riacquistare i titolari di CAP attraverso la frequenza ai corsi di aggiornamento ed esami, in base alle norme sulla patente a punti?"
+    },
+    {
+      "ID": 149,
+      "riferimento": 13,
+      "idced": 149,
+      "quesito": "Quanti punti è consentito riacquistare, attraverso la frequenza ai corsi di aggiornamento ed esami, in base alle norme sulla patente a punti?"
+    },
+    {
+      "ID": 150,
+      "riferimento": 13,
+      "idced": 150,
+      "quesito": "Cosa comporta la perdita totale del punteggio dal C.A.P.?"
+    },
+    {
+      "ID": 151,
+      "riferimento": 5,
+      "idced": 151,
+      "quesito": "E' consentita la breve fermata di altri veicoli per salita o discesa di persone, con il conducente presente e pronto a ripartire, nelle piazzole destinate ai taxi?"
+    },
+    {
+      "ID": 152,
+      "riferimento": 5,
+      "idced": 152,
+      "quesito": "E' consentita la sosta di altri veicoli nelle apposite piazzole destinate al servizio Taxi?"
+    },
+    {
+      "ID": 153,
+      "riferimento": 13,
+      "idced": 153,
+      "quesito": "I conducenti di autovetture per il trasporto di persone in servizio pubblico di Taxi o NCC sono esentati dall'obbligo di indossare le cinture di sicurezza?"
+    },
+    {
+      "ID": 154,
+      "riferimento": 13,
+      "idced": 154,
+      "quesito": "I bambini di statura inferiore a 1,50 m che viaggiano su vetture adibite al servizio pubblico non di linea, vanno obbligatoriamente assicurati al sedile con un sistema di ritenuta?"
+    },
+    {
+      "ID": 155,
+      "riferimento": 13,
+      "idced": 155,
+      "quesito": "I conducenti di veicoli adibiti a servizio di taxi o noleggio con conducente sono autorizzati a fare uso di apparecchi radiotelefonici ovvero cuffie sonore?"
+    },
+    {
+      "ID": 156,
+      "riferimento": 13,
+      "idced": 156,
+      "quesito": "Quale obbligo specifico ha il conducente di veicoli addetti a uso di terzi Taxi o NCC rispetto a quello di veicoli addetti ad uso proprio?"
+    },
+    {
+      "ID": 157,
+      "riferimento": 13,
+      "idced": 157,
+      "quesito": "Qual è il tasso alcolemico che non deve essere superato dai conducenti che esercitano l'attivita' professionale di trasporto di persone?"
+    },
+    {
+      "ID": 158,
+      "riferimento": 13,
+      "idced": 158,
+      "quesito": "Il certificato di abilitazione professionale KB abilita anche a condurre i veicoli per i quali è necessario il certificato KA?"
+    },
+    {
+      "ID": 159,
+      "riferimento": 12,
+      "idced": 159,
+      "quesito": "Cosa distingue gli autoservizi pubblici non di linea da quelli di linea?"
+    },
+    {
+      "ID": 160,
+      "riferimento": 12,
+      "idced": 160,
+      "quesito": "Quali sono gli autoservizi pubblici non di linea?"
+    },
+    {
+      "ID": 161,
+      "riferimento": 14,
+      "idced": 161,
+      "quesito": "Chi determina le tariffe del servizio di Taxi?"
+    },
+    {
+      "ID": 162,
+      "riferimento": 14,
+      "idced": 162,
+      "quesito": "Dove deve avvenire il prelevamento dell'utente o l'inizio del servizio di Taxi?"
+    },
+    {
+      "ID": 163,
+      "riferimento": 14,
+      "idced": 163,
+      "quesito": "Dove puo' avvenire lo stazionamento dei veicoli adibiti a servizio di Taxi, durante il servizio stesso?"
+    },
+    {
+      "ID": 164,
+      "riferimento": 14,
+      "idced": 164,
+      "quesito": "Quale è lo scopo del servizio di Taxi?"
+    },
+    {
+      "ID": 165,
+      "riferimento": 14,
+      "idced": 165,
+      "quesito": "Dove è obbligatoria la prestazione del servizio di Taxi?"
+    },
+    {
+      "ID": 166,
+      "riferimento": 14,
+      "idced": 166,
+      "quesito": "Quale Ente applica le sanzioni per l'inosservanza dell'obbligatorieta' della prestazione del servizio di Taxi?"
+    },
+    {
+      "ID": 167,
+      "riferimento": 15,
+      "idced": 167,
+      "quesito": "A chi è rivolto il servizio di noleggio con conducente?"
+    },
+    {
+      "ID": 168,
+      "riferimento": 15,
+      "idced": 168,
+      "quesito": "Come possono essere effettuate le prestazioni di noleggio di veicoli con conducente?"
+    },
+    {
+      "ID": 169,
+      "riferimento": 15,
+      "idced": 169,
+      "quesito": "Dove avviene, di norma, lo stazionamento dei mezzi addetti al servizio di noleggio con conducente?"
+    },
+    {
+      "ID": 170,
+      "riferimento": 13,
+      "idced": 170,
+      "quesito": "A cosa serve l'iscrizione al ruolo dei conducenti di veicoli adibiti ad autoservizi pubblici non di linea?"
+    },
+    {
+      "ID": 171,
+      "riferimento": 13,
+      "idced": 171,
+      "quesito": "Possono essere conferite licenze o autorizzazioni per autoservizi pubblici non di linea a organismi associativi?"
+    },
+    {
+      "ID": 172,
+      "riferimento": 13,
+      "idced": 172,
+      "quesito": "Come viene rilasciata la licenza o l'autorizzazione ad autoservizi pubblici non di linea?"
+    },
+    {
+      "ID": 173,
+      "riferimento": 13,
+      "idced": 173,
+      "quesito": "A quanti veicoli addetti ad autoservizi pubblici non di linea puo' fare riferimento una singola licenza o autorizzazione?"
+    },
+    {
+      "ID": 174,
+      "riferimento": 13,
+      "idced": 174,
+      "quesito": "E' possibile cumulare licenza di taxi e autorizzazione al noleggio in capo al medesimo soggetto?"
+    },
+    {
+      "ID": 175,
+      "riferimento": 15,
+      "idced": 175,
+      "quesito": "La prevista rimessa per autoservizio pubblico non di linea deve necessariamente essere situata nel territorio del Comune che rilascia il titolo amministrativo?"
+    },
+    {
+      "ID": 176,
+      "riferimento": 15,
+      "idced": 176,
+      "quesito": "Per quali autoservizi pubblici non di linea è necessario disporre di una rimessa propria?"
+    },
+    {
+      "ID": 177,
+      "riferimento": 13,
+      "idced": 177,
+      "quesito": "In quale dei seguenti casi le licenze e autorizzazioni possono essere trasferite a richiesta dal titolare?"
+    },
+    {
+      "ID": 178,
+      "riferimento": 13,
+      "idced": 178,
+      "quesito": "In quali dei seguenti casi le licenze e autorizzazioni possono essere trasferite a richiesta dal titolare?"
+    },
+    {
+      "ID": 179,
+      "riferimento": 13,
+      "idced": 179,
+      "quesito": "In quali sei seguenti casi le licenze e autorizzazioni possono essere trasferite a richiesta del titolare?"
+    },
+    {
+      "ID": 180,
+      "riferimento": 13,
+      "idced": 180,
+      "quesito": "In caso di trasferimento della licenza o dell'autorizzazione da parte di un titolare, quanto tempo deve trascorrere prima che egli possa riottenerne altra?"
+    },
+    {
+      "ID": 181,
+      "riferimento": 14,
+      "idced": 181,
+      "quesito": "I titolari di licenza Taxi possono farsi sostituire alla guida del Taxi?"
+    },
+    {
+      "ID": 182,
+      "riferimento": 14,
+      "idced": 182,
+      "quesito": "I veicoli adibiti a servizio di Taxi possono circolare e sostare liberamente?"
+    },
+    {
+      "ID": 183,
+      "riferimento": 14,
+      "idced": 183,
+      "quesito": "Nel servizio Taxi, da dove deve avvenire la partenza del veicolo per il prelevamento dell'utente o per l'inizio del servizio?"
+    },
+    {
+      "ID": 184,
+      "riferimento": 14,
+      "idced": 184,
+      "quesito": "Nel servizio Taxi, è necessario l'assenso del conducente per destinazioni esterne al territorio comunale o comprensoriale?"
+    },
+    {
+      "ID": 185,
+      "riferimento": 15,
+      "idced": 185,
+      "quesito": "Nel servizio di noleggio con conducente con autovettura è possibile sostare in posteggio di stazionamento su suolo pubblico?"
+    },
+    {
+      "ID": 186,
+      "riferimento": 13,
+      "idced": 186,
+      "quesito": "Nel servizio di noleggio con conducente con autovettura si possono usare corsie preferenziali per Taxi e autobus e altre facilitazioni previste per i servizi pubblici?"
+    },
+    {
+      "ID": 187,
+      "riferimento": 15,
+      "idced": 187,
+      "quesito": "Dove vengono effettuate le prenotazioni di trasporto nel servizio di noleggio con conducente con autovettura?"
+    },
+    {
+      "ID": 188,
+      "riferimento": 15,
+      "idced": 188,
+      "quesito": "In che caso i veicoli da NCC possono essere autorizzati allo stazionamento su suolo pubblico dal Comune, se qui non è esercito il servizio di Taxi?"
+    },
+    {
+      "ID": 189,
+      "riferimento": 14,
+      "idced": 189,
+      "quesito": "Cosa caratterizza le autovetture adibite al servizio di Taxi rispetto a quelle adibite al servizio di noleggio con conducente?"
+    },
+    {
+      "ID": 190,
+      "riferimento": 14,
+      "idced": 190,
+      "quesito": "E' sempre sufficiente il tassametro omologato per indicare la tariffa da pagare nel servizio di Taxi?"
+    },
+    {
+      "ID": 191,
+      "riferimento": 14,
+      "idced": 191,
+      "quesito": "Per le autovetture immatricolate per servizio Taxi è sempre necessario esporre sul tetto il contrassegno luminoso con la scritta 'taxi'"
+    },
+    {
+      "ID": 192,
+      "riferimento": 14,
+      "idced": 192,
+      "quesito": "Come vengono contraddistinte le autovetture adibite ai servizi di Taxi?"
+    },
+    {
+      "ID": 193,
+      "riferimento": 14,
+      "idced": 193,
+      "quesito": "Le autovetture adibite al servizio Taxi devono esporre la scritta 'servizio pubblico'"
+    },
+    {
+      "ID": 194,
+      "riferimento": 15,
+      "idced": 194,
+      "quesito": "Quale contrassegno particolare devono esporre le autovetture adibite al servizio di noleggio con conducente?"
+    },
+    {
+      "ID": 195,
+      "riferimento": 15,
+      "idced": 195,
+      "quesito": "Quale targa particolare devono esporre le autovetture adibite al servizio di noleggio con conducente?"
+    },
+    {
+      "ID": 196,
+      "riferimento": 14,
+      "idced": 196,
+      "quesito": "A favore di chi deve essere effettuato il servizio di Taxi?"
+    },
+    {
+      "ID": 197,
+      "riferimento": 14,
+      "idced": 197,
+      "quesito": "Come si determina la tariffa del servizio Taxi?"
+    },
+    {
+      "ID": 198,
+      "riferimento": 15,
+      "idced": 198,
+      "quesito": "Il servizio di noleggio con conducente è soggetto a tariffa predeterminata?"
+    },
+    {
+      "ID": 199,
+      "riferimento": 15,
+      "idced": 199,
+      "quesito": "Quale organo determina i criteri per la definizione delle tariffe minime e massime per i servizi di noleggio con conducente?"
+    },
+    {
+      "ID": 200,
+      "riferimento": 15,
+      "idced": 200,
+      "quesito": "In quali comuni puo' essere consentito svolgere il servizio di Taxi con autovetture immatricolate per servizio di noleggio con conducente?"
+    },
+    {
+      "ID": 201,
+      "riferimento": 14,
+      "idced": 201,
+      "quesito": "In quali comuni puo' esservi esonero dal dotare le autovetture addette al servizio Taxi dell'apposito tassametro omologato?"
+    },
+    {
+      "ID": 202,
+      "riferimento": 14,
+      "idced": 202,
+      "quesito": "Le vetture addette al servizio Taxi possono avere scritte e stemmi identificativi dell'azienda esercente e del Comune di appartenenza, posti sulle fiancate?"
+    },
+    {
+      "ID": 203,
+      "riferimento": 15,
+      "idced": 203,
+      "quesito": "Le tariffe minime e massime per il NCC con autovetture tengono conto anche dei tempi di sosta, pedaggi autostradali, tasse di transito, aria condizionata, ecc.?"
+    },
+    {
+      "ID": 204,
+      "riferimento": 12,
+      "idced": 204,
+      "quesito": "Cosa distingue i servizi di trasporto pubblici non di linea da quelli di linea?"
+    },
+    {
+      "ID": 205,
+      "riferimento": 12,
+      "idced": 205,
+      "quesito": "I servizi di trasporto pubblico non di linea possono presentarsi in forme concorrenziali al trasporto pubblico di linea?"
+    },
+    {
+      "ID": 206,
+      "riferimento": 14,
+      "idced": 206,
+      "quesito": "Il servizio Taxi ha il solo scopo di soddisfare le richieste di trasporto individuali?"
+    },
+    {
+      "ID": 207,
+      "riferimento": 14,
+      "idced": 207,
+      "quesito": "Il servizio Taxi ha obblighi particolari relativi al prelevamento dell'utente o all'inizio del servizio?"
+    },
+    {
+      "ID": 208,
+      "riferimento": 14,
+      "idced": 208,
+      "quesito": "La prestazione del servizio Taxi ha obblighi particolari in relazione al territorio interessato dallo spostamento?"
+    },
+    {
+      "ID": 209,
+      "riferimento": 13,
+      "idced": 209,
+      "quesito": "Da chi puo' essere svolto il servizio Taxi?"
+    },
+    {
+      "ID": 210,
+      "riferimento": 15,
+      "idced": 210,
+      "quesito": "Dove puo' essere prelevato l'utente che ha prenotato un servizio di noleggio con conducente?"
+    },
+    {
+      "ID": 211,
+      "riferimento": 15,
+      "idced": 211,
+      "quesito": "Il servizio di autonoleggio con conducente ha obblighi particolari in relazione all'inizio del servizio?"
+    },
+    {
+      "ID": 212,
+      "riferimento": 13,
+      "idced": 212,
+      "quesito": "Da chi puo' essere svolto il servizio di autonoleggio con conducente?"
+    },
+    {
+      "ID": 213,
+      "riferimento": 13,
+      "idced": 213,
+      "quesito": "La sostituzione alla guida di un titolare di licenza o autorizzazione all'esercizio di servizi pubblici non di linea deve essere autorizzata da qualche Ente?"
+    },
+    {
+      "ID": 214,
+      "riferimento": 13,
+      "idced": 214,
+      "quesito": "Qual è l'autorita' che consente il rinnovo e il trasferimento di titolarita' delle licenze taxi e delle autorizzazioni per il servizio di noleggio con conducente?"
+    },
+    {
+      "ID": 215,
+      "riferimento": 13,
+      "idced": 215,
+      "quesito": "Qual è l'autorita' che rilascia le autorizzazioni per il servizio di noleggio con conducente?"
+    },
+    {
+      "ID": 216,
+      "riferimento": 13,
+      "idced": 216,
+      "quesito": "Qual è l'autorita' che rilascia le licenze per il servizio Taxi?"
+    },
+    {
+      "ID": 217,
+      "riferimento": 15,
+      "idced": 217,
+      "quesito": "Quale ente determina le tariffe per il servizio di noleggio con conducente?"
+    },
+    {
+      "ID": 218,
+      "riferimento": 14,
+      "idced": 218,
+      "quesito": "Quale ente determina le tariffe per il servizio Taxi?"
+    },
+    {
+      "ID": 219,
+      "riferimento": 15,
+      "idced": 219,
+      "quesito": "Nei Comuni dove non esiste servizio di Taxi, i veicoli adibiti al servizio di noleggio con conducente possono sostare su aree pubbliche?"
+    },
+    {
+      "ID": 220,
+      "riferimento": 15,
+      "idced": 220,
+      "quesito": "La sosta dei veicoli in servizio di NCC presso stazioni ferroviarie, se consentita dal Comune, è possibile nelle stesse aree destinate ai Taxi?"
+    },
+    {
+      "ID": 221,
+      "riferimento": 15,
+      "idced": 221,
+      "quesito": "Nei Comuni dove esiste il servizio di Taxi, i veicoli adibiti al servizio di noleggio con conducente possono sostare su aree pubbliche?"
+    },
+    {
+      "ID": 222,
+      "riferimento": 14,
+      "idced": 222,
+      "quesito": "Quale autorita' determina i criteri per il calcolo annuale delle tariffe per il servizio Taxi?"
+    },
+    {
+      "ID": 223,
+      "riferimento": 14,
+      "idced": 223,
+      "quesito": "Quale autorita' determina le modalita' di turnazione per l'esercizio del servizio Taxi?"
+    },
+    {
+      "ID": 224,
+      "riferimento": 13,
+      "idced": 224,
+      "quesito": "L'iscrizione al ruolo dei conducenti dei veicoli adibiti a servizi pubblici non di linea è necessaria per i dipendenti di ditte autorizzate a svolgere servizi di NCC?"
+    },
+    {
+      "ID": 225,
+      "riferimento": 19,
+      "idced": 225,
+      "quesito": "Per garantire la sicurezza della circolazione ed evitare incidenti è necessario"
+    },
+    {
+      "ID": 226,
+      "riferimento": 8,
+      "idced": 226,
+      "quesito": "Chi guida un veicolo ad elevate prestazioni, deve"
+    },
+    {
+      "ID": 227,
+      "riferimento": 9,
+      "idced": 227,
+      "quesito": "In caso di incidente stradale, il conducente"
+    },
+    {
+      "ID": 228,
+      "riferimento": 9,
+      "idced": 228,
+      "quesito": "Il conducente coinvolto in un incidente stradale con danni a persone"
+    },
+    {
+      "ID": 229,
+      "riferimento": 9,
+      "idced": 229,
+      "quesito": "Allorchè si è coinvolti in un incidente stradale, è obbligatorio soccorrere gli infortunati"
+    },
+    {
+      "ID": 230,
+      "riferimento": 8,
+      "idced": 231,
+      "quesito": "In caso di incidente, si deve segnalare il pericolo ai veicoli che sopraggiungono"
+    },
+    {
+      "ID": 231,
+      "riferimento": 9,
+      "idced": 232,
+      "quesito": "Soccorrere un infortunato della strada"
+    },
+    {
+      "ID": 232,
+      "riferimento": 9,
+      "idced": 233,
+      "quesito": "Allorchè si è coinvolti in un incidente stradale, è sempre obbligatorio soccorrere gli infortunati"
+    },
+    {
+      "ID": 233,
+      "riferimento": 9,
+      "idced": 234,
+      "quesito": "Soccorrere un infortunato della strada"
+    },
+    {
+      "ID": 234,
+      "riferimento": 9,
+      "idced": 235,
+      "quesito": "Soccorrere un infortunato della strada"
+    },
+    {
+      "ID": 235,
+      "riferimento": 9,
+      "idced": 236,
+      "quesito": "Soccorrere un infortunato della strada"
+    },
+    {
+      "ID": 236,
+      "riferimento": 9,
+      "idced": 237,
+      "quesito": "Soccorrere un infortunato della strada"
+    },
+    {
+      "ID": 237,
+      "riferimento": 13,
+      "idced": 238,
+      "quesito": "La decurtazione totale dei punti della patente di guida determina"
+    },
+    {
+      "ID": 238,
+      "riferimento": 13,
+      "idced": 239,
+      "quesito": "L'uso delle cinture di sicurezza delle autovetture"
+    },
+    {
+      "ID": 239,
+      "riferimento": 13,
+      "idced": 240,
+      "quesito": "La licenza per l'esercizio del servizio di Taxi è rilasciata"
+    },
+    {
+      "ID": 240,
+      "riferimento": 13,
+      "idced": 241,
+      "quesito": "L'infrazione commessa nello svolgimento dell'attivita' professionale di guida di un Taxi"
+    },
+    {
+      "ID": 241,
+      "riferimento": 13,
+      "idced": 242,
+      "quesito": "Con la frequenza di un corso recupero punti per C.A.P."
+    },
+    {
+      "ID": 242,
+      "riferimento": 13,
+      "idced": 243,
+      "quesito": "All'atto del rilascio della patente di guida, al conducente viene attribuito un punteggio di"
+    },
+    {
+      "ID": 243,
+      "riferimento": 13,
+      "idced": 244,
+      "quesito": "Il certificato di abilitazione professionale viene prescritto per la guida di"
+    },
+    {
+      "ID": 244,
+      "riferimento": 13,
+      "idced": 245,
+      "quesito": "Con quale cadenza periodica devono essere revisionati i Taxi?"
+    },
+    {
+      "ID": 245,
+      "riferimento": 12,
+      "idced": 246,
+      "quesito": "Cosa si intende per uso del veicolo?"
+    },
+    {
+      "ID": 246,
+      "riferimento": 12,
+      "idced": 247,
+      "quesito": "Cosa si intende per destinazione del veicolo?"
+    },
+    {
+      "ID": 247,
+      "riferimento": 12,
+      "idced": 248,
+      "quesito": "L'uso di terzi comprende"
+    },
+    {
+      "ID": 248,
+      "riferimento": 12,
+      "idced": 249,
+      "quesito": "In quale caso un veicolo viene adibito ad uso proprio?"
+    },
+    {
+      "ID": 249,
+      "riferimento": 14,
+      "idced": 250,
+      "quesito": "Quante persone al massimo puo' trasportare un Taxi?"
+    },
+    {
+      "ID": 250,
+      "riferimento": 11,
+      "idced": 251,
+      "quesito": "Che cosa è il premio di assicurazione?"
+    },
+    {
+      "ID": 251,
+      "riferimento": 18,
+      "idced": 252,
+      "quesito": "Qual è lo spessore minimo ammesso del battistrada di un pneumatico di un autoveicolo?"
+    },
+    {
+      "ID": 252,
+      "riferimento": 12,
+      "idced": 253,
+      "quesito": "In quale caso un veicolo viene adibito ad uso terzi?"
+    },
+    {
+      "ID": 253,
+      "riferimento": 12,
+      "idced": 254,
+      "quesito": "L'uso dei terzi non comprende"
+    },
+    {
+      "ID": 254,
+      "riferimento": 11,
+      "idced": 255,
+      "quesito": "La polizza per la responsabilita' civile R.C. copre"
+    },
+    {
+      "ID": 255,
+      "riferimento": 18,
+      "idced": 256,
+      "quesito": "La funzione del pneumatico è"
+    },
+    {
+      "ID": 256,
+      "riferimento": 18,
+      "idced": 257,
+      "quesito": "La struttura del pneumatico puo' essere di tipo"
+    },
+    {
+      "ID": 257,
+      "riferimento": 14,
+      "idced": 258,
+      "quesito": "Il sistema di tenuta dell'aria tra copertura e cerchio di uno pneumatico puo' essere"
+    },
+    {
+      "ID": 258,
+      "riferimento": 18,
+      "idced": 259,
+      "quesito": "Nella marcatura dello pneumatico 195/65 R14 86T, il primo numero 195 indica"
+    },
+    {
+      "ID": 259,
+      "riferimento": 18,
+      "idced": 260,
+      "quesito": "Nella marcatura dello pneumatico 195/65 R14 86T, il numero 65 indica"
+    },
+    {
+      "ID": 260,
+      "riferimento": 18,
+      "idced": 261,
+      "quesito": "Nella marcatura dello pneumatico 195/65 R14 86T, il numero 65 indica"
+    },
+    {
+      "ID": 261,
+      "riferimento": 18,
+      "idced": 262,
+      "quesito": "Nella marcatura dello pneumatico 195/65 R14 86T, la lettera R indica"
+    },
+    {
+      "ID": 262,
+      "riferimento": 18,
+      "idced": 263,
+      "quesito": "Nella marcatura dello pneumatico 195/65 R14 86T, il numero 86 indica"
+    },
+    {
+      "ID": 263,
+      "riferimento": 18,
+      "idced": 264,
+      "quesito": "Nella marcatura dello pneumatico 195/65 R14 86T, il numero 14 indica"
+    },
+    {
+      "ID": 264,
+      "riferimento": 18,
+      "idced": 265,
+      "quesito": "Nella marcatura dello pneumatico 195/65 R14 86T, la lettera T indica"
+    },
+    {
+      "ID": 265,
+      "riferimento": 18,
+      "idced": 266,
+      "quesito": "Ai fini della circolazione stradale, le dimensioni ammissibili di uno pneumatico per un determinato veicolo sono riportate"
+    },
+    {
+      "ID": 266,
+      "riferimento": 18,
+      "idced": 267,
+      "quesito": "La sostituzione di uno pneumatico con uno di identica misura e' consentita purche'"
+    },
+    {
+      "ID": 267,
+      "riferimento": 18,
+      "idced": 268,
+      "quesito": "La sostituzione di uno pneumatico con uno di identiche dimensioni e' consentita purche'"
+    },
+    {
+      "ID": 268,
+      "riferimento": 18,
+      "idced": 269,
+      "quesito": "La sostituzione di uno pneumatico con uno di diversa misura e' consentita purche'"
+    },
+    {
+      "ID": 269,
+      "riferimento": 18,
+      "idced": 270,
+      "quesito": "La marcatura M+S sullo pneumatico sta ad indicare"
+    },
+    {
+      "ID": 270,
+      "riferimento": 18,
+      "idced": 271,
+      "quesito": "Uno pneumatico di tipo tubless si caratterizza per"
+    },
+    {
+      "ID": 271,
+      "riferimento": 18,
+      "idced": 272,
+      "quesito": "La marcatura di uno pneumatico consente, tra l'altro, di conoscere"
+    },
+    {
+      "ID": 272,
+      "riferimento": 18,
+      "idced": 273,
+      "quesito": "La marcatura di uno pneumatico consente, tra l'altro, di conoscere"
+    },
+    {
+      "ID": 273,
+      "riferimento": 18,
+      "idced": 274,
+      "quesito": "La marcatura 'regroovable' di uno pneumatico sta a indicare che"
+    },
+    {
+      "ID": 274,
+      "riferimento": 18,
+      "idced": 275,
+      "quesito": "E' obbligatorio montare su uno stesso asse"
+    },
+    {
+      "ID": 275,
+      "riferimento": 18,
+      "idced": 276,
+      "quesito": "A parita' di circonferenza di rotolamento, un pneumatico piu' stretto è"
+    },
+    {
+      "ID": 276,
+      "riferimento": 18,
+      "idced": 277,
+      "quesito": "Un pneumatico di tipo 'ribassato'"
+    },
+    {
+      "ID": 277,
+      "riferimento": 18,
+      "idced": 278,
+      "quesito": "Una pressione di gonfiaggio dello pneumatico inferiore a quella prescritta"
+    },
+    {
+      "ID": 278,
+      "riferimento": 18,
+      "idced": 279,
+      "quesito": "Una pressione di gonfiaggio dello pneumatico inferiore a quella prescritta"
+    },
+    {
+      "ID": 279,
+      "riferimento": 18,
+      "idced": 280,
+      "quesito": "Una pressione di gonfiaggio dello pneumatico superiore a quella prescritta"
+    },
+    {
+      "ID": 280,
+      "riferimento": 18,
+      "idced": 281,
+      "quesito": "La pressione di gonfiaggio dello pneumatico va controllata"
+    },
+    {
+      "ID": 281,
+      "riferimento": 18,
+      "idced": 282,
+      "quesito": "Lo spessore minimo del battistrada di uno pneumatico e'"
+    },
+    {
+      "ID": 282,
+      "riferimento": 18,
+      "idced": 283,
+      "quesito": "Lo spessore minimo del battistrada di uno pneumatico e'"
+    },
+    {
+      "ID": 283,
+      "riferimento": 18,
+      "idced": 284,
+      "quesito": "Lo spessore minimo del battistrada di uno pneumatico e'"
+    },
+    {
+      "ID": 284,
+      "riferimento": 18,
+      "idced": 285,
+      "quesito": "La mancata equilibratura di uno pneumatico"
+    },
+    {
+      "ID": 285,
+      "riferimento": 19,
+      "idced": 286,
+      "quesito": "Una corretta manutenzione di uno pneumatico prevede"
+    },
+    {
+      "ID": 286,
+      "riferimento": 18,
+      "idced": 287,
+      "quesito": "L'acquaplaning"
+    },
+    {
+      "ID": 287,
+      "riferimento": 18,
+      "idced": 288,
+      "quesito": "L'acquaplaning"
+    },
+    {
+      "ID": 288,
+      "riferimento": 18,
+      "idced": 289,
+      "quesito": "Il valore dell'OFF-SET o ET"
+    },
+    {
+      "ID": 289,
+      "riferimento": 18,
+      "idced": 290,
+      "quesito": "Nell'accoppiamento dello pneumatico con il cerchio"
+    },
+    {
+      "ID": 290,
+      "riferimento": 18,
+      "idced": 291,
+      "quesito": "Un valore di OFF-SET diverso da quello prescritto dalla casa costruttrice del veicolo"
+    },
+    {
+      "ID": 291,
+      "riferimento": 18,
+      "idced": 292,
+      "quesito": "Per la sostituzione di una ruota"
+    },
+    {
+      "ID": 292,
+      "riferimento": 18,
+      "idced": 293,
+      "quesito": "Per la sostituzione di una ruota"
+    },
+    {
+      "ID": 293,
+      "riferimento": 18,
+      "idced": 294,
+      "quesito": "Il disegno del battistrada dello pneumatico"
+    },
+    {
+      "ID": 294,
+      "riferimento": 18,
+      "idced": 295,
+      "quesito": "L'ABS"
+    },
+    {
+      "ID": 295,
+      "riferimento": 18,
+      "idced": 296,
+      "quesito": "L'ABS"
+    },
+    {
+      "ID": 296,
+      "riferimento": 18,
+      "idced": 297,
+      "quesito": "L'ABS"
+    },
+    {
+      "ID": 297,
+      "riferimento": 18,
+      "idced": 298,
+      "quesito": "Nell'ABS l'attuatore elettropneumatico"
+    },
+    {
+      "ID": 298,
+      "riferimento": 18,
+      "idced": 299,
+      "quesito": "L'ABS"
+    },
+    {
+      "ID": 299,
+      "riferimento": 18,
+      "idced": 300,
+      "quesito": "In caso di malfunzionamento dell'ABS"
+    },
+    {
+      "ID": 300,
+      "riferimento": 18,
+      "idced": 301,
+      "quesito": "Sono elementi dell'impianto frenante idraulico di un autoveicolo"
+    },
+    {
+      "ID": 301,
+      "riferimento": 18,
+      "idced": 302,
+      "quesito": "Sono elementi dell'impianto frenante idraulico di un autoveicolo"
+    },
+    {
+      "ID": 302,
+      "riferimento": 18,
+      "idced": 303,
+      "quesito": "Il circuito idraulico dell'impianto di frenatura degli autoveicoli"
+    },
+    {
+      "ID": 303,
+      "riferimento": 18,
+      "idced": 304,
+      "quesito": "Il circuito idraulico dell'impianto di frenatura degli autoveicoli"
+    },
+    {
+      "ID": 304,
+      "riferimento": 18,
+      "idced": 305,
+      "quesito": "Il correttore di frenata"
+    },
+    {
+      "ID": 305,
+      "riferimento": 18,
+      "idced": 306,
+      "quesito": "La pompa dell'impianto dei freni"
+    },
+    {
+      "ID": 306,
+      "riferimento": 18,
+      "idced": 307,
+      "quesito": "Il circuito frenante sdoppiato nelle autovetture"
+    },
+    {
+      "ID": 307,
+      "riferimento": 18,
+      "idced": 308,
+      "quesito": "Il circuito frenante sdoppiato nelle autovetture"
+    },
+    {
+      "ID": 308,
+      "riferimento": 18,
+      "idced": 309,
+      "quesito": "Il freno a disco"
+    },
+    {
+      "ID": 309,
+      "riferimento": 18,
+      "idced": 310,
+      "quesito": "Il freno a disco"
+    },
+    {
+      "ID": 310,
+      "riferimento": 18,
+      "idced": 311,
+      "quesito": "Puo' determinare una frenatura irregolare"
+    },
+    {
+      "ID": 311,
+      "riferimento": 18,
+      "idced": 312,
+      "quesito": "Nell'impianto frenante la forza trasmessa alle ruote"
+    },
+    {
+      "ID": 312,
+      "riferimento": 18,
+      "idced": 313,
+      "quesito": "Puo' determinare una frenatura irregolare"
+    },
+    {
+      "ID": 313,
+      "riferimento": 18,
+      "idced": 314,
+      "quesito": "Nell'impianto frenante a circuito idraulico la forza applicata al pedale"
+    },
+    {
+      "ID": 314,
+      "riferimento": 18,
+      "idced": 315,
+      "quesito": "Il freno di stazionamento"
+    },
+    {
+      "ID": 315,
+      "riferimento": 18,
+      "idced": 316,
+      "quesito": "Puo' determinare una frenatura poco efficiente"
+    },
+    {
+      "ID": 316,
+      "riferimento": 18,
+      "idced": 317,
+      "quesito": "Il correttore di frenata"
+    },
+    {
+      "ID": 317,
+      "riferimento": 18,
+      "idced": 318,
+      "quesito": "Puo' determinare una frenatura irregolare"
+    },
+    {
+      "ID": 318,
+      "riferimento": 18,
+      "idced": 319,
+      "quesito": "Eccessive vibrazioni durante nel corso della frenatura di servizio"
+    },
+    {
+      "ID": 319,
+      "riferimento": 18,
+      "idced": 320,
+      "quesito": "Guarnizioni di attrito sporche"
+    },
+    {
+      "ID": 320,
+      "riferimento": 19,
+      "idced": 321,
+      "quesito": "Per evitare un'usura precoce delle guarnizioni di attrito dei freni occorre"
+    },
+    {
+      "ID": 321,
+      "riferimento": 19,
+      "idced": 322,
+      "quesito": "Per evitare un'usura precoce delle guarnizioni di attrito dei freni occorre"
+    },
+    {
+      "ID": 322,
+      "riferimento": 17,
+      "idced": 323,
+      "quesito": "Il motore a benzina"
+    },
+    {
+      "ID": 323,
+      "riferimento": 17,
+      "idced": 324,
+      "quesito": "Nella fase di aspirazione del motore a benzina a 4 tempi"
+    },
+    {
+      "ID": 324,
+      "riferimento": 17,
+      "idced": 325,
+      "quesito": "Nella fase di aspirazione del motore a benzina a 4 tempi"
+    },
+    {
+      "ID": 325,
+      "riferimento": 17,
+      "idced": 326,
+      "quesito": "Nella fase di compressione del motore a benzina a 4 tempi"
+    },
+    {
+      "ID": 326,
+      "riferimento": 17,
+      "idced": 327,
+      "quesito": "Nella fase di scoppio del motore benzina a 4 tempi"
+    },
+    {
+      "ID": 327,
+      "riferimento": 17,
+      "idced": 328,
+      "quesito": "La fase di scoppio del motore benzina a 4 tempi"
+    },
+    {
+      "ID": 328,
+      "riferimento": 17,
+      "idced": 329,
+      "quesito": "Nella fase di scarico del motore benzina a 4 tempi"
+    },
+    {
+      "ID": 329,
+      "riferimento": 17,
+      "idced": 330,
+      "quesito": "Gli organi ausiliari di un motore a benzina/diesel sono tra l'altro"
+    },
+    {
+      "ID": 330,
+      "riferimento": 17,
+      "idced": 331,
+      "quesito": "L'autoregolatore del numero di giri"
+    },
+    {
+      "ID": 331,
+      "riferimento": 17,
+      "idced": 332,
+      "quesito": "L'autoregolatore del numero di giri"
+    },
+    {
+      "ID": 332,
+      "riferimento": 17,
+      "idced": 333,
+      "quesito": "Gli organi ausiliari di un motore a benzina/diesel sono tra l'altro"
+    },
+    {
+      "ID": 333,
+      "riferimento": 17,
+      "idced": 334,
+      "quesito": "Gli organi della distribuzione comprendono anche"
+    },
+    {
+      "ID": 334,
+      "riferimento": 17,
+      "idced": 335,
+      "quesito": "Nel motore ad iniezione a benzina"
+    },
+    {
+      "ID": 335,
+      "riferimento": 17,
+      "idced": 336,
+      "quesito": "La sovralimentazione"
+    },
+    {
+      "ID": 336,
+      "riferimento": 17,
+      "idced": 337,
+      "quesito": "L'intercooler"
+    },
+    {
+      "ID": 337,
+      "riferimento": 17,
+      "idced": 338,
+      "quesito": "Gli elementi principali degli organi di lubrificazione sono"
+    },
+    {
+      "ID": 338,
+      "riferimento": 17,
+      "idced": 339,
+      "quesito": "Causa di insufficiente pressione dell'olio motore dell'impianto di lubrificazione puo' essere:"
+    },
+    {
+      "ID": 339,
+      "riferimento": 17,
+      "idced": 340,
+      "quesito": "L'impianto di raffreddamento del motore"
+    },
+    {
+      "ID": 340,
+      "riferimento": 17,
+      "idced": 341,
+      "quesito": "Nel motore Diesel"
+    },
+    {
+      "ID": 341,
+      "riferimento": 17,
+      "idced": 342,
+      "quesito": "Nel motore Diesel"
+    },
+    {
+      "ID": 342,
+      "riferimento": 17,
+      "idced": 343,
+      "quesito": "Il sistema di iniezione common rail in un motore diesel"
+    },
+    {
+      "ID": 343,
+      "riferimento": 17,
+      "idced": 344,
+      "quesito": "Il sistema di iniezione common rail in un motore diesel"
+    },
+    {
+      "ID": 344,
+      "riferimento": 17,
+      "idced": 345,
+      "quesito": "I veicoli con motore elettrico"
+    },
+    {
+      "ID": 345,
+      "riferimento": 17,
+      "idced": 346,
+      "quesito": "Nei motori a GPL"
+    },
+    {
+      "ID": 346,
+      "riferimento": 17,
+      "idced": 347,
+      "quesito": "Il motorino d'avviamento"
+    },
+    {
+      "ID": 347,
+      "riferimento": 17,
+      "idced": 348,
+      "quesito": "Il motorino d'avviamento"
+    },
+    {
+      "ID": 348,
+      "riferimento": 17,
+      "idced": 349,
+      "quesito": "I fusibili"
+    },
+    {
+      "ID": 349,
+      "riferimento": 17,
+      "idced": 350,
+      "quesito": "I fusibili"
+    },
+    {
+      "ID": 350,
+      "riferimento": 17,
+      "idced": 351,
+      "quesito": "La sostituzione di un fusibile"
+    },
+    {
+      "ID": 351,
+      "riferimento": 17,
+      "idced": 352,
+      "quesito": "Il motore elettrico"
+    },
+    {
+      "ID": 352,
+      "riferimento": 17,
+      "idced": 353,
+      "quesito": "Il motore elettrico"
+    },
+    {
+      "ID": 353,
+      "riferimento": 18,
+      "idced": 354,
+      "quesito": "Gli organi della trasmissione hanno la funzione di"
+    },
+    {
+      "ID": 354,
+      "riferimento": 18,
+      "idced": 355,
+      "quesito": "Gli organi della trasmissione hanno la funzione di"
+    },
+    {
+      "ID": 355,
+      "riferimento": 18,
+      "idced": 356,
+      "quesito": "Fanno parte degli organi della trasmissione"
+    },
+    {
+      "ID": 356,
+      "riferimento": 18,
+      "idced": 357,
+      "quesito": "La frizione"
+    },
+    {
+      "ID": 357,
+      "riferimento": 18,
+      "idced": 358,
+      "quesito": "La frizione"
+    },
+    {
+      "ID": 358,
+      "riferimento": 18,
+      "idced": 359,
+      "quesito": "La frizione"
+    },
+    {
+      "ID": 359,
+      "riferimento": 18,
+      "idced": 360,
+      "quesito": "Il disco della frizione"
+    },
+    {
+      "ID": 360,
+      "riferimento": 18,
+      "idced": 361,
+      "quesito": "La frizione"
+    },
+    {
+      "ID": 361,
+      "riferimento": 18,
+      "idced": 362,
+      "quesito": "Il ferodo presente sul disco della frizione"
+    },
+    {
+      "ID": 362,
+      "riferimento": 18,
+      "idced": 363,
+      "quesito": "La frizione"
+    },
+    {
+      "ID": 363,
+      "riferimento": 18,
+      "idced": 364,
+      "quesito": "Per un corretto uso della frizione"
+    },
+    {
+      "ID": 364,
+      "riferimento": 18,
+      "idced": 365,
+      "quesito": "Il cambio"
+    },
+    {
+      "ID": 365,
+      "riferimento": 18,
+      "idced": 366,
+      "quesito": "La forza di trazione trasmessa alle ruote"
+    },
+    {
+      "ID": 366,
+      "riferimento": 18,
+      "idced": 367,
+      "quesito": "Il sincronizzatore"
+    },
+    {
+      "ID": 367,
+      "riferimento": 18,
+      "idced": 368,
+      "quesito": "La scatola del cambio"
+    },
+    {
+      "ID": 368,
+      "riferimento": 18,
+      "idced": 369,
+      "quesito": "La copia conica"
+    },
+    {
+      "ID": 369,
+      "riferimento": 18,
+      "idced": 370,
+      "quesito": "La copia conica"
+    },
+    {
+      "ID": 370,
+      "riferimento": 18,
+      "idced": 371,
+      "quesito": "Il differenziale"
+    },
+    {
+      "ID": 371,
+      "riferimento": 18,
+      "idced": 372,
+      "quesito": "Il differenziale"
+    },
+    {
+      "ID": 372,
+      "riferimento": 16,
+      "idced": 373,
+      "quesito": "La rappresentazione grafica di una carta stradale"
+    },
+    {
+      "ID": 373,
+      "riferimento": 16,
+      "idced": 374,
+      "quesito": "Una carta stradale"
+    },
+    {
+      "ID": 374,
+      "riferimento": 16,
+      "idced": 375,
+      "quesito": "Il fattore di scala di una carta stradale"
+    },
+    {
+      "ID": 375,
+      "riferimento": 16,
+      "idced": 376,
+      "quesito": "Le carte stradali"
+    },
+    {
+      "ID": 376,
+      "riferimento": 16,
+      "idced": 377,
+      "quesito": "Gli elementi di una carta stradale"
+    },
+    {
+      "ID": 377,
+      "riferimento": 16,
+      "idced": 378,
+      "quesito": "Il fattore di scala di una carta stradale"
+    },
+    {
+      "ID": 378,
+      "riferimento": 16,
+      "idced": 379,
+      "quesito": "Una linea tratteggiata su una carta stradale puo' indicare"
+    },
+    {
+      "ID": 379,
+      "riferimento": 16,
+      "idced": 380,
+      "quesito": "Un fattore di scala 1:1000 sta ad indicare che"
+    },
+    {
+      "ID": 380,
+      "riferimento": 16,
+      "idced": 381,
+      "quesito": "Un fattore di scala 1:1000 sta ad indicare che"
+    },
+    {
+      "ID": 381,
+      "riferimento": 16,
+      "idced": 382,
+      "quesito": "La lettura delle distanze su una carta stradale"
+    },
+    {
+      "ID": 382,
+      "riferimento": 16,
+      "idced": 383,
+      "quesito": "La lettura delle distanze su una carta stradale"
+    },
+    {
+      "ID": 383,
+      "riferimento": 16,
+      "idced": 384,
+      "quesito": "Le distanze su una carta stradale"
+    },
+    {
+      "ID": 384,
+      "riferimento": 16,
+      "idced": 385,
+      "quesito": "Dalla lettura della carta stradale e' possibile"
+    },
+    {
+      "ID": 385,
+      "riferimento": 16,
+      "idced": 386,
+      "quesito": "Dalla lettura della carta stradale"
+    },
+    {
+      "ID": 386,
+      "riferimento": 16,
+      "idced": 387,
+      "quesito": "Nella scelta del percorso stradale"
+    },
+    {
+      "ID": 387,
+      "riferimento": 16,
+      "idced": 388,
+      "quesito": "Sulla carta stradale della Nazione"
+    },
+    {
+      "ID": 388,
+      "riferimento": 16,
+      "idced": 389,
+      "quesito": "Sulla carta stradale"
+    },
+    {
+      "ID": 389,
+      "riferimento": 16,
+      "idced": 390,
+      "quesito": "Sulla carta stradale"
+    },
+    {
+      "ID": 390,
+      "riferimento": 13,
+      "idced": 391,
+      "quesito": "Il titolare che abbia trasferito una licenza Taxi"
+    },
+    {
+      "ID": 391,
+      "riferimento": 13,
+      "idced": 392,
+      "quesito": "Il titolare che abbia trasferito una licenza Taxi"
+    },
+    {
+      "ID": 392,
+      "riferimento": 13,
+      "idced": 393,
+      "quesito": "In caso di morte del titolare della licenza"
+    },
+    {
+      "ID": 393,
+      "riferimento": 13,
+      "idced": 394,
+      "quesito": "In caso di morte del titolare della licenza"
+    },
+    {
+      "ID": 394,
+      "riferimento": 13,
+      "idced": 395,
+      "quesito": "La licenza Taxi puo' essere trasferita"
+    },
+    {
+      "ID": 395,
+      "riferimento": 13,
+      "idced": 396,
+      "quesito": "In caso di morte del titolare della licenza"
+    },
+    {
+      "ID": 396,
+      "riferimento": 14,
+      "idced": 397,
+      "quesito": "Il titolare di licenza Taxi puo' essere sostituito alla guida"
+    },
+    {
+      "ID": 397,
+      "riferimento": 14,
+      "idced": 398,
+      "quesito": "Il titolare di licenza Taxi puo' essere sostituito alla guida"
+    },
+    {
+      "ID": 398,
+      "riferimento": 14,
+      "idced": 399,
+      "quesito": "Il titolare di licenza Taxi puo' essere sostituito alla guida"
+    },
+    {
+      "ID": 399,
+      "riferimento": 14,
+      "idced": 400,
+      "quesito": "Il titolare di licenza Taxi puo' essere sostituito alla guida"
+    },
+    {
+      "ID": 400,
+      "riferimento": 13,
+      "idced": 401,
+      "quesito": "Un veicolo NCC puo' essere condotto"
+    },
+    {
+      "ID": 401,
+      "riferimento": 14,
+      "idced": 402,
+      "quesito": "Le modalita' di svolgimento del servizio Taxi"
+    },
+    {
+      "ID": 402,
+      "riferimento": 14,
+      "idced": 403,
+      "quesito": "La prestazione del servizio Taxi"
+    },
+    {
+      "ID": 403,
+      "riferimento": 14,
+      "idced": 404,
+      "quesito": "La prestazione del servizio Taxi"
+    },
+    {
+      "ID": 404,
+      "riferimento": 14,
+      "idced": 405,
+      "quesito": "Trovando oggetti dimenticati da utenti all'interno del Taxi"
+    },
+    {
+      "ID": 405,
+      "riferimento": 13,
+      "idced": 406,
+      "quesito": "Il conducente del Taxi o NCC"
+    },
+    {
+      "ID": 406,
+      "riferimento": 14,
+      "idced": 407,
+      "quesito": "Il conducente del Taxi"
+    },
+    {
+      "ID": 407,
+      "riferimento": 14,
+      "idced": 408,
+      "quesito": "II conducente del Taxi, nel caso di interruzione della corsa per causa di forza maggiore"
+    },
+    {
+      "ID": 408,
+      "riferimento": 14,
+      "idced": 409,
+      "quesito": "Nel servizio Taxi, è richiesto il supplemento"
+    },
+    {
+      "ID": 409,
+      "riferimento": 14,
+      "idced": 410,
+      "quesito": "Il tariffario nel servizio Taxi"
+    },
+    {
+      "ID": 410,
+      "riferimento": 14,
+      "idced": 411,
+      "quesito": "La tariffa a base multipla"
+    },
+    {
+      "ID": 411,
+      "riferimento": 14,
+      "idced": 412,
+      "quesito": "La tariffa a base multipla"
+    },
+    {
+      "ID": 412,
+      "riferimento": 15,
+      "idced": 413,
+      "quesito": "Nel servizio NCC"
+    },
+    {
+      "ID": 413,
+      "riferimento": 15,
+      "idced": 414,
+      "quesito": "Il foglio di servizio nel servizio NCC"
+    },
+    {
+      "ID": 414,
+      "riferimento": 15,
+      "idced": 415,
+      "quesito": "Il foglio di servizio nel servizio NCC contiene tra l'altro"
+    },
+    {
+      "ID": 415,
+      "riferimento": 15,
+      "idced": 416,
+      "quesito": "Il foglio di servizio nel servizio NCC contiene tra l'altro"
+    },
+    {
+      "ID": 416,
+      "riferimento": 15,
+      "idced": 417,
+      "quesito": "La tariffa a forcella nel servizio NCC tiene conto, tra l'altro"
+    },
+    {
+      "ID": 417,
+      "riferimento": 15,
+      "idced": 418,
+      "quesito": "La tariffa a forcella nel servizio NCC tiene conto, tra l'altro"
+    },
+    {
+      "ID": 418,
+      "riferimento": 17,
+      "idced": 419,
+      "quesito": "Gli oli lubrificanti sono classificati in base"
+    },
+    {
+      "ID": 419,
+      "riferimento": 17,
+      "idced": 420,
+      "quesito": "La viscosita' di un olio lubrificante"
+    },
+    {
+      "ID": 420,
+      "riferimento": 17,
+      "idced": 421,
+      "quesito": "Le caratteristiche di viscosita' di un olio lubrificante richieste per un veicolo"
+    },
+    {
+      "ID": 421,
+      "riferimento": 17,
+      "idced": 422,
+      "quesito": "In zone climatiche con climi freddi"
+    },
+    {
+      "ID": 422,
+      "riferimento": 17,
+      "idced": 423,
+      "quesito": "Un olio lubrificante a bassa viscosita' a freddo"
+    },
+    {
+      "ID": 423,
+      "riferimento": 17,
+      "idced": 424,
+      "quesito": "Gli oli lubrificanti per il motore e per la scatola del cambio"
+    },
+    {
+      "ID": 424,
+      "riferimento": 17,
+      "idced": 425,
+      "quesito": "Gli oli lubrificanti multigrado"
+    },
+    {
+      "ID": 425,
+      "riferimento": 17,
+      "idced": 426,
+      "quesito": "Per i motori diesel sono piu' adatti"
+    },
+    {
+      "ID": 426,
+      "riferimento": 17,
+      "idced": 427,
+      "quesito": "La specifica SAE 20w/50"
+    },
+    {
+      "ID": 427,
+      "riferimento": 17,
+      "idced": 428,
+      "quesito": "Per i motori a benzina sono piu' adatti"
+    },
+    {
+      "ID": 428,
+      "riferimento": 17,
+      "idced": 429,
+      "quesito": "La specifica SAE 10w/40"
+    },
+    {
+      "ID": 429,
+      "riferimento": 17,
+      "idced": 430,
+      "quesito": "Un olio SAE 10w/40"
+    },
+    {
+      "ID": 430,
+      "riferimento": 17,
+      "idced": 431,
+      "quesito": "L'olio lubrificante usato"
+    },
+    {
+      "ID": 431,
+      "riferimento": 17,
+      "idced": 432,
+      "quesito": "L'olio lubrificante"
+    },
+    {
+      "ID": 432,
+      "riferimento": 17,
+      "idced": 433,
+      "quesito": "L'olio lubrificante"
+    },
+    {
+      "ID": 433,
+      "riferimento": 17,
+      "idced": 434,
+      "quesito": "La viscosita' di un olio lubrificante"
+    },
+    {
+      "ID": 434,
+      "riferimento": 17,
+      "idced": 435,
+      "quesito": "L'olio lubrificante multigrado"
+    },
+    {
+      "ID": 435,
+      "riferimento": 17,
+      "idced": 436,
+      "quesito": "L'olio lubrificante"
+    },
+    {
+      "ID": 436,
+      "riferimento": 17,
+      "idced": 437,
+      "quesito": "Periodicamente è necessario verificare il livello dell'olio lubrificante"
+    },
+    {
+      "ID": 437,
+      "riferimento": 17,
+      "idced": 438,
+      "quesito": "Un eccessivo consumo di olio lubrificante"
+    },
+    {
+      "ID": 438,
+      "riferimento": 17,
+      "idced": 439,
+      "quesito": "Il controllo del livello dell'olio lubrificante"
+    },
+    {
+      "ID": 439,
+      "riferimento": 17,
+      "idced": 440,
+      "quesito": "Periodicamente è necessario sostituire"
+    },
+    {
+      "ID": 440,
+      "riferimento": 17,
+      "idced": 441,
+      "quesito": "Un abbassamento della pressione dell'olio lubrificante"
+    },
+    {
+      "ID": 441,
+      "riferimento": 17,
+      "idced": 442,
+      "quesito": "Un abbassamento della pressione dell'olio lubrificante"
+    },
+    {
+      "ID": 442,
+      "riferimento": 17,
+      "idced": 443,
+      "quesito": "L'emissione di fumo grigio/nero dallo scarico di un motore diesel puo' dipendere"
+    },
+    {
+      "ID": 443,
+      "riferimento": 17,
+      "idced": 444,
+      "quesito": "L'emissione di fumo grigio/nero dallo scarico di un motore diesel puo' dipendere"
+    },
+    {
+      "ID": 444,
+      "riferimento": 17,
+      "idced": 445,
+      "quesito": "L'emissione di fumo grigio/nero dallo scarico di un motore diesel puo' dipendere"
+    },
+    {
+      "ID": 445,
+      "riferimento": 17,
+      "idced": 446,
+      "quesito": "L'emissione di fumo grigio/bianco dallo scarico di un motore diesel puo' dipendere"
+    },
+    {
+      "ID": 446,
+      "riferimento": 18,
+      "idced": 447,
+      "quesito": "La frizione che slitta puo' dipendere"
+    },
+    {
+      "ID": 447,
+      "riferimento": 18,
+      "idced": 448,
+      "quesito": "La frizione che slitta puo' dipendere"
+    },
+    {
+      "ID": 448,
+      "riferimento": 17,
+      "idced": 449,
+      "quesito": "Un malfunzionamento del motore"
+    },
+    {
+      "ID": 449,
+      "riferimento": 1,
+      "idced": 450,
+      "quesito": "Un'autovettura puo' contenere al massimo"
+    },
+    {
+      "ID": 450,
+      "riferimento": 1,
+      "idced": 451,
+      "quesito": "Una motocarrozzetta è"
+    },
+    {
+      "ID": 451,
+      "riferimento": 1,
+      "idced": 452,
+      "quesito": "Il numero massimo di posti di un'autovettura in circolazione"
+    },
+    {
+      "ID": 452,
+      "riferimento": 17,
+      "idced": 453,
+      "quesito": "Nel sistema di raffreddamento a liquido"
+    },
+    {
+      "ID": 453,
+      "riferimento": 17,
+      "idced": 454,
+      "quesito": "Un sistema di raffreddamento a liquido"
+    },
+    {
+      "ID": 454,
+      "riferimento": 17,
+      "idced": 455,
+      "quesito": "Un sistema di raffreddamento a liquido"
+    },
+    {
+      "ID": 455,
+      "riferimento": 17,
+      "idced": 456,
+      "quesito": "Nel raffreddamento a liquido"
+    },
+    {
+      "ID": 456,
+      "riferimento": 17,
+      "idced": 457,
+      "quesito": "Nel raffreddamento a liquido"
+    },
+    {
+      "ID": 457,
+      "riferimento": 17,
+      "idced": 458,
+      "quesito": "A motore acceso"
+    },
+    {
+      "ID": 458,
+      "riferimento": 17,
+      "idced": 459,
+      "quesito": "Il passaggio del liquido refrigerante all'interno del radiatore"
+    },
+    {
+      "ID": 459,
+      "riferimento": 17,
+      "idced": 460,
+      "quesito": "Il radiatore"
+    },
+    {
+      "ID": 460,
+      "riferimento": 17,
+      "idced": 461,
+      "quesito": "La vaschetta di espansione del sistema di raffreddamento"
+    },
+    {
+      "ID": 461,
+      "riferimento": 17,
+      "idced": 462,
+      "quesito": "Il liquido antigelo"
+    },
+    {
+      "ID": 462,
+      "riferimento": 17,
+      "idced": 463,
+      "quesito": "Gli additivi per il liquido refrigerante"
+    },
+    {
+      "ID": 463,
+      "riferimento": 17,
+      "idced": 464,
+      "quesito": "Gli additivi per il liquido refrigerante"
+    },
+    {
+      "ID": 464,
+      "riferimento": 17,
+      "idced": 465,
+      "quesito": "Un eccessivo riscaldamento del liquido di raffreddamento del motore"
+    },
+    {
+      "ID": 465,
+      "riferimento": 17,
+      "idced": 466,
+      "quesito": "Un eccessivo riscaldamento del liquido di raffreddamento del motore"
+    },
+    {
+      "ID": 466,
+      "riferimento": 17,
+      "idced": 467,
+      "quesito": "In caso di eccessivo surriscaldamento del liquido di raffreddamento"
+    },
+    {
+      "ID": 467,
+      "riferimento": 17,
+      "idced": 468,
+      "quesito": "Un eccessivo riscaldamento del liquido di raffreddamento del motore"
+    },
+    {
+      "ID": 468,
+      "riferimento": 17,
+      "idced": 469,
+      "quesito": "Il liquido antigelo"
+    },
+    {
+      "ID": 469,
+      "riferimento": 17,
+      "idced": 470,
+      "quesito": "L'impianto di raffreddamento a liquido"
+    },
+    {
+      "ID": 470,
+      "riferimento": 17,
+      "idced": 471,
+      "quesito": "Periodicamente è necessario verificare il livello del liquido refrigerante"
+    },
+    {
+      "ID": 471,
+      "riferimento": 14,
+      "idced": 472,
+      "quesito": "Nel servizio taxi"
+    },
+    {
+      "ID": 472,
+      "riferimento": 15,
+      "idced": 473,
+      "quesito": "La composizione della tariffa per il servizio Taxi e noleggio"
+    },
+    {
+      "ID": 473,
+      "riferimento": 15,
+      "idced": 474,
+      "quesito": "Nel servizio di noleggio da rimessa con conducente"
+    },
+    {
+      "ID": 474,
+      "riferimento": 15,
+      "idced": 475,
+      "quesito": "Nel servizio di noleggio da rimessa con conducente"
+    },
+    {
+      "ID": 475,
+      "riferimento": 14,
+      "idced": 476,
+      "quesito": "La pubblicita' non luminosa sui veicoli adibiti a servizio Taxi"
+    },
+    {
+      "ID": 476,
+      "riferimento": 14,
+      "idced": 477,
+      "quesito": "La pubblicita' non luminosa sui veicoli adibiti a servizio Taxi"
+    },
+    {
+      "ID": 477,
+      "riferimento": 14,
+      "idced": 478,
+      "quesito": "La pubblicita' sui veicoli adibiti a servizio Taxi"
+    },
+    {
+      "ID": 478,
+      "riferimento": 15,
+      "idced": 479,
+      "quesito": "Il servizio Taxi si differenzia dal servizio NCC"
+    },
+    {
+      "ID": 479,
+      "riferimento": 1,
+      "idced": 480,
+      "quesito": "Un'autovettura appartiene alla categoria internazionale"
+    },
+    {
+      "ID": 480,
+      "riferimento": 17,
+      "idced": 481,
+      "quesito": "I consumi elevati possono dipendere"
+    },
+    {
+      "ID": 481,
+      "riferimento": 19,
+      "idced": 482,
+      "quesito": "Al fine di individuare i guasti il conducente deve"
+    },
+    {
+      "ID": 482,
+      "riferimento": 18,
+      "idced": 483,
+      "quesito": "Una frenatura squilibrata su un asse puo' dipendere da"
+    },
+    {
+      "ID": 483,
+      "riferimento": 18,
+      "idced": 484,
+      "quesito": "Una frenatura non efficiente (spazi di frenatura eccessivi) puo' dipendere"
+    },
+    {
+      "ID": 484,
+      "riferimento": 19,
+      "idced": 485,
+      "quesito": "Le operazioni di manutenzione programmata"
+    },
+    {
+      "ID": 485,
+      "riferimento": 19,
+      "idced": 486,
+      "quesito": "Gli interventi di manutenzione programmata"
+    },
+    {
+      "ID": 486,
+      "riferimento": 19,
+      "idced": 487,
+      "quesito": "Rientrano tra gli interventi di manutenzione programmata prescritta dal costruttore"
+    },
+    {
+      "ID": 487,
+      "riferimento": 13,
+      "idced": 488,
+      "quesito": "L'esito della revisione annuale per Taxi e NCC"
+    },
+    {
+      "ID": 488,
+      "riferimento": 13,
+      "idced": 489,
+      "quesito": "La periodicita' della revisione ex art.80 del CDS per Taxi e NCC è"
+    },
+    {
+      "ID": 489,
+      "riferimento": 13,
+      "idced": 490,
+      "quesito": "Sulla carta di circolazione"
+    },
+    {
+      "ID": 490,
+      "riferimento": 18,
+      "idced": 491,
+      "quesito": "Un forte abbassamento del veicolo nella parte anteriore o laterale"
+    },
+    {
+      "ID": 491,
+      "riferimento": 18,
+      "idced": 492,
+      "quesito": "Gli ammortizzatori scarichi"
+    },
+    {
+      "ID": 492,
+      "riferimento": 18,
+      "idced": 493,
+      "quesito": "Gli ammortizzatori"
+    },
+    {
+      "ID": 493,
+      "riferimento": 18,
+      "idced": 494,
+      "quesito": "Gli ammortizzatori idraulici"
+    },
+    {
+      "ID": 494,
+      "riferimento": 18,
+      "idced": 495,
+      "quesito": "L'inefficienza degli ammortizzatori"
+    },
+    {
+      "ID": 495,
+      "riferimento": 17,
+      "idced": 496,
+      "quesito": "Uno stile di guida volto a contenere i consumi di carburante"
+    },
+    {
+      "ID": 496,
+      "riferimento": 17,
+      "idced": 497,
+      "quesito": "Il massimo rendimento di un veicolo con motore alternativo si ha"
+    },
+    {
+      "ID": 497,
+      "riferimento": 17,
+      "idced": 498,
+      "quesito": "In termini di rendimento, il carburante consumato"
+    },
+    {
+      "ID": 498,
+      "riferimento": 17,
+      "idced": 499,
+      "quesito": "Il rendimento globale di un veicolo con motore alternativo con cilindri e pistoni"
+    },
+    {
+      "ID": 499,
+      "riferimento": 17,
+      "idced": 500,
+      "quesito": "Per migliorare il rendimento e ridurre i consumi"
+    },
+    {
+      "ID": 500,
+      "riferimento": 17,
+      "idced": 501,
+      "quesito": "Un motore elastico"
+    },
+    {
+      "ID": 501,
+      "riferimento": 17,
+      "idced": 502,
+      "quesito": "Per ridurre il consumo di carburante e l'inquinamento atmosferico"
+    },
+    {
+      "ID": 502,
+      "riferimento": 13,
+      "idced": 503,
+      "quesito": "Nel servizio Taxi"
+    },
+    {
+      "ID": 503,
+      "riferimento": 14,
+      "idced": 504,
+      "quesito": "Un Taxi con esposizioni pubblicitarie con pannello bifacciale"
+    },
+    {
+      "ID": 504,
+      "riferimento": 14,
+      "idced": 505,
+      "quesito": "La pubblicita' apposta sui Taxi"
+    },
+    {
+      "ID": 505,
+      "riferimento": 14,
+      "idced": 506,
+      "quesito": "L'uso proprio del Taxi"
+    },
+    {
+      "ID": 506,
+      "riferimento": 14,
+      "idced": 507,
+      "quesito": "La guida di un Taxi fuori servizio"
+    },
+    {
+      "ID": 507,
+      "riferimento": 14,
+      "idced": 508,
+      "quesito": "La guida di un Taxi fuori servizio"
+    },
+    {
+      "ID": 508,
+      "riferimento": 14,
+      "idced": 509,
+      "quesito": "L'uso di un Taxi fuori servizio per esigenze personali"
+    },
+    {
+      "ID": 509,
+      "riferimento": 17,
+      "idced": 510,
+      "quesito": "La fuoriuscita di fumo bianco ed abbondante dallo scarico di un motore diesel puo' indicare"
+    },
+    {
+      "ID": 510,
+      "riferimento": 17,
+      "idced": 511,
+      "quesito": "Il fumo nero allo scarico puo' indicare"
+    },
+    {
+      "ID": 511,
+      "riferimento": 19,
+      "idced": 512,
+      "quesito": "Il conducente prima di partire"
+    },
+    {
+      "ID": 512,
+      "riferimento": 19,
+      "idced": 513,
+      "quesito": "Il conducente prima di partire"
+    },
+    {
+      "ID": 513,
+      "riferimento": 19,
+      "idced": 514,
+      "quesito": "Il conducente prima di partire"
+    },
+    {
+      "ID": 514,
+      "riferimento": 19,
+      "idced": 515,
+      "quesito": "Il conducente prima di iniziare un viaggio"
+    },
+    {
+      "ID": 515,
+      "riferimento": 9,
+      "idced": 230,
+      "quesito": "Dopo un incidente stradale occorre:"
+    }
+  ]
+}
