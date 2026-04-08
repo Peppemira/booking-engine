@@ -29,6 +29,8 @@ const NAV_ITEMS = [
   { href: "/listino", key: "listino", label: "Listino Prezzi", icon: "💶" },
   { href: "/committenti", key: "committenti", label: "Committenti", icon: "🏢" },
   { href: "/impegni", key: "impegni", label: "Impegni e Scadenze", icon: "📌" },
+  { href: "/visite-mediche", key: "visite-mediche", label: "Visite Mediche", icon: "🩺" },
+  { href: "/preventivi", key: "preventivi", label: "Preventivi", icon: "📝" },
   // ────────────────────────────────────────────────────────────────────────
   { href: "/strumenti-utili", key: "strumenti-utili", label: "Strumenti Utili", icon: "🔧" },
   { href: "/impostazioni", key: "impostazioni", label: "Impostazioni", icon: "⚙️" },

@@ -27,6 +27,8 @@ const istruttoriRoutes  = require("./istruttoriRoutes");  // Punto 20
 const notificheRoutes   = require("./notificheRoutes");   // Punto 21
 const operatoriRoutes   = require("./operatoriRoutes");   // Punto 24
 const verbaliSvoltiRoutes = require("./verbaliSvoltiRoutes"); // archivio storico verbali
+const visiteMedicheRoutes = require("./visiteMedicheRoutes"); // calendario visite mediche (iPatenteCloud Cap 14)
+const preventiviRoutes    = require("./preventiviRoutes");    // preventivi con workflow (iPatenteCloud Cap 9)
 
 const router = express.Router();
 
@@ -58,6 +60,8 @@ router.use("/istruttori", istruttoriRoutes);       // gestione istruttori (Punto
 router.use("/notifiche", notificheRoutes);         // notifiche candidati (Punto 21)
 router.use("/operatori", operatoriRoutes);         // operatori per sede con ruoli (Punto 24)
 router.use("/verbali-svolti", verbaliSvoltiRoutes); // archivio storico verbali con filtri avanzati
+router.use("/visite-mediche", visiteMedicheRoutes); // calendario visite mediche (iPatenteCloud Cap 14)
+router.use("/preventivi", preventiviRoutes);         // preventivi con workflow bozza→accettato (iPatenteCloud Cap 9)
 // NOTA: /api/auth/login, /api/auth/me, /api/auth/logout sono montati in server.js (loginAutoscuola/meAutoscuola)
 
 module.exports = router;
