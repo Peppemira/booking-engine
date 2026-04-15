@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { href: "/", key: "dashboard", label: "Dashboard", icon: "⌂" },
   { href: "/prenotazioni", key: "prenotazioni", label: "Prenotazioni e Radar", icon: "📡" },
   { href: "/portale", key: "portale", label: "Portale Automobilista", icon: "🌐" },
+  { href: "/portale/funzioni", key: "portale-funzioni", label: "Portale - Funzioni", icon: "🗂️" },
   { href: "/anagrafica-iscrizioni", key: "anagrafica-iscrizioni", label: "Anagrafica ed Iscrizioni", icon: "👤" },
   { href: "/pratiche", key: "pratiche", label: "Pratiche", icon: "📂" },
   { href: "/trasmiss", key: "trasmiss", label: "Trasmissioni CED", icon: "📤" },

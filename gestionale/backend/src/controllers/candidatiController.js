@@ -102,9 +102,9 @@ async function remove(req, res) {
 
 async function omonimi(req, res) {
   try {
-    const { cognome, nome, data_nascita } = req.body || {};
+    const { cognome, nome, data_nascita, exact } = req.body || {};
     const { data, error } = await anagraficaCandidatiService.searchOmonimi(
-      { cognome, nome, dataNascita: data_nascita },
+      { cognome, nome, dataNascita: data_nascita, exact: !!exact },
       req
     );
     if (error) return res.status(500).json({ error: error.message });

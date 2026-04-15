@@ -943,6 +943,488 @@ async function rinnCqcHandler(req, res) {
   }
 }
 
+// =============================================================================
+// CANDIDATI-CENTRIC ENDPOINTS (replica GeCA Trasmiss.cs invio_Click logic)
+// =============================================================================
+// GeCA Trasmiss.cs lavora sempre a partire dall'iscrizione (candidato) e NON
+// dalla pratica_patente. Questi endpoint colmano il gap: elencano candidati
+// pronti per trasmissione (raggruppati per sigla) e dispatchano verso il
+// corretto handler portal a partire dal candidato.
+
+/**
+ * Mappa sigla tipo_iscrizione GeCA → chiave operazione.
+ * Sigle trasmissibili (15 su 22): IN/PR/RE, CV, CM, D|/Y|/L|/S|/R|, M|/E|,
+ * PC, CC, GA.
+ * Sigle non trasmissibili al portale automobilista: PN (nautica),
+ * RP/CQ/CK/CA (corsi interni), EG/AD/PI/PP (altri).
+ */
+const SIGLA_TO_OPERAZIONE = {
+  // Conseguimento per esame → trasmettiConseguimentoPatente
+  IN: "conseguimento",
+  PR: "conseguimento",
+  RE: "conseguimento",
+  // Rinnovo / conferma validita' → trasmettiRinnovoPatente
+  CV: "rinnovo",
+  // Certificato medico / rinnovo con TT2112 → trasmettiRinnovoMedico
+  CM: "rinnovo_medico",
+  // Duplicato patente → trasmettiPraticaAltro
+  "D|": "altro",
+  "Y|": "altro",
+  "L|": "altro",
+  "S|": "altro",
+  "R|": "altro",
+  // Conversione patente → trasmettiPraticaAltro
+  "M|": "altro",
+  "E|": "altro",
+  // Patente CQC (conseguimento) → trasmettiConseguimentoCQC
+  PC: "cqc",
+  // CQC Card (rinnovo CQC) → trasmettiRinnCQC
+  CC: "rinn_cqc",
+  // Guida Accompagnata → trasmettiPrimaFase (prima fase AM/A1/A2/A)
+  GA: "prima_fase",
+};
+
+/**
+ * Mappa operazione → tipo_pratica (per la tabella pratiche_patente)
+ */
+const OPERAZIONE_TO_TIPO_PRATICA = {
+  conseguimento:  "ESAME",
+  rinnovo:        "RINNOVO",
+  rinnovo_medico: "CERTIFICATO_MEDICO",
+  altro:          "DUPLICATO",
+  cqc:            "CQC",
+  rinn_cqc:       "RINNOVO_CQC",
+  prima_fase:     "GUIDA_ACCOMPAGNATA",
+};
+
+/**
+ * Etichetta leggibile per operazione (usata in UI).
+ */
+const OPERAZIONE_LABEL = {
+  conseguimento:  "Conseguimento Patente",
+  rinnovo:        "Rinnovo Patente",
+  rinnovo_medico: "Rinnovo con Cert. Medico",
+  altro:          "Duplicato / Conversione",
+  cqc:            "Conseguimento CQC",
+  rinn_cqc:       "Rinnovo CQC",
+  prima_fase:     "Prima Fase (Foglio Rosa)",
+};
+
+/**
+ * Risolve la sigla dal candidato (campi diretti o raw_portale fallback).
+ */
+function resolveSiglaFromCandidato(candidato = {}) {
+  return (
+    candidato.tipo_iscrizione_sigla ||
+    candidato.raw_portale?.tipo_iscrizione_sigla ||
+    candidato.raw_portale?.sigla ||
+    ""
+  );
+}
+
+/**
+ * GET /api/trasmiss/candidati-pronti
+ *
+ * Query params:
+ *   - sigla:  filtra per sigla specifica (opzionale)
+ *   - tipo:   filtra per chiave operazione (conseguimento/rinnovo/…) opzionale
+ *   - includi_trasmessi: "true" per includere anche candidati già trasmessi
+ *
+ * Ritorna:
+ *   {
+ *     success: true,
+ *     candidati: [ ... ],          // array di candidati arricchiti con stato pratica
+ *     count: N,
+ *     gruppi: { IN: 10, CM: 3 },   // conteggi per sigla
+ *     gruppi_operazione: { ... },  // conteggi per operazione
+ *   }
+ */
+async function candidatiPronti(req, res) {
+  try {
+    const siglaFiltro = (req.query.sigla || "").trim();
+    const tipoFiltro  = (req.query.tipo || "").trim();
+    const includiTrasmessi = String(req.query.includi_trasmessi || "") === "true";
+
+    // 1) Carica candidati (con tenant filter)
+    let q = supabase
+      .from("candidates")
+      .select(
+        "id,cognome,nome,codice_fiscale,data_nascita,categoria_patente," +
+        "categoria_richiesta,codice_autoscuola,data_iscrizione," +
+        "stato_iscrizione,telefono,raw_portale,created_at"
+      );
+    q = withTenantFilter(q, req);
+    // Escludi archiviati (storico)
+    q = q.or("storico.is.null,storico.eq.false");
+    q = q.order("created_at", { ascending: false }).limit(500);
+
+    const { data: candidatiRaw, error: errCand } = await q;
+    if (errCand) return res.status(500).json({ error: errCand.message });
+
+    const candidati = candidatiRaw || [];
+    if (candidati.length === 0) {
+      return res.json({ success: true, candidati: [], count: 0, gruppi: {}, gruppi_operazione: {} });
+    }
+
+    // 2) Carica tutte le pratiche_patente per questi candidati
+    const ids = candidati.map((c) => c.id);
+    const { data: pratiche, error: errPrat } = await supabase
+      .from(TABLE_PRATICHE)
+      .select(
+        "id,candidate_id,candidato_id,tipo_pratica,tipo_trasmissione," +
+        "stato_pratica,marca_operativa,id_richiesta_portale," +
+        "data_trasmissione_portale,ultimo_errore_portale,codice_estremi_pagamento"
+      )
+      .or(`candidate_id.in.(${ids.join(",")}),candidato_id.in.(${ids.join(",")})`);
+    if (errPrat && !/column.*does not exist/i.test(String(errPrat.message))) {
+      return res.status(500).json({ error: errPrat.message });
+    }
+
+    // 3) Mappa candidato_id → pratica (la più recente)
+    const praticaPerCandidato = new Map();
+    for (const p of pratiche || []) {
+      const cid = p.candidate_id || p.candidato_id;
+      if (cid && !praticaPerCandidato.has(cid)) {
+        praticaPerCandidato.set(cid, p);
+      }
+    }
+
+    // 4) Arricchisci candidati con stato pratica + determina trasmissibilita'
+    const gruppi = {};
+    const gruppi_op = {};
+    const enriched = [];
+    for (const c of candidati) {
+      const sigla = resolveSiglaFromCandidato(c);
+      const operazione = SIGLA_TO_OPERAZIONE[sigla] || null;
+      const pratica = praticaPerCandidato.get(c.id) || null;
+      const trasmesso = !!(pratica && pratica.id_richiesta_portale);
+
+      // Filtri
+      if (siglaFiltro && sigla !== siglaFiltro) continue;
+      if (tipoFiltro && operazione !== tipoFiltro) continue;
+      if (!includiTrasmessi && trasmesso) continue;
+      // Candidato deve avere una sigla trasmissibile (altrimenti skip)
+      if (!operazione) continue;
+
+      gruppi[sigla] = (gruppi[sigla] || 0) + 1;
+      gruppi_op[operazione] = (gruppi_op[operazione] || 0) + 1;
+
+      enriched.push({
+        id: c.id,
+        cognome: c.cognome,
+        nome: c.nome,
+        codice_fiscale: c.codice_fiscale,
+        data_nascita: c.data_nascita,
+        telefono: c.telefono,
+        categoria_patente: c.categoria_patente,
+        categoria_richiesta: c.categoria_richiesta,
+        codice_autoscuola: c.codice_autoscuola,
+        data_iscrizione: c.data_iscrizione,
+        stato_iscrizione: c.stato_iscrizione,
+        raw_portale: c.raw_portale,
+        // Campi derivati per la trasmissione
+        tipo_iscrizione_sigla: sigla,
+        operazione,
+        operazione_label: OPERAZIONE_LABEL[operazione] || operazione,
+        tipo_pratica_suggerito: OPERAZIONE_TO_TIPO_PRATICA[operazione] || "ALTRO",
+        // Stato pratica (se esiste)
+        pratica_id: pratica?.id || null,
+        stato_pratica: pratica?.stato_pratica || "da_creare",
+        marca_operativa: pratica?.marca_operativa || null,
+        id_richiesta_portale: pratica?.id_richiesta_portale || null,
+        data_trasmissione_portale: pratica?.data_trasmissione_portale || null,
+        ultimo_errore_portale: pratica?.ultimo_errore_portale || null,
+        trasmesso,
+      });
+    }
+
+    res.json({
+      success: true,
+      candidati: enriched,
+      count: enriched.length,
+      gruppi,
+      gruppi_operazione: gruppi_op,
+    });
+  } catch (e) {
+    res.status(500).json({ error: e.message || "Errore lettura candidati pronti" });
+  }
+}
+
+/**
+ * Helper: cerca o crea una pratica_patente per un candidato+operazione.
+ * Replica la logica implicita di GeCA Trasmiss che opera sempre su un candidato.
+ */
+async function getOrCreatePraticaForCandidato(candidato, operazione, extras = {}) {
+  const tipoPratica = OPERAZIONE_TO_TIPO_PRATICA[operazione] || "ALTRO";
+
+  // 1) Cerca pratica esistente per candidato+tipo_pratica (non ancora trasmessa)
+  let q = supabase
+    .from(TABLE_PRATICHE)
+    .select("*")
+    .eq("tipo_pratica", tipoPratica)
+    .or("id_richiesta_portale.is.null,id_richiesta_portale.eq.")
+    .order("created_at", { ascending: false })
+    .limit(1);
+  q = q.or(`candidate_id.eq.${candidato.id},candidato_id.eq.${candidato.id}`);
+  const { data: esistente } = await q;
+  if (esistente && esistente.length > 0) return esistente[0];
+
+  // 2) Crea nuova pratica
+  const TIPO_TRASMISSIONE_MAP = {
+    ESAME:              "trasmissione_pratica_conseguimento",
+    RINNOVO:            "trasmissione_pratica_rinnovo",
+    CQC:                "trasmissione_pratica_conseguimento_cqc",
+    RINNOVO_CQC:        "rinnovo_cqc",
+    CERTIFICATO_MEDICO: "trasmissione_pratica_rinnovo_medico",
+    DUPLICATO:          "trasmissione_pratica_altro",
+    GUIDA_ACCOMPAGNATA: "trasmissione_pratica_conseguimento_fase1",
+    ALTRO:              "trasmissione_pratica_altro",
+  };
+
+  const payload = {
+    candidato_id:      candidato.id,
+    candidate_id:      candidato.id,
+    tipo_pratica:      tipoPratica,
+    categoria:         candidato.categoria_patente || candidato.categoria_richiesta || null,
+    categoria_patente: candidato.categoria_patente || candidato.categoria_richiesta || null,
+    stato:             "attivo",
+    stato_pratica:     "pronto_trasmissione",
+    tipo_trasmissione: TIPO_TRASMISSIONE_MAP[tipoPratica] || "trasmissione_pratica_altro",
+    data_richiesta:    new Date().toISOString().slice(0, 10),
+    codice_autoscuola: candidato.codice_autoscuola || null,
+    ...extras,
+  };
+  // Tenant field opzionale
+  if (candidato.autoscuola_id) payload.autoscuola_id = candidato.autoscuola_id;
+
+  // Tentativo insert con fallback se alcuni campi non esistono
+  let attempt = { ...payload };
+  for (let i = 0; i < 8; i++) {
+    const { data, error } = await supabase
+      .from(TABLE_PRATICHE)
+      .insert([attempt])
+      .select("*")
+      .single();
+    if (!error) return data;
+    const m = String(error.message || "").match(/Could not find the '([^']+)' column|column "([^"]+)" of relation|column\s+([a-zA-Z0-9_]+)\s+does not exist/i);
+    const missing = m?.[1] || m?.[2] || m?.[3];
+    if (!missing || !(missing in attempt)) throw new Error(error.message);
+    delete attempt[missing];
+  }
+  throw new Error("Impossibile creare la pratica_patente: troppi tentativi di fallback colonne");
+}
+
+/**
+ * POST /api/trasmiss/trasmetti-candidato
+ *
+ * Dispatcher unificato: dato un candidato, determina la sigla, crea (se serve)
+ * una pratica_patente e chiama il giusto handler di trasmissione al portale.
+ *
+ * Body:
+ *   - candidato_id:  (obbligatorio)
+ *   - sigla:         override sigla tipo_iscrizione (opzionale)
+ *   - credenziali:   credenziali portale (opzionale — fallback a env/default)
+ *   - bollettini:    array bollettini di pagamento (opzionale)
+ *   - fotoBase64:    base64 foto candidato (opzionale)
+ *   - firmaBase64:   base64 firma candidato (opzionale)
+ *   - extra:         dati extra specifici (opzionale)
+ */
+async function trasmettiCandidato(req, res) {
+  try {
+    const {
+      candidato_id,
+      sigla: siglaOverride,
+      credenziali,
+      bollettini,
+      fotoBase64,
+      firmaBase64,
+      extra,
+    } = req.body || {};
+
+    if (!candidato_id) {
+      return res.status(400).json({ error: "candidato_id obbligatorio" });
+    }
+
+    // 1) Carica candidato
+    let cq = supabase.from("candidates").select("*").eq("id", candidato_id);
+    cq = withTenantFilter(cq, req);
+    const { data: candidato, error: errCand } = await cq.maybeSingle();
+    if (errCand) return res.status(500).json({ error: errCand.message });
+    if (!candidato) return res.status(404).json({ error: "Candidato non trovato" });
+
+    // 2) Determina sigla + operazione
+    const sigla = (siglaOverride || resolveSiglaFromCandidato(candidato) || "").trim();
+    if (!sigla) {
+      return res.status(400).json({ error: "Sigla tipo_iscrizione mancante — impossibile determinare l'operazione" });
+    }
+    const operazione = SIGLA_TO_OPERAZIONE[sigla];
+    if (!operazione) {
+      return res.status(400).json({
+        error: `Sigla '${sigla}' non trasmissibile al portale automobilista`,
+        sigla,
+        trasmissibile: false,
+      });
+    }
+
+    // 3) Ottieni o crea pratica_patente
+    const pratica = await getOrCreatePraticaForCandidato(candidato, operazione);
+    const pratica_id = pratica.id;
+
+    // Collega il candidato alla pratica per i successivi loadPraticaConCandidato
+    const praticaConCandidato = { ...pratica, candidates: candidato };
+
+    // 4) Aggiorna stato a in_trasmissione (UI feedback)
+    await supabase
+      .from(TABLE_PRATICHE)
+      .update({ stato_pratica: "in_trasmissione" })
+      .eq("id", pratica_id);
+
+    // 5) Risolvi credenziali
+    const creds = resolvePortalCredentials(credenziali);
+
+    // 6) Dispatch all'handler corretto in base a operazione
+    let result;
+    switch (operazione) {
+      case "conseguimento":
+        result = await trasmettiConseguimentoPatente({
+          credentials: creds,
+          pratica: praticaConCandidato,
+          candidato,
+          bollettini,
+          fotoBase64,
+          firmaBase64,
+          extra,
+          onProgress: () => {},
+        });
+        break;
+      case "rinnovo":
+        result = await trasmettiRinnovoPatente({
+          credentials: creds,
+          pratica: praticaConCandidato,
+          candidato,
+          bollettini,
+          fotoBase64,
+          firmaBase64,
+          extra,
+          onProgress: () => {},
+        });
+        break;
+      case "rinnovo_medico": {
+        const moduloCia = buildModuloFromCandidato(candidato, extra || {});
+        result = await trasmettiRinnovoMedico({
+          credentials: creds,
+          pratica: praticaConCandidato,
+          candidato,
+          modulo: moduloCia,
+          bollettini,
+          fotoBase64,
+          firmaBase64,
+          extra,
+          onProgress: () => {},
+        });
+        break;
+      }
+      case "altro":
+        result = await trasmettiPraticaAltro({
+          credentials: creds,
+          pratica: praticaConCandidato,
+          candidato,
+          bollettini,
+          fotoBase64,
+          firmaBase64,
+          extra,
+          onProgress: () => {},
+        });
+        break;
+      case "cqc":
+        result = await trasmettiConseguimentoCQC({
+          credentials: creds,
+          pratica: praticaConCandidato,
+          candidato,
+          bollettini,
+          fotoBase64,
+          firmaBase64,
+          extra,
+          onProgress: () => {},
+        });
+        break;
+      case "rinn_cqc": {
+        const moduloCqc = buildModuloFromCandidato(candidato, extra || {});
+        result = await trasmettiRinnCQC({
+          credentials: creds,
+          modulo: moduloCqc,
+          bollettini,
+          fotoBase64,
+          firmaBase64,
+          codiceFiscale: candidato.codice_fiscale || "",
+          onProgress: () => {},
+        });
+        break;
+      }
+      case "prima_fase":
+        result = await trasmettiPrimaFase({
+          credentials: creds,
+          pratica: praticaConCandidato,
+          candidato,
+          bollettini,
+          fotoBase64,
+          firmaBase64,
+          extra,
+          onProgress: () => {},
+        });
+        break;
+      default:
+        return res.status(400).json({ error: `Operazione '${operazione}' non implementata` });
+    }
+
+    // 7) Salva esito e rispondi
+    await salvaEsitoTrasmissione(pratica_id, result);
+
+    if (!result || !result.success) {
+      return res.status(422).json({
+        success: false,
+        pratica_id,
+        sigla,
+        operazione,
+        error: result?.error || "Errore trasmissione",
+        log: result?.log || null,
+      });
+    }
+
+    return res.json({
+      success: true,
+      candidato_id: candidato.id,
+      pratica_id,
+      sigla,
+      operazione,
+      operazione_label: OPERAZIONE_LABEL[operazione] || operazione,
+      marcaOperativa: result.marcaOperativa,
+      idRichiesta: result.idRichiesta,
+      codiceEstremiPagamento: result.codiceEstremiPagamento,
+      messaggioPortale: result.messaggioPortale,
+      log: result.log,
+    });
+  } catch (e) {
+    res.status(500).json({ error: e.message || "Errore trasmissione candidato" });
+  }
+}
+
+/**
+ * GET /api/trasmiss/candidato-operazioni
+ * Ritorna la mappa SIGLA_TO_OPERAZIONE + etichette per il frontend.
+ */
+function candidatoOperazioni(req, res) {
+  res.json({
+    success: true,
+    sigla_to_operazione: SIGLA_TO_OPERAZIONE,
+    operazione_label: OPERAZIONE_LABEL,
+    operazione_to_tipo_pratica: OPERAZIONE_TO_TIPO_PRATICA,
+    sigle_non_trasmissibili: [
+      "PN", "RP", "CQ", "CK", "CA", "EG", "AD", "PI", "PP",
+    ],
+  });
+}
+
 module.exports = {
   pratichePronte,
   storico,
@@ -964,4 +1446,8 @@ module.exports = {
   // Sessioni esame programmato
   sessioniEsameHandler,
   prenotaEsameHandler,
+  // Candidati-centric (replica GeCA Trasmiss.cs flow)
+  candidatiPronti,
+  trasmettiCandidato,
+  candidatoOperazioni,
 };

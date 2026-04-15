@@ -125,4 +125,32 @@ router.post(
   trasmissController.prenotaEsameHandler
 );
 
+// =============================================================================
+// CANDIDATI-CENTRIC (replica GeCA Trasmiss.cs — invio da iscrizione candidato)
+// =============================================================================
+
+// Lista candidati pronti per trasmissione raggruppati per sigla/operazione
+// Query: sigla?, tipo?, includi_trasmessi?
+router.get(
+  "/candidati-pronti",
+  requireAuth,
+  trasmissController.candidatiPronti
+);
+
+// Trasmette un candidato al portale: crea (se serve) la pratica_patente e
+// chiama il giusto handler di trasmissione in base alla sigla tipo_iscrizione
+// Body: { candidato_id, sigla?, credenziali?, bollettini?, fotoBase64?, firmaBase64?, extra? }
+router.post(
+  "/trasmetti-candidato",
+  requireAuth,
+  trasmissController.trasmettiCandidato
+);
+
+// Ritorna la mappa sigla→operazione (usata dal frontend per filtri/etichette)
+router.get(
+  "/candidato-operazioni",
+  requireAuth,
+  trasmissController.candidatoOperazioni
+);
+
 module.exports = router;

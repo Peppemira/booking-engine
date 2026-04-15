@@ -162,6 +162,13 @@ if (String(process.env.RADAR_AUTO_START || "false").toLowerCase() === "true") {
   startScheduler();
 }
 
+// Scheduler per sync incrementale Archivio Storico Portale (tempo reale)
+// Si avvia automaticamente se ARCHIVIO_SCHEDULER_ENABLED=true
+{
+  const { startArchivioScheduler } = require("./services/archivioScheduler");
+  startArchivioScheduler();
+}
+
 // Sessione globale del portale (in memoria)
 let portalSession = null;
 

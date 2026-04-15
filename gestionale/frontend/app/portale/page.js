@@ -236,6 +236,8 @@ const TABS = [
   { key: "rev-cqc-svolti",     label: "Rev. CQC Svolti",      tipo: "VSRCQC", icon: "🔄" },
   { key: "rev-cqc-annullati",  label: "Rev. CQC Annull.",      tipo: "VARCQC", icon: "❌" },
   { key: "situazione",         label: "Situazione Candidati", tipo: "SIT",    icon: "👤" },
+  // ── Archivio storico (rinnovi patente / medici / CQC) ──────────────────────
+  { key: "archivio-storico",   label: "Archivio Storico",     tipo: "ARCH",   icon: "📚" },
 ];
 
 // ─── TOOLBAR AZIONI (Seleziona, Stampa, Export, Annulla) ─────────────────────
@@ -1270,7 +1272,7 @@ function PanelloSessioni({ tipo, label, user }) {
               </div>
 
               <div className="flex flex-wrap gap-2 pt-1">
-                <button onClick={() => handleStampaPortale("stampaPrenotazione", storiaData?.candidato?.index ?? -1)}
+                <button onClick={() => handleStampaPortale("stampaPrenotazione", selectedCandidato ?? -1)}
                   className="px-3 py-1.5 bg-green-600 text-white rounded-lg text-[11px] font-bold hover:bg-green-700 transition">
                   Stampa prenotazione
                 </button>
@@ -2718,6 +2720,678 @@ function StatoPortale() {
   );
 }
 
+// ─── ARCHIVIO STORICO (rinnovi patente / medici / CQC + candidati esami) ─────
+//
+// Integrato nella pagina /portale come tab dedicata.
+// Riutilizza gli endpoint backend:
+//   POST /api/sync/archivio-storico-completo (SSE per progress)
+//   GET  /api/sync/archivio-riepilogo
+//   GET  /api/sync/archivio-log
+//
+// Fonti portale lette:
+//   - ReadGestRinnAgenzia_initGestRinnAgenzia.action  (rinnovi patente)
+//   - ReadGestRinnMed_initVerStatoPratHDDG.action     (rinnovi medici TT2112)
+//   - ReadRichPatCqc_initRichPatCqc.action            (rinnovi/conseguimenti CQC)
+//   - Read_initActionSituazioneCandidati.action       (candidati da 4 combinazioni verbali)
+
+function formatDateTimeIT(s) {
+  if (!s) return "–";
+  try { return new Date(s).toLocaleString("it-IT"); }
+  catch (_) { return String(s); }
+}
+
+function formatDurationMs(ms) {
+  if (!ms && ms !== 0) return "–";
+  const sec = Math.floor(ms / 1000);
+  if (sec < 60) return `${sec}s`;
+  const min = Math.floor(sec / 60);
+  const rs  = sec % 60;
+  if (min < 60) return `${min}m ${rs}s`;
+  const h = Math.floor(min / 60);
+  const rm = min % 60;
+  return `${h}h ${rm}m`;
+}
+
+const ARCH_TIPO_LABEL = {
+  patente:   "🪪 Rinnovo Patente",
+  medico:    "⚕️ Cert. Medico TT2112",
+  cqc:       "🚛 Rinnovo / Emissione CQC",
+  duplicato: "📋 Duplicato",
+  altro:     "📌 Altro",
+};
+
+function PanelloArchivioStorico() {
+  // Riepilogo dashboard
+  const [riepilogo, setRiepilogo] = useState(null);
+  const [loadingRiepilogo, setLoadingRiepilogo] = useState(false);
+  const [runLog, setRunLog] = useState([]);
+  const [loadingLog, setLoadingLog] = useState(false);
+
+  // Form sync
+  const [dataInizio, setDataInizio] = useState("2000-01-01");
+  const [dataFine,   setDataFine]   = useState(todayISO());
+  const [windowDays, setWindowDays] = useState(30); // MAX 31 giorni lato portale
+  const [includeEsami,      setIncludeEsami]      = useState(true);
+  const [includeRinnoviPat, setIncludeRinnoviPat] = useState(true);
+  const [includeRinnoviMed, setIncludeRinnoviMed] = useState(true);
+  const [includeRinnoviCqc, setIncludeRinnoviCqc] = useState(true);
+
+  // Strategia A: bypass del limite 31gg via ricerca puntuale per persona
+  const [includeStrategiaA,    setIncludeStrategiaA]    = useState(false);
+  const [strategiaAMaxPersone, setStrategiaAMaxPersone] = useState(0);   // 0 = nessun limite
+  const [strategiaADelayMs,    setStrategiaADelayMs]    = useState(400);
+
+  // Stato sync in corso
+  const [syncBusy, setSyncBusy] = useState(false);
+  const [syncMessages, setSyncMessages] = useState([]);
+  const [syncResult, setSyncResult] = useState(null);
+  const syncAbortRef = useRef(null);
+
+  // Auto-refresh incrementale
+  const [autoRefresh, setAutoRefresh] = useState(false);
+  const [autoRefreshMinutes, setAutoRefreshMinutes] = useState(5);
+  const autoRefreshTimerRef = useRef(null);
+  const [lastAutoRefresh, setLastAutoRefresh] = useState(null);
+
+  const loadRiepilogo = useCallback(async () => {
+    setLoadingRiepilogo(true);
+    try {
+      const res = await fetch(`${apiBase()}/api/sync/archivio-riepilogo`, {
+        headers: authHeaders(),
+        cache: "no-cache",
+      });
+      const data = await res.json();
+      if (data.success) setRiepilogo(data.riepilogo || null);
+    } catch (e) {
+      console.warn("loadRiepilogo", e);
+    } finally {
+      setLoadingRiepilogo(false);
+    }
+  }, []);
+
+  const loadLog = useCallback(async () => {
+    setLoadingLog(true);
+    try {
+      const res = await fetch(`${apiBase()}/api/sync/archivio-log?limit=20`, {
+        headers: authHeaders(),
+        cache: "no-cache",
+      });
+      const data = await res.json();
+      if (data.success) setRunLog(data.runs || []);
+    } catch (e) {
+      console.warn("loadLog", e);
+    } finally {
+      setLoadingLog(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadRiepilogo();
+    loadLog();
+  }, [loadRiepilogo, loadLog]);
+
+  const avviaSync = useCallback(async (opts = {}) => {
+    if (syncBusy) return;
+    setSyncBusy(true);
+    setSyncMessages([]);
+    setSyncResult(null);
+
+    const body = {
+      includeEsami,
+      includeRinnoviPat,
+      includeRinnoviMed,
+      includeRinnoviCqc,
+      includeStrategiaA,
+      strategiaAMaxPersone: Number(strategiaAMaxPersone) || 0,
+      strategiaADelayMs:    Number(strategiaADelayMs)    || 400,
+      dataInizio,
+      dataFine,
+      windowDays,
+      tipoSync: opts.tipoSync || "full",
+      triggerSource: opts.triggerSource || "portale-tab-manuale",
+      ...opts,
+    };
+
+    const addMessage = (msg) => {
+      setSyncMessages((prev) => [...prev, { ts: new Date().toISOString(), ...msg }].slice(-100));
+    };
+
+    try {
+      const controller = new AbortController();
+      syncAbortRef.current = controller;
+
+      const res = await fetch(`${apiBase()}/api/sync/archivio-storico-completo`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "text/event-stream",
+          ...authHeaders(),
+        },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const ct = res.headers.get("content-type") || "";
+      if (ct.includes("text/event-stream") && res.body) {
+        const reader = res.body.getReader();
+        const dec = new TextDecoder();
+        let buf = "";
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buf += dec.decode(value, { stream: true });
+          const lines = buf.split("\n");
+          buf = lines.pop();
+          for (const line of lines) {
+            if (!line.startsWith("data:")) continue;
+            try {
+              const ev = JSON.parse(line.slice(5).trim());
+              addMessage(ev);
+              if (ev.event === "done")       setSyncResult(ev);
+              else if (ev.event === "error") setSyncResult({ event: "error", message: ev.message });
+            } catch (_) {}
+          }
+        }
+      } else {
+        const data = await res.json();
+        addMessage({ event: "done", ...data });
+        setSyncResult(data);
+      }
+    } catch (err) {
+      if (err.name !== "AbortError") {
+        addMessage({ event: "error", message: err.message });
+        setSyncResult({ event: "error", message: err.message });
+      }
+    } finally {
+      setSyncBusy(false);
+      syncAbortRef.current = null;
+      loadRiepilogo();
+      loadLog();
+    }
+  }, [
+    syncBusy, includeEsami, includeRinnoviPat, includeRinnoviMed,
+    includeRinnoviCqc, includeStrategiaA, strategiaAMaxPersone, strategiaADelayMs,
+    dataInizio, dataFine, windowDays,
+    loadRiepilogo, loadLog,
+  ]);
+
+  const cancelSync = useCallback(() => {
+    if (syncAbortRef.current) {
+      try { syncAbortRef.current.abort(); } catch (_) {}
+    }
+    setSyncBusy(false);
+  }, []);
+
+  // Auto-refresh incrementale (ogni N minuti, ultimi 7 giorni, no esami)
+  useEffect(() => {
+    if (autoRefreshTimerRef.current) {
+      clearInterval(autoRefreshTimerRef.current);
+      autoRefreshTimerRef.current = null;
+    }
+    if (!autoRefresh) return;
+
+    const minutes  = Math.max(1, Number(autoRefreshMinutes) || 5);
+    const interval = minutes * 60 * 1000;
+
+    const tick = async () => {
+      if (syncBusy) return;
+      try {
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        const di = weekAgo.toISOString().slice(0, 10);
+
+        await fetch(`${apiBase()}/api/sync/archivio-storico-completo`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...authHeaders() },
+          body: JSON.stringify({
+            includeEsami: false,
+            includeRinnoviPat: true,
+            includeRinnoviMed: true,
+            includeRinnoviCqc: true,
+            dataInizio: di,
+            dataFine: todayISO(),
+            windowDays: 30,
+            tipoSync: "incrementale",
+            triggerSource: "portale-tab-auto",
+          }),
+        });
+        setLastAutoRefresh(new Date().toISOString());
+        loadRiepilogo();
+        loadLog();
+      } catch (e) {
+        console.warn("auto-refresh archivio", e);
+      }
+    };
+
+    autoRefreshTimerRef.current = setInterval(tick, interval);
+    return () => {
+      if (autoRefreshTimerRef.current) {
+        clearInterval(autoRefreshTimerRef.current);
+        autoRefreshTimerRef.current = null;
+      }
+    };
+  }, [autoRefresh, autoRefreshMinutes, syncBusy, loadRiepilogo, loadLog]);
+
+  const tipiContati = riepilogo?.rinnovi_per_tipo || {};
+
+  return (
+    <div className="space-y-4 max-w-full">
+      <div>
+        <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+          📚 Archivio Storico Portale
+        </h2>
+        <p className="text-xs text-slate-500 mt-0.5">
+          Scarica e mantieni aggiornato l'archivio completo (candidati esami + rinnovi patente/medici/CQC)
+          direttamente dal Portale dell'Automobilista.
+        </p>
+      </div>
+
+      {/* Riepilogo cards */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div className="rounded-xl border border-slate-200 bg-white p-3">
+          <div className="text-[10px] uppercase tracking-wide text-slate-500">Candidati</div>
+          <div className="mt-1 text-xl font-bold text-slate-800">
+            {riepilogo?.candidati_totali ?? "–"}
+          </div>
+          <div className="text-[10px] text-slate-400">Dall'archivio portale</div>
+        </div>
+        <div className="rounded-xl border border-slate-200 bg-amber-50 p-3">
+          <div className="text-[10px] uppercase tracking-wide text-amber-800">Rinn. Patente</div>
+          <div className="mt-1 text-xl font-bold text-amber-900">
+            {tipiContati.patente ?? 0}
+          </div>
+          <div className="text-[10px] text-amber-700">Tutti gli stati</div>
+        </div>
+        <div className="rounded-xl border border-slate-200 bg-fuchsia-50 p-3">
+          <div className="text-[10px] uppercase tracking-wide text-fuchsia-800">Cert. Medici</div>
+          <div className="mt-1 text-xl font-bold text-fuchsia-900">
+            {tipiContati.medico ?? 0}
+          </div>
+          <div className="text-[10px] text-fuchsia-700">TT2112</div>
+        </div>
+        <div className="rounded-xl border border-slate-200 bg-emerald-50 p-3">
+          <div className="text-[10px] uppercase tracking-wide text-emerald-800">CQC</div>
+          <div className="mt-1 text-xl font-bold text-emerald-900">
+            {tipiContati.cqc ?? 0}
+          </div>
+          <div className="text-[10px] text-emerald-700">Rinnovi / Conseguimenti</div>
+        </div>
+        <div className="rounded-xl border border-slate-200 bg-white p-3">
+          <div className="text-[10px] uppercase tracking-wide text-slate-500">Ultimo sync</div>
+          <div className="mt-1 text-xs font-semibold text-slate-800">
+            {riepilogo?.ultimo_sync ? formatDateTimeIT(riepilogo.ultimo_sync) : "–"}
+          </div>
+          <div className="text-[10px] text-slate-400">
+            {riepilogo?.rinnovi_totali != null ? `${riepilogo.rinnovi_totali} rinnovi totali` : "–"}
+          </div>
+        </div>
+        <div className="rounded-xl border border-slate-200 bg-white p-3">
+          <div className="text-[10px] uppercase tracking-wide text-slate-500">Auto-refresh</div>
+          <div className="mt-1 text-xs font-semibold text-slate-800">
+            {autoRefresh ? `Ogni ${autoRefreshMinutes}m` : "Off"}
+          </div>
+          <div className="text-[10px] text-slate-400">
+            {lastAutoRefresh ? `Ultimo: ${formatDateTimeIT(lastAutoRefresh)}` : "–"}
+          </div>
+        </div>
+      </div>
+
+      {/* Form configurazione */}
+      <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-3">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-1">
+            ⚙️ Configurazione sync
+          </h3>
+          <button
+            onClick={() => { loadRiepilogo(); loadLog(); }}
+            disabled={loadingRiepilogo || loadingLog}
+            className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-medium text-slate-700 disabled:opacity-40 transition border border-slate-200"
+            title="Aggiorna dati dashboard"
+          >
+            🔄 Aggiorna
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Data inizio</label>
+            <input
+              type="date"
+              value={dataInizio}
+              onChange={(e) => setDataInizio(e.target.value)}
+              className="w-full px-3 py-1.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <p className="text-[10px] text-slate-400 mt-0.5">Default 2000-01-01 = tutto lo storico</p>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Data fine</label>
+            <input
+              type="date"
+              value={dataFine}
+              onChange={(e) => setDataFine(e.target.value)}
+              className="w-full px-3 py-1.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Finestra iterazione (giorni)</label>
+            <input
+              type="number"
+              min={1}
+              max={31}
+              value={windowDays}
+              onChange={(e) => {
+                const v = Number(e.target.value) || 30;
+                setWindowDays(Math.min(Math.max(1, v), 31));
+              }}
+              className="w-full px-3 py-1.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <p className="text-[10px] text-slate-400 mt-0.5">Max 31 giorni (limite del portale)</p>
+          </div>
+        </div>
+
+        <div>
+          <div className="text-xs font-medium text-slate-600 mb-1">Categorie da scaricare</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <label className="flex items-center gap-2 text-xs text-slate-700">
+              <input type="checkbox" checked={includeEsami} onChange={(e) => setIncludeEsami(e.target.checked)} />
+              <span>📋 Candidati da verbali esami (4 combinazioni)</span>
+            </label>
+            <label className="flex items-center gap-2 text-xs text-slate-700">
+              <input type="checkbox" checked={includeRinnoviPat} onChange={(e) => setIncludeRinnoviPat(e.target.checked)} />
+              <span>🪪 Rinnovi patente (tutti stati)</span>
+            </label>
+            <label className="flex items-center gap-2 text-xs text-slate-700">
+              <input type="checkbox" checked={includeRinnoviMed} onChange={(e) => setIncludeRinnoviMed(e.target.checked)} />
+              <span>⚕️ Rinnovi medici TT2112</span>
+            </label>
+            <label className="flex items-center gap-2 text-xs text-slate-700">
+              <input type="checkbox" checked={includeRinnoviCqc} onChange={(e) => setIncludeRinnoviCqc(e.target.checked)} />
+              <span>🚛 Rinnovi / Conseguimento CQC</span>
+            </label>
+          </div>
+        </div>
+
+        {/* Strategia A: bypass limite 31gg */}
+        <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 space-y-2">
+          <label className="flex items-center gap-2 text-xs font-semibold text-blue-900">
+            <input
+              type="checkbox"
+              checked={includeStrategiaA}
+              onChange={(e) => setIncludeStrategiaA(e.target.checked)}
+            />
+            <span>🎯 Strategia A — bypass limite 31 giorni (ricerca puntuale per persona)</span>
+          </label>
+          <p className="text-[11px] text-blue-800 leading-snug">
+            Itera i candidati in DB e cerca i rinnovi di ciascuno senza filtro data.
+            Recupera anche lo storico di 10+ anni (per patenti <b>e</b> medici). Il modulo CQC
+            non è disponibile per tutte le autoscuole e viene saltato automaticamente.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-[11px] font-medium text-blue-900 mb-1">
+                Max persone (0 = tutte)
+              </label>
+              <input
+                type="number"
+                min={0}
+                value={strategiaAMaxPersone}
+                onChange={(e) => setStrategiaAMaxPersone(parseInt(e.target.value, 10) || 0)}
+                disabled={syncBusy || !includeStrategiaA}
+                className="w-full px-3 py-1.5 text-xs border border-blue-300 rounded-lg bg-white disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-medium text-blue-900 mb-1">
+                Delay tra persone (ms)
+              </label>
+              <input
+                type="number"
+                min={0}
+                step={100}
+                value={strategiaADelayMs}
+                onChange={(e) => setStrategiaADelayMs(parseInt(e.target.value, 10) || 400)}
+                disabled={syncBusy || !includeStrategiaA}
+                className="w-full px-3 py-1.5 text-xs border border-blue-300 rounded-lg bg-white disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          <button
+            onClick={() => avviaSync({ tipoSync: "full", triggerSource: "portale-tab-manuale" })}
+            disabled={syncBusy}
+            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg transition disabled:opacity-50"
+          >
+            {syncBusy ? "⏳ Sync in corso…" : "🚀 Avvia sync storico completo"}
+          </button>
+          <button
+            onClick={() => avviaSync({
+              tipoSync: "full",
+              triggerSource: "portale-tab-strategia-a",
+              includeEsami: false,
+              includeRinnoviPat: false,
+              includeRinnoviMed: false,
+              includeRinnoviCqc: false,
+              includeStrategiaA: true,
+            })}
+            disabled={syncBusy}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition disabled:opacity-50"
+            title="Lancia solo le fasi Strategia A (2B/3B/4B), salta le baseline. Più rapido per popolare lo storico."
+          >
+            🎯 Solo Strategia A (rapido)
+          </button>
+          {syncBusy && (
+            <button
+              onClick={cancelSync}
+              className="px-3 py-2 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-medium rounded-lg transition border border-red-200"
+            >
+              ⛔ Annulla
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Auto-refresh */}
+      <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 flex flex-wrap items-center gap-3">
+        <label className="flex items-center gap-2 text-xs font-medium text-amber-900">
+          <input
+            type="checkbox"
+            checked={autoRefresh}
+            onChange={(e) => setAutoRefresh(e.target.checked)}
+          />
+          <span>🔴 Aggiornamento tempo reale (sync incrementale automatico)</span>
+        </label>
+        <span className="text-xs text-amber-800">Ogni</span>
+        <input
+          type="number"
+          min={1}
+          max={60}
+          value={autoRefreshMinutes}
+          onChange={(e) => setAutoRefreshMinutes(Number(e.target.value) || 5)}
+          className="w-14 px-2 py-1 text-xs border border-amber-300 rounded-lg bg-white"
+        />
+        <span className="text-xs text-amber-800">minuti</span>
+        <span className="text-[10px] text-amber-700 ml-auto">
+          Scarica automaticamente solo i rinnovi più recenti (ultimi 7 giorni) per mantenere il DB allineato.
+        </span>
+      </div>
+
+      {/* Log sincronizzazione (SSE) */}
+      {(syncBusy || syncMessages.length > 0) && (
+        <div className="rounded-xl bg-slate-900 text-slate-100 p-3 font-mono text-[11px] max-h-64 overflow-y-auto">
+          <div className="font-semibold mb-1 text-emerald-400">🖥 Log sincronizzazione</div>
+          {syncMessages.length === 0 && (
+            <div className="text-slate-400">In attesa di dati dal server…</div>
+          )}
+          {syncMessages.map((m, i) => {
+            const isError = m.event === "error";
+            const isDone  = m.event === "done";
+            return (
+              <div key={i} className={isError ? "text-red-400" : (isDone ? "text-emerald-400" : "text-slate-300")}>
+                <span className="text-slate-500">[{new Date(m.ts).toLocaleTimeString("it-IT")}]</span>{" "}
+                <span>{m.event || "info"}</span>
+                {m.fase  ? <> — <span className="text-sky-300">{m.fase}</span></>   : null}
+                {m.message ? <> — {m.message}</> : null}
+                {typeof m.raccolti === "number" ? <> — raccolti {m.raccolti}{m.totale ? `/${m.totale}` : ""}</> : null}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {syncResult && syncResult.event === "error" && (
+        <div className="rounded-xl bg-red-50 border border-red-200 text-red-700 px-4 py-3 text-sm">
+          ❌ Errore: {syncResult.message}
+        </div>
+      )}
+      {syncResult && syncResult.event === "done" && (
+        <div className="rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 text-sm space-y-1">
+          <div>✅ Sync completato.</div>
+          <div className="text-xs">
+            {typeof syncResult.candidati_trovati === "number" && (
+              <>Candidati trovati: <b>{syncResult.candidati_trovati}</b> (nuovi <b>{syncResult.candidati_inseriti ?? 0}</b>, agg. <b>{syncResult.candidati_aggiornati ?? 0}</b>). </>
+            )}
+          </div>
+          <div className="text-xs">
+            {typeof syncResult.rinnovi_trovati === "number" && (
+              <>Rinnovi trovati: <b>{syncResult.rinnovi_trovati}</b> (inseriti <b>{syncResult.rinnovi_inseriti ?? 0}</b>, aggiornati <b>{syncResult.rinnovi_aggiornati ?? 0}</b>, invariati <b>{syncResult.rinnovi_invariati ?? 0}</b>). </>
+            )}
+          </div>
+          <div className="text-xs">
+            {typeof syncResult.errori === "number" && syncResult.errori > 0 && (
+              <span className="text-amber-700">⚠️ Errori: <b>{syncResult.errori}</b>. </span>
+            )}
+            {typeof syncResult.durationMs === "number" && (
+              <>Durata: <b>{formatDurationMs(syncResult.durationMs)}</b>.</>
+            )}
+          </div>
+
+          {/* Statistiche Strategia A */}
+          {(syncResult.strategia_a_persone_iterate > 0 ||
+            syncResult.strategia_a_medici_persone_iterate > 0 ||
+            syncResult.strategia_a_cqc_persone_iterate > 0) && (
+            <div className="mt-2 pt-2 border-t border-emerald-200">
+              <div className="text-xs font-semibold text-blue-900 mb-1">🎯 Strategia A (bypass 31gg)</div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-[11px]">
+                <div className="rounded bg-white/70 border border-blue-100 px-2 py-1">
+                  <div className="font-semibold text-blue-900">🪪 Patenti</div>
+                  <div className="text-slate-700">
+                    Persone: <b>{syncResult.strategia_a_persone_iterate ?? 0}</b> ·{" "}
+                    Rinnovi: <b>{syncResult.strategia_a_rinnovi_trovati ?? 0}</b>
+                  </div>
+                </div>
+                <div className="rounded bg-white/70 border border-blue-100 px-2 py-1">
+                  <div className="font-semibold text-blue-900">⚕️ Medici</div>
+                  <div className="text-slate-700">
+                    Persone: <b>{syncResult.strategia_a_medici_persone_iterate ?? 0}</b> ·{" "}
+                    Rinnovi: <b>{syncResult.strategia_a_medici_rinnovi_trovati ?? 0}</b>
+                    {syncResult.strategia_a_medici_servizio_non_disponibile && (
+                      <span className="ml-1 text-amber-700">(⚠️ modulo non disp.)</span>
+                    )}
+                  </div>
+                </div>
+                <div className="rounded bg-white/70 border border-blue-100 px-2 py-1">
+                  <div className="font-semibold text-blue-900">🚛 CQC</div>
+                  <div className="text-slate-700">
+                    Persone: <b>{syncResult.strategia_a_cqc_persone_iterate ?? 0}</b> ·{" "}
+                    Rinnovi: <b>{syncResult.strategia_a_cqc_rinnovi_trovati ?? 0}</b>
+                    {syncResult.strategia_a_cqc_servizio_non_disponibile && (
+                      <span className="ml-1 text-amber-700">(⚠️ modulo non disp.)</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Storico run */}
+      <div className="rounded-xl border border-slate-200 bg-white p-4">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-1">
+            🗒 Storico run di sincronizzazione
+          </h3>
+          {loadingLog && <span className="text-xs text-slate-400">Caricamento…</span>}
+        </div>
+        {runLog.length === 0 ? (
+          <div className="text-xs text-slate-400 py-4 text-center">Nessun run ancora eseguito.</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="bg-slate-50 border-b-2 border-slate-200 text-slate-600">
+                  <th className="text-left px-3 py-2">Avvio</th>
+                  <th className="text-left px-3 py-2">Tipo</th>
+                  <th className="text-left px-3 py-2">Origine</th>
+                  <th className="text-right px-3 py-2">Durata</th>
+                  <th className="text-right px-3 py-2" title="Candidati: trovati / inseriti">Candidati</th>
+                  <th className="text-right px-3 py-2" title="Rinnovi: trovati / inseriti / aggiornati">Rinnovi</th>
+                  <th className="text-right px-3 py-2">Err.</th>
+                  <th className="text-left px-3 py-2">Esito</th>
+                </tr>
+              </thead>
+              <tbody>
+                {runLog.map((r) => {
+                  const durMs = typeof r.duration_ms === "number"
+                    ? r.duration_ms
+                    : (r.finished_at && r.started_at
+                        ? new Date(r.finished_at) - new Date(r.started_at)
+                        : null);
+                  return (
+                    <tr key={r.id} className="border-b border-slate-100 hover:bg-slate-50" title={r.ultimo_errore || undefined}>
+                      <td className="px-3 py-2">{formatDateTimeIT(r.started_at)}</td>
+                      <td className="px-3 py-2">{r.tipo_sync || "–"}</td>
+                      <td className="px-3 py-2 text-slate-500">{r.trigger_source || "–"}</td>
+                      <td className="px-3 py-2 text-right">
+                        {durMs != null ? formatDurationMs(durMs) : "–"}
+                      </td>
+                      <td className="px-3 py-2 text-right text-slate-700">
+                        <span title="Trovati">{r.candidati_trovati ?? 0}</span>
+                        {" / "}
+                        <span className="text-emerald-700 font-medium" title="Inseriti">{r.candidati_inseriti ?? 0}</span>
+                      </td>
+                      <td className="px-3 py-2 text-right text-slate-700">
+                        <span title="Trovati">{r.rinnovi_trovati ?? 0}</span>
+                        {" / "}
+                        <span className="text-emerald-700 font-medium" title="Inseriti">{r.rinnovi_inseriti ?? 0}</span>
+                        {" / "}
+                        <span className="text-sky-700 font-medium" title="Aggiornati">{r.rinnovi_aggiornati ?? 0}</span>
+                      </td>
+                      <td className={`px-3 py-2 text-right ${(r.errori ?? 0) > 0 ? "text-red-600 font-medium" : "text-slate-400"}`}>
+                        {r.errori ?? 0}
+                      </td>
+                      <td className="px-3 py-2">
+                        {r.stato === "success"
+                          ? <span className="text-emerald-700">✓ OK</span>
+                          : r.stato === "failed"
+                            ? <span className="text-red-600">✗ Errore</span>
+                            : r.stato === "running"
+                              ? <span className="text-amber-700">⏳ In corso</span>
+                              : <span className="text-slate-500">{r.stato || "–"}</span>}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      <div className="text-[11px] text-slate-400">
+        Fonti portale lette: <code>ReadGestRinnAgenzia</code> (patente) ·{" "}
+        <code>ReadGestRinnMed</code> (medici TT2112) ·{" "}
+        <code>ReadRichPatCqc</code> (CQC) ·{" "}
+        <code>SituazioneCandidati</code> (candidati esami).
+      </div>
+    </div>
+  );
+}
+
 // ─── PAGINA PRINCIPALE ─────────────────────────────────────────────────────────
 
 export default function PortalePage() {
@@ -2826,6 +3500,9 @@ export default function PortalePage() {
           </TabPanel>
           <TabPanel active={activeTab === "situazione"}>
             <PanelloSituazioneCandidati />
+          </TabPanel>
+          <TabPanel active={activeTab === "archivio-storico"}>
+            <PanelloArchivioStorico />
           </TabPanel>
         </div>
 

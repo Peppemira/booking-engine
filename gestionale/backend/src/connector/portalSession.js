@@ -400,6 +400,16 @@ let persistentPage = null;
 let persistentLastLoginAt = 0;
 let persistentLastTabType = "";  // Ultimo tipo tab usato (SQI, SGOS, etc.) per fast path
 
+// Cache stato dettaglio per fast-path della stampa: dopo readSessioneDettaglioViaBrowser
+// la pagina ha il form Select_listCandidati caricato via setContent, ma page.url() non riflette
+// questo stato (resta sull'URL della ricerca). Memorizziamo i parametri per consentire
+// alla stampa di skippare ricerca+selezione+dettaglio quando il dettaglio è già in DOM.
+let persistentDetailUsername = "";       // username dell'ultimo dettaglio caricato
+let persistentDetailSessionIndex = -1;   // sessionIndex dell'ultimo dettaglio
+let persistentDetailSearchKey = "";      // dataDa|dataA|stato dell'ultimo dettaglio
+let persistentDetailHtml = "";           // HTML del dettaglio (per re-setContent se la pagina ha perso lo stato)
+let persistentDetailLoadedAt = 0;        // timestamp creazione cache (TTL)
+
 // Mutex per serializzare accesso al browser persistente (evita conflitti tra richieste concorrenti)
 let _browserMutex = Promise.resolve();
 function acquireBrowserLock() {
@@ -451,6 +461,12 @@ async function getBrowserAndPageForSession(username, password, pin, trace) {
         }
         persistentBrowser = null;
         persistentPage = null;
+        // Invalida cache dettaglio: la pagina è morta, lo stato non è più valido
+        persistentDetailUsername = "";
+        persistentDetailSessionIndex = -1;
+        persistentDetailSearchKey = "";
+        persistentDetailHtml = "";
+        persistentDetailLoadedAt = 0;
       }
     }
 
@@ -2729,9 +2745,40 @@ async function loginDirectHttp(options = {}) {
 
   console.log("[portalSession] loginDirectHttp STEP1: invio login per utente", username);
 
+  // Helper: esegue una GET con retry su errori di rete transienti (ECONNRESET/ETIMEDOUT/etc).
+  // Il portale dell'Automobilista chiude occasionalmente le connessioni TLS durante il
+  // redirect chain del login. Un retry con piccolo backoff risolve nella maggior parte dei casi.
+  const TRANSIENT_NET_CODES = new Set([
+    "ECONNRESET", "ETIMEDOUT", "ECONNABORTED", "EPIPE", "ENETUNREACH",
+    "EAI_AGAIN", "ECONNREFUSED", "ERR_SOCKET_CONNECTION_TIMEOUT",
+  ]);
+  async function getWithRetry(url, cfg = {}, maxAttempts = 4) {
+    let lastErr;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        return await client.get(url, cfg);
+      } catch (err) {
+        lastErr = err;
+        const code = String(err?.code || err?.cause?.code || "");
+        const status = err?.response?.status;
+        // Non ritentare errori HTTP "veri" (gestiti dal chiamante), solo i network reset
+        if (status && status !== 502 && status !== 503 && status !== 504) throw err;
+        if (!TRANSIENT_NET_CODES.has(code) && !/ECONN|ETIMED|socket hang/i.test(String(err?.message || ""))) {
+          throw err;
+        }
+        if (attempt < maxAttempts) {
+          const delayMs = 500 * attempt + Math.floor(Math.random() * 300);
+          console.warn(`[portalSession] loginDirectHttp STEP1: ${code || "network"} al tentativo ${attempt}/${maxAttempts}, retry tra ${delayMs}ms...`);
+          await new Promise((r) => setTimeout(r, delayMs));
+        }
+      }
+    }
+    throw lastErr;
+  }
+
   let response;
   try {
-    response = await client.get(loginUrl, { maxRedirects: 15 });
+    response = await getWithRetry(loginUrl, { maxRedirects: 15 }, 4);
   } catch (err) {
     // Se homepage-professionista dà 404, riprova con la homepage generica
     if (err?.response?.status === 404) {
@@ -2744,7 +2791,7 @@ async function loginDirectHttp(options = {}) {
         "&loginView.beanUtente.userName=" + encodeURIComponent(username) +
         "&loginView.beanUtente.password=" + encodeURIComponent(password) +
         "&action:Login_executeLogin=Accedi";
-      response = await client.get(fallbackLoginUrl, { maxRedirects: 15 });
+      response = await getWithRetry(fallbackLoginUrl, { maxRedirects: 15 }, 4);
     } else {
       throw err;
     }
@@ -3024,6 +3071,26 @@ const PORTAL_TAB_CONFIG = {
   },
   VARCQC: {
     searchUrl: "/prenotazione/sessioneEsameAbilitazioneEP/Read_initActionVerbaliAnnullatiRevisioneCqc.action?pageStatus=SEARCH",
+    formSelector: 'form#RicercaSessioneEsameAbilitazioneEP, form[name="RicercaSessioneEsameAbilitazioneEP"]',
+    dateFromSelector: 'input[name*="dataVerbaleEsameAbilitazione"]:not([name*="TO"])',
+    dateToSelector: 'input[name*="dataVerbaleEsameAbilitazioneTO"]',
+    statusSelector: null,
+    submitSelector: 'input[name="action:ReadCqc_pagingCQC"]',
+    dateRange: "past7",
+  },
+  // --- Verbali Annullati Conseguimento ---
+  VANC: {
+    searchUrl: "/prenotazione/sessioneEsameAbilitazioneEP/Read_initActionVerbaliAnnullatiConseguimento.action?pageStatus=SEARCH",
+    formSelector: 'form#RicercaSessioneEsameAbilitazioneEP, form[name="RicercaSessioneEsameAbilitazioneEP"]',
+    dateFromSelector: 'input[name*="dataVerbaleEsameAbilitazione"]:not([name*="TO"])',
+    dateToSelector: 'input[name*="dataVerbaleEsameAbilitazioneTO"]',
+    statusSelector: null,
+    submitSelector: 'input[name="action:ReadConseguimento_pagingConseguimento"]',
+    dateRange: "past7",
+  },
+  // --- Verbali Annullati CQC ---
+  VANQ: {
+    searchUrl: "/prenotazione/sessioneEsameAbilitazioneEP/Read_initActionVerbaliAnnullatiCqc.action?pageStatus=SEARCH",
     formSelector: 'form#RicercaSessioneEsameAbilitazioneEP, form[name="RicercaSessioneEsameAbilitazioneEP"]',
     dateFromSelector: 'input[name*="dataVerbaleEsameAbilitazione"]:not([name*="TO"])',
     dateToSelector: 'input[name*="dataVerbaleEsameAbilitazioneTO"]',
@@ -3326,6 +3393,127 @@ async function readPortalSearchViaBrowser(tabType, options = {}) {
 
     // Salva il tipo tab per il fast path della prossima richiesta
     if (isPersistent) persistentLastTabType = tabType;
+
+    return resultHtml;
+  } finally {
+    if (!isPersistent) {
+      await browser.close();
+    }
+    releaseLock();
+  }
+}
+
+/**
+ * readPortalPageViaBrowser — Apre una URL generica del portale via Puppeteer
+ * (con login + handle PIN + dispatcher) e ritorna l'HTML della pagina.
+ *
+ * Utile per pagine che NON sono form di ricerca ma viste statiche (es:
+ * credito residuo PagoPA, rinnovo gestione, stampa elenco, ecc.).
+ *
+ * @param {string} pageUrl  URL relativa (es. "/sistema-pagamenti/creditoResiduo/Read_initAction.action")
+ * @param {object} options  { username, password, pin, trace }
+ * @returns {Promise<string>} HTML della pagina
+ */
+async function readPortalPageViaBrowser(pageUrl, options = {}) {
+  const username = options.username || process.env.PORTAL_USER || process.env.PORTAL_USERNAME;
+  const password = options.password || process.env.PORTAL_PASS || process.env.PORTAL_PASSWORD;
+  const pin = options.pin || process.env.PORTAL_PIN;
+  const trace = Array.isArray(options.trace) ? options.trace : null;
+
+  if (!username || !password) {
+    throw new Error("PORTAL_USER/PORTAL_PASS mancanti nel .env");
+  }
+  if (!pageUrl || typeof pageUrl !== "string") {
+    throw new Error("pageUrl obbligatoria (es. /sistema-pagamenti/...)");
+  }
+
+  const PORTAL_BASE = "https://www.ilportaledellautomobilista.it";
+  const fullUrl = pageUrl.startsWith("http") ? pageUrl : `${PORTAL_BASE}${pageUrl}`;
+
+  pushDiag(trace, "browser.page.start", { fullUrl });
+
+  const { browser, page, isPersistent, releaseLock } = await getBrowserAndPageForSession(username, password, pin, trace);
+
+  try {
+    // --- LOGIN (skip se browser persistente gia' loggato) ---
+    let skipLogin = false;
+    if (isPersistent && persistentLastLoginAt > 0) {
+      try {
+        const currentUrl = await page.url();
+        if (currentUrl.includes("/prenotazione") || currentUrl.includes("/portale-automobilista") || currentUrl.includes("/web/") || currentUrl.includes("/sistema-pagamenti") || currentUrl.includes("/RichiestaPatenti")) {
+          skipLogin = true;
+          pushDiag(trace, "browser.page.login.skip", { url: currentUrl });
+        }
+      } catch { skipLogin = false; }
+    }
+
+    if (!skipLogin) {
+      await page.goto(`${PORTAL_BASE}/SSO/SSOLogin/Login_initAction.action`, { waitUntil: "domcontentloaded" });
+
+      const userSel = await waitFirstSelector(page, [
+        'input[name="loginView.beanUtente.userName"]', 'input[name="username"]', 'input[type="text"]',
+      ], 8000).catch(() => null);
+      const passSel = await waitFirstSelector(page, [
+        'input[name="loginView.beanUtente.password"]', 'input[name="password"]', 'input[type="password"]',
+      ], 8000).catch(() => null);
+
+      if (userSel && passSel) {
+        await page.click(userSel, { clickCount: 3 });
+        await page.type(userSel, username, { delay: 15 });
+        await page.click(passSel, { clickCount: 3 });
+        await page.type(passSel, password, { delay: 15 });
+
+        const loginBtnSel = 'input[name="action:Login_executeLogin"], input[type="submit"], button[type="submit"]';
+        await Promise.allSettled([
+          page.waitForNavigation({ waitUntil: "domcontentloaded", timeout: 60000 }),
+          page.click(loginBtnSel),
+        ]);
+
+        pushDiag(trace, "browser.page.login.done", { url: page.url() });
+        await handlePinIfPresent(page, pin);
+        if (isPersistent) persistentLastLoginAt = Date.now();
+      }
+    }
+
+    // --- NAVIGATE ---
+    await page.goto(fullUrl, { waitUntil: "domcontentloaded" });
+
+    if (!skipLogin) await sleep(800);
+
+    // Handle dispatcher / PIN
+    for (let i = 0; i < 6; i++) {
+      const hasPin = await page.$('input[name="loginView.pin"], input[name="pin"]');
+      if (hasPin) { await handlePinIfPresent(page, pin); await sleep(200); continue; }
+
+      const postForm = await page.$('form[name="postform"]');
+      if (postForm) {
+        await Promise.allSettled([
+          page.waitForNavigation({ waitUntil: "domcontentloaded", timeout: 30000 }),
+          page.$eval('form[name="postform"]', (form) => form.submit()),
+        ]);
+        await sleep(150);
+        continue;
+      }
+
+      break;
+    }
+
+    await sleep(skipLogin ? 300 : 800);
+
+    const resultHtml = await page.content();
+    pushDiag(trace, "browser.page.done", {
+      url: page.url(),
+      htmlLength: resultHtml.length,
+      title: await page.title().catch(() => ""),
+    });
+
+    // Salva per diagnostica
+    try {
+      const dumpDir = path.resolve(__dirname, "../../diagnostica-dump");
+      if (!fs.existsSync(dumpDir)) fs.mkdirSync(dumpDir, { recursive: true });
+      const safeName = pageUrl.replace(/[^a-zA-Z0-9]/g, "_").slice(0, 80);
+      fs.writeFileSync(path.join(dumpDir, `page-${safeName}.html`), resultHtml || "", "utf8");
+    } catch (_) {}
 
     return resultHtml;
   } finally {
@@ -3815,6 +4003,24 @@ async function readSessioneDettaglioViaBrowser(options = {}) {
       const val = allCampi[nome] || Object.entries(allCampi).find(([k]) => k.toLowerCase().includes(nome.toLowerCase()))?.[1] || "";
       if (val) campiNoti[nome] = val;
     });
+
+    // ── Salva stato dettaglio per la fast-path della stampa ──
+    // Dopo setContent(detailHtml) la pagina ha il form Select_listCandidati nel DOM,
+    // ma page.url() resta sull'URL della ricerca. Memorizziamo i parametri usati per
+    // consentire a readStampaPortaleViaBrowser di skippare login+ricerca+selezione+dettaglio
+    // riutilizzando direttamente il DOM caricato.
+    if (isPersistent) {
+      persistentDetailUsername = username;
+      persistentDetailSessionIndex = idx;
+      persistentDetailSearchKey = `${fromDateValue}|${toDateValue}|${statoFilter}`;
+      persistentDetailHtml = String(detailSubmit?.html || "");
+      persistentDetailLoadedAt = Date.now();
+      pushDiag(trace, "dettaglio.cache.saved", {
+        sessionIndex: idx,
+        searchKey: persistentDetailSearchKey,
+        htmlLen: persistentDetailHtml.length,
+      });
+    }
 
     return {
       success: true,
@@ -4310,21 +4516,49 @@ async function readStampaPortaleViaBrowser(options = {}) {
 
     pushDiag(trace, "stampa.browser.start", { stampaType, sessionIndex, candidateIndex });
 
-    // ── 0. FAST PATH: se il browser persistente è già sulla pagina dettaglio, salta direttamente allo step 5 ──
+    // ── 0. FAST PATH: se il browser persistente ha caricato di recente lo stesso dettaglio, salta direttamente allo step 5 ──
+    //
+    // PROBLEMA RISOLTO: readSessioneDettaglioViaBrowser usa page.setContent() per caricare
+    // il dettaglio, ma setContent NON aggiorna page.url() (resta sull'URL della ricerca).
+    // Quindi un check basato solo su URL fallisce sempre. Usiamo invece la cache dello stato
+    // (popolata dal dettaglio) + verifica DOM, con re-setContent come fallback.
     let fastPathToStampa = false;
-    if (isPersistent && persistentLastLoginAt > 0) {
+    if (isPersistent && persistentLastLoginAt > 0 && persistentDetailLoadedAt > 0) {
       try {
-        const currentUrl = await page.url();
-        // Se siamo già su Select_listCandidati (pagina dettaglio), possiamo stampare subito
-        if (currentUrl.includes("Select_listCandidati") || currentUrl.includes("listCandidati")) {
+        const cacheAgeMs = Date.now() - persistentDetailLoadedAt;
+        const cacheMaxAgeMs = 15 * 60 * 1000; // 15 min, leggermente meno del TTL del browser (20 min)
+        const currentSearchKey = `${fromDateValue}|${toDateValue}|${statoFilter}`;
+        const matchesUser = persistentDetailUsername === username;
+        const matchesSession = persistentDetailSessionIndex === sessionIndex && persistentDetailSearchKey === currentSearchKey;
+        const cacheValid = matchesUser && matchesSession && cacheAgeMs < cacheMaxAgeMs;
+
+        if (cacheValid) {
+          // Caso A: il DOM ha ancora il form Select_listCandidati (page state intatto dal dettaglio)
           const hasDetailForm = await page.$('form#Select_listCandidati, form[name="Select_listCandidati"]');
           if (hasDetailForm) {
             fastPathToStampa = true;
-            pushDiag(trace, "stampa.fastpath", { url: currentUrl });
-            console.log(`[stampa] FAST PATH: browser già su dettaglio, salto a step 5`);
+            pushDiag(trace, "stampa.fastpath.dom", { sessionIndex, ageMs: cacheAgeMs });
+            console.log(`[stampa] FAST PATH (DOM intatto): dettaglio già caricato, salto a step 5 (age=${cacheAgeMs}ms)`);
+          } else if (persistentDetailHtml) {
+            // Caso B: il DOM è stato sovrascritto (es. da altre chiamate Puppeteer in mezzo),
+            // ma abbiamo l'HTML in cache. Re-setContent lo ripristina.
+            await page.setContent(persistentDetailHtml, { waitUntil: "domcontentloaded" });
+            const hasFormAfter = await page.$('form#Select_listCandidati, form[name="Select_listCandidati"]');
+            if (hasFormAfter) {
+              fastPathToStampa = true;
+              pushDiag(trace, "stampa.fastpath.restored", { sessionIndex, ageMs: cacheAgeMs, htmlLen: persistentDetailHtml.length });
+              console.log(`[stampa] FAST PATH (HTML ripristinato): cache hit, salto a step 5 (age=${cacheAgeMs}ms)`);
+            } else {
+              pushDiag(trace, "stampa.fastpath.restoreFailed", { sessionIndex });
+              console.log(`[stampa] Restore HTML fallito: form non trovato dopo setContent`);
+            }
           }
+        } else {
+          pushDiag(trace, "stampa.fastpath.miss", { matchesUser, matchesSession, ageMs: cacheAgeMs });
         }
-      } catch { /* ignore */ }
+      } catch (err) {
+        pushDiag(trace, "stampa.fastpath.error", { error: String(err?.message || err) });
+      }
     }
 
     // ── 1. LOGIN (skip se sessione persistente attiva) ──
@@ -4511,14 +4745,27 @@ async function readStampaPortaleViaBrowser(options = {}) {
 
     pushDiag(trace, "stampa.detail.done", { url: page.url() });
 
-    // Salva dettaglio per diagnostica
+    // Salva dettaglio per diagnostica + popola cache per chiamate stampa successive
+    let slowPathDetailHtml = "";
     try {
+      slowPathDetailHtml = await page.content();
       const fsDiag2 = require("fs");
       const pathDiag2 = require("path");
       const dumpDir2 = pathDiag2.resolve(__dirname, "../../diagnostica-dump");
       if (!fsDiag2.existsSync(dumpDir2)) fsDiag2.mkdirSync(dumpDir2, { recursive: true });
-      fsDiag2.writeFileSync(pathDiag2.join(dumpDir2, "stampa-detail-page.html"), await page.content(), "utf8");
+      fsDiag2.writeFileSync(pathDiag2.join(dumpDir2, "stampa-detail-page.html"), slowPathDetailHtml, "utf8");
     } catch (_e) {}
+
+    // Popola cache dettaglio: una stampa successiva per la stessa sessione potrà fast-path
+    // (es. utente clicca STAMPA, poi STAMPA CANDIDATI sulla stessa sessione)
+    if (isPersistent && slowPathDetailHtml) {
+      persistentDetailUsername = username;
+      persistentDetailSessionIndex = sessionIndex;
+      persistentDetailSearchKey = `${fromDateValue}|${toDateValue}|${statoFilter}`;
+      persistentDetailHtml = slowPathDetailHtml;
+      persistentDetailLoadedAt = Date.now();
+      pushDiag(trace, "stampa.cache.populated", { sessionIndex, htmlLen: slowPathDetailHtml.length });
+    }
     } // fine if (!fastPathToStampa)
 
     // ── 5. STAMPA via fetch() nel contesto della pagina dettaglio ──
@@ -4652,6 +4899,7 @@ module.exports.invalidatePortalSession = invalidatePortalSession;
 module.exports.diagnosePortalLogin = diagnosePortalLogin;
 module.exports.readSessioniQuizInterneViaBrowser = readSessioniQuizInterneViaBrowser;
 module.exports.readPortalSearchViaBrowser = readPortalSearchViaBrowser;
+module.exports.readPortalPageViaBrowser = readPortalPageViaBrowser;
 module.exports.PORTAL_TAB_CONFIG = PORTAL_TAB_CONFIG;
 module.exports.runManualSessionFlowViaBrowser = runManualSessionFlowViaBrowser;
 module.exports.readSituazioneCandidatiDettaglioViaBrowser = readSituazioneCandidatiDettaglioViaBrowser;

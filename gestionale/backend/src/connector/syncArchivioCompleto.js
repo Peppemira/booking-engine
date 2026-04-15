@@ -477,11 +477,15 @@ async function syncArchivioCompleto(opts = {}) {
   });
   const client = makeHttpClient(jar);
 
-  // Combinazioni iPatenteCloud: (P/T), (Q/T), (P/G)
+  // Combinazioni iPatenteCloud (replica completa GeCA Trasmiss):
+  //   P = Patente, Q = CQC
+  //   T = Teoria,  G = Guida
+  // Copertura TOTALE dei verbali esami = 4 combinazioni.
   const COMBINAZIONI = [
     { tipo: "P", tipoProva: "T", desc: "Patente Teoria" },
-    { tipo: "Q", tipoProva: "T", desc: "CQC Teoria"    },
+    { tipo: "Q", tipoProva: "T", desc: "CQC Teoria"     },
     { tipo: "P", tipoProva: "G", desc: "Patente Guida"  },
+    { tipo: "Q", tipoProva: "G", desc: "CQC Guida"      }, // FASE A — combinazione mancante
   ];
 
   // Mappa marca operativa → dati lista (evita duplicati)
