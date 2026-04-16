@@ -147,3 +147,33 @@ Gli script sono attualmente hardcoded sul tenant **Giuseppe Miracolo** (costante
 1. Recuperare il suo `autoscuola_id` da `autoscuole` in Supabase
 2. Sostituirlo nella costante `GM` in cima a ciascuno script
 3. Verificare che le credenziali portale in `.env` siano del tenant target
+
+---
+
+## Foto e firme — limite del portale
+
+**Il portale dell'Automobilista NON espone foto/firme storiche** dei candidati
+che hanno già la patente. Sono recuperabili **solo durante una pratica esame
+attiva** tramite il flusso:
+
+```
+ReadSituazioneCandidati → CandidatiInVerbale → fetchSchedaCandidato
+   (verbale esame)         (per verbale)        (picBase64 / picFirmaBase64)
+```
+
+Il codice è già implementato in `src/connector/syncArchivioCompleto.js`
+(funzione `syncFotoFirmaCandidato`) ed è esposto via `POST /api/sync/archivio-completo`.
+
+**Per GM (verificato il 2026-04-16):**
+- 0 verbali esame attivi in nessuna combinazione (Patente/CQC × Teoria/Guida)
+- Le 2 370 anagrafiche derivano tutte da rinnovi → nessuna scheda esame collegata
+- Foto/firme **non recuperabili** dal portale per i candidati storici esistenti
+
+**Per future pratiche esame:** lo `syncArchivioCompleto` esistente scaricherà
+automaticamente foto+firma e le caricherà su Supabase Storage bucket
+`candidate-media` con path `{cf_slug}/foto.jpg` e `{cf_slug}/firma.jpg`,
+salvando gli URL pubblici in `candidates.raw_portale.foto_url` / `firma_url`.
+
+L'endpoint alternativo `cercaCandidatoPerPatente` (`prenotazionePatente/Read_initAction`)
+ritorna l'HTML del form di **inserimento nuova pratica**: i campi `pic` e
+`picFirma` lì presenti sono `<input type="file">` per upload, non per download.
