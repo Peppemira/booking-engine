@@ -105,15 +105,26 @@ async function statistiche(req, res) {
 // GET /api/visite-mediche/scadenze-medico
 // Ritorna i rinnovi medici in scadenza nei prossimi N giorni (default 90).
 // Aggrega in 3 bucket: entro 30, entro 60, entro 90 giorni.
+// Query params:
+//   giorni=90            finestra in avanti (max 365)
+//   limit=100            max righe (max 500)
+//   includi_scaduti=1    include anche rinnovi scaduti negli ultimi N giorni
+//   scaduti_giorni=30    finestra all'indietro per scaduti (default 30)
 // ---------------------------------------------------------------------------
 async function scadenzeMedico(req, res) {
   try {
     const autoscuolaId = req.autoscuolaId;
     const giorni = Math.min(parseInt(req.query.giorni || "90", 10), 365);
     const limit = Math.min(parseInt(req.query.limit || "100", 10), 500);
+    const includiScaduti = req.query.includi_scaduti === "1" || req.query.includi_scaduti === "true";
+    const scadutiGiorni = Math.min(parseInt(req.query.scaduti_giorni || "30", 10), 365);
 
-    const oggi = new Date().toISOString().split("T")[0];
-    const limite = new Date(Date.now() + giorni * 86400000).toISOString().split("T")[0];
+    const oggiDate = new Date();
+    const oggi = oggiDate.toISOString().split("T")[0];
+    const limiteFuturo = new Date(oggiDate.getTime() + giorni * 86400000).toISOString().split("T")[0];
+    const limitePassato = includiScaduti
+      ? new Date(oggiDate.getTime() - scadutiGiorni * 86400000).toISOString().split("T")[0]
+      : oggi;
 
     const { data, error } = await supabase
       .from("rinnovi_portale")
@@ -121,8 +132,8 @@ async function scadenzeMedico(req, res) {
       .eq("autoscuola_id", autoscuolaId)
       .eq("tipo_rinnovo", "medico")
       .not("data_scadenza", "is", null)
-      .gte("data_scadenza", oggi)
-      .lte("data_scadenza", limite)
+      .gte("data_scadenza", limitePassato)
+      .lte("data_scadenza", limiteFuturo)
       .order("data_scadenza", { ascending: true })
       .limit(limit);
 
@@ -147,11 +158,12 @@ async function scadenzeMedico(req, res) {
       };
     });
 
-    const counts = { giorni30: 0, giorni60: 0, giorni90: 0 };
+    const counts = { scaduti: 0, giorni30: 0, giorni60: 0, giorni90: 0 };
     for (const it of items) {
-      if (it.giorni_rimanenti <= 30) counts.giorni30 += 1;
-      if (it.giorni_rimanenti <= 60) counts.giorni60 += 1;
-      if (it.giorni_rimanenti <= 90) counts.giorni90 += 1;
+      if (it.giorni_rimanenti < 0) counts.scaduti += 1;
+      if (it.giorni_rimanenti >= 0 && it.giorni_rimanenti <= 30) counts.giorni30 += 1;
+      if (it.giorni_rimanenti >= 0 && it.giorni_rimanenti <= 60) counts.giorni60 += 1;
+      if (it.giorni_rimanenti >= 0 && it.giorni_rimanenti <= 90) counts.giorni90 += 1;
     }
 
     res.json({ counts, items, totale: items.length });

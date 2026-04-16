@@ -61,7 +61,7 @@ export default function DashboardPage() {
   const [scadenzeBusy, setScadenzeBusy] = useState(false);
 
   // Scadenze rinnovi medici (portale archivio)
-  const [scadenzeMedico, setScadenzeMedico] = useState({ items: [], counts: { giorni30: 0, giorni60: 0, giorni90: 0 }, totale: 0 });
+  const [scadenzeMedico, setScadenzeMedico] = useState({ items: [], counts: { scaduti: 0, giorni30: 0, giorni60: 0, giorni90: 0 }, totale: 0 });
   const [scadenzeMedicoBusy, setScadenzeMedicoBusy] = useState(false);
 
   // Pagamenti oggi
@@ -135,14 +135,14 @@ export default function DashboardPage() {
     setScadenzeMedicoBusy(true);
     try {
       const base = getBase();
-      const res = await fetch(`${base}/api/visite-mediche/scadenze-medico?giorni=90&limit=100`, {
+      const res = await fetch(`${base}/api/visite-mediche/scadenze-medico?giorni=90&includi_scaduti=1&scaduti_giorni=30&limit=100`, {
         headers: authHeaders(),
       });
       if (res.ok) {
         const d = await res.json();
         setScadenzeMedico({
           items: Array.isArray(d.items) ? d.items : [],
-          counts: d.counts || { giorni30: 0, giorni60: 0, giorni90: 0 },
+          counts: d.counts || { scaduti: 0, giorni30: 0, giorni60: 0, giorni90: 0 },
           totale: d.totale || 0,
         });
       }
@@ -204,6 +204,7 @@ export default function DashboardPage() {
     { label: "📚 Corsi", href: "/corsi" },
     { label: "💳 Pagamenti", href: "/pagamenti" },
     { label: "📄 Documenti", href: "/documenti" },
+    { label: "⏳ Scadenze Mediche", href: "/scadenze-mediche" },
     { label: "📊 Statistiche", href: "/statistiche" },
     { label: "🛠 Strumenti", href: "/strumenti-utili" },
     { label: "⚙️ Impostazioni", href: "/impostazioni" },
@@ -318,14 +319,20 @@ export default function DashboardPage() {
             <h3 className="text-sm font-bold text-rose-900">🩺 Scadenze rinnovi medici</h3>
             <p className="text-[11px] text-rose-700/80">Art. 126 CdS — calcolo automatico dalla visita medica</p>
           </div>
-          <Link href="/archivio-portale" className="text-xs text-rose-700 hover:underline">Archivio portale →</Link>
+          <Link href="/scadenze-mediche" className="text-xs text-rose-700 hover:underline">Vedi tutte →</Link>
         </div>
 
         {/* Bucket counts */}
-        <div className="mb-3 grid grid-cols-3 gap-2">
+        <div className="mb-3 grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <div className="rounded-lg border border-red-300 bg-white px-3 py-2">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-red-700">Già scaduti</p>
+            <p className="mt-0.5 text-xl font-bold tabular-nums text-red-700">
+              {scadenzeMedicoBusy ? "…" : scadenzeMedico.counts.scaduti || 0}
+            </p>
+          </div>
           <div className="rounded-lg border border-red-200 bg-white px-3 py-2">
             <p className="text-[10px] font-bold uppercase tracking-wider text-red-600">Entro 30gg</p>
-            <p className="mt-0.5 text-xl font-bold tabular-nums text-red-700">
+            <p className="mt-0.5 text-xl font-bold tabular-nums text-red-600">
               {scadenzeMedicoBusy ? "…" : scadenzeMedico.counts.giorni30}
             </p>
           </div>
