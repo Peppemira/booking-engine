@@ -50,6 +50,7 @@ const {
 } = require("./portalSync");
 const { syncArchivioCompleto } = require("./syncArchivioCompleto");
 const supabase = require("../database/supabase");
+const { calcolaScadenzaMedico } = require("../services/scadenzeService");
 
 const DEFAULT_DATA_INIZIO   = process.env.ARCHIVIO_SYNC_FROM || "2000-01-01";
 const DEFAULT_DATA_FINE     = process.env.ARCHIVIO_SYNC_TO   || new Date().toISOString().slice(0, 10);
@@ -180,8 +181,6 @@ async function upsertRinnovoPortale(rinnovo, { autoscuolaId }) {
     raw_portale: rinnovo,
   };
 
-  payload.hash_contenuto = computeHash(payload);
-
   // Match candidato esistente
   payload.candidato_id = await findCandidatoId({
     autoscuolaId,
@@ -190,6 +189,36 @@ async function upsertRinnovoPortale(rinnovo, { autoscuolaId }) {
     cognome: payload.cognome,
     nome: payload.nome,
   });
+
+  // Auto-calcolo scadenza medico (art. 126 CdS) per nuovi rinnovi medici che
+  // non hanno già data_scadenza dal portale. Evita la necessità di rilanciare
+  // manualmente calcola_scadenze_medico.js dopo ogni sync.
+  if (payload.tipo_rinnovo === "medico" && !payload.data_scadenza) {
+    const dataVisita = dettaglio.data_visita_medica || dettaglio.dataVisitaMedica || null;
+    let dataNascita = payload.data_nascita;
+    let categoria = payload.categoria_patente;
+    if ((!dataNascita || !categoria) && payload.candidato_id) {
+      const { data: cand } = await supabase
+        .from("candidates")
+        .select("data_nascita, categoria_patente")
+        .eq("id", payload.candidato_id)
+        .maybeSingle();
+      if (cand) {
+        dataNascita = dataNascita || cand.data_nascita;
+        categoria   = categoria   || cand.categoria_patente;
+      }
+    }
+    if (dataVisita && dataNascita) {
+      const out = calcolaScadenzaMedico({
+        dataVisita,
+        dataNascita,
+        categoria: categoria || "B",
+      });
+      if (out.dataScadenza) payload.data_scadenza = out.dataScadenza;
+    }
+  }
+
+  payload.hash_contenuto = computeHash(payload);
 
   // Cerca record esistente (stesso tenant + marca + tipo)
   let selectQ = supabase

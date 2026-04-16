@@ -100,6 +100,20 @@ Fonte: `src/services/scadenzeService.js` (+ test unitari).
 
 Risultato ultimo run GM: **4328 / 4480 scadenze materializzate (97%)**.
 
+### Calcolo automatico durante sync
+
+A partire dall'integrazione in `connector/syncArchivioStorico.js → upsertRinnovoPortale`,
+**ogni nuovo rinnovo medico inserito/aggiornato dal sync incrementale ottiene
+la `data_scadenza` automaticamente** (regole art. 126 CdS) se:
+
+- `tipo_rinnovo === 'medico'` e `data_scadenza` non presente dal portale
+- `data_visita_medica` è leggibile dal dettaglio HTML
+- `data_nascita` è presente (dal dettaglio o dal candidato linkato)
+
+Quindi **questo script è ora utile solo per backfill iniziale** o per ricalcolo
+dopo modifiche alle regole in `scadenzeService.js`. I sync periodici (cron) non
+richiedono più di rilanciarlo.
+
 ---
 
 ## Ordine consigliato (recupero completo da zero)
