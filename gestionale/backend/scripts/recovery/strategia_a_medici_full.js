@@ -2,17 +2,17 @@
 // per ognuna fetcha i rinnovi medici dal portale, fa il dettaglio e salva
 // IMMEDIATAMENTE in DB (no batch in memoria — se crasha non perdiamo dati).
 //
-// Uso: node test_strategia_a_medici_full.js [--limit=N] [--start=N] [--delay=N] [--dry-run]
+// Uso: node scripts/recovery/strategia_a_medici_full.js [--limit=N] [--start=N] [--delay=N] [--dry-run]
 //
 // Resume: usa --start=N per skippare le prime N persone (utile dopo crash).
 
-require("dotenv").config({ path: require("path").resolve(__dirname, ".env") });
+require("dotenv").config({ path: require("path").resolve(__dirname, "..", "..", ".env") });
 const cheerio = require("cheerio");
 const { createClient } = require("@supabase/supabase-js");
-const { loginDirectHttp } = require("./src/connector/portalSession");
-const { makeHttpClient } = require("./src/connector/portalHttp");
-const { leggiRinnoviMediciPerPersona } = require("./src/connector/portalSync");
-const { upsertRinnovoPortale } = require("./src/connector/syncArchivioStorico");
+const { loginDirectHttp } = require("../../src/connector/portalSession");
+const { makeHttpClient } = require("../../src/connector/portalHttp");
+const { leggiRinnoviMediciPerPersona } = require("../../src/connector/portalSync");
+const { upsertRinnovoPortale } = require("../../src/connector/syncArchivioStorico");
 
 const supabase = createClient(
   process.env.SUPABASE_URL,

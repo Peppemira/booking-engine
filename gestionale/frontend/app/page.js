@@ -60,6 +60,10 @@ export default function DashboardPage() {
   const [scadenze, setScadenze] = useState([]);
   const [scadenzeBusy, setScadenzeBusy] = useState(false);
 
+  // Scadenze rinnovi medici (portale archivio)
+  const [scadenzeMedico, setScadenzeMedico] = useState({ items: [], counts: { giorni30: 0, giorni60: 0, giorni90: 0 }, totale: 0 });
+  const [scadenzeMedicoBusy, setScadenzeMedicoBusy] = useState(false);
+
   // Pagamenti oggi
   const [pagamentiOggi, setPagamentiOggi] = useState([]);
 
@@ -127,6 +131,25 @@ export default function DashboardPage() {
     finally { setScadenzeBusy(false); }
   }, []);
 
+  const fetchScadenzeMedico = useCallback(async () => {
+    setScadenzeMedicoBusy(true);
+    try {
+      const base = getBase();
+      const res = await fetch(`${base}/api/visite-mediche/scadenze-medico?giorni=90&limit=100`, {
+        headers: authHeaders(),
+      });
+      if (res.ok) {
+        const d = await res.json();
+        setScadenzeMedico({
+          items: Array.isArray(d.items) ? d.items : [],
+          counts: d.counts || { giorni30: 0, giorni60: 0, giorni90: 0 },
+          totale: d.totale || 0,
+        });
+      }
+    } catch { /* non critico */ }
+    finally { setScadenzeMedicoBusy(false); }
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
     async function init() {
@@ -140,11 +163,12 @@ export default function DashboardPage() {
         setLoading(false);
         fetchData();
         fetchScadenze();
+        fetchScadenzeMedico();
       }
     }
     init();
     return () => { cancelled = true; };
-  }, [router, fetchData, fetchScadenze]);
+  }, [router, fetchData, fetchScadenze, fetchScadenzeMedico]);
 
   async function onLogout() {
     await logoutSession();
@@ -286,6 +310,74 @@ export default function DashboardPage() {
           )}
         </section>
       </div>
+
+      {/* Scadenze rinnovi medici (archivio portale) */}
+      <section className="mt-4 rounded-xl border border-rose-200 bg-rose-50 p-4 shadow-sm">
+        <div className="mb-3 flex items-center justify-between">
+          <div>
+            <h3 className="text-sm font-bold text-rose-900">🩺 Scadenze rinnovi medici</h3>
+            <p className="text-[11px] text-rose-700/80">Art. 126 CdS — calcolo automatico dalla visita medica</p>
+          </div>
+          <Link href="/archivio-portale" className="text-xs text-rose-700 hover:underline">Archivio portale →</Link>
+        </div>
+
+        {/* Bucket counts */}
+        <div className="mb-3 grid grid-cols-3 gap-2">
+          <div className="rounded-lg border border-red-200 bg-white px-3 py-2">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-red-600">Entro 30gg</p>
+            <p className="mt-0.5 text-xl font-bold tabular-nums text-red-700">
+              {scadenzeMedicoBusy ? "…" : scadenzeMedico.counts.giorni30}
+            </p>
+          </div>
+          <div className="rounded-lg border border-amber-200 bg-white px-3 py-2">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-amber-600">Entro 60gg</p>
+            <p className="mt-0.5 text-xl font-bold tabular-nums text-amber-700">
+              {scadenzeMedicoBusy ? "…" : scadenzeMedico.counts.giorni60}
+            </p>
+          </div>
+          <div className="rounded-lg border border-sky-200 bg-white px-3 py-2">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-sky-600">Entro 90gg</p>
+            <p className="mt-0.5 text-xl font-bold tabular-nums text-sky-700">
+              {scadenzeMedicoBusy ? "…" : scadenzeMedico.counts.giorni90}
+            </p>
+          </div>
+        </div>
+
+        {/* Lista prossimi rinnovi */}
+        {scadenzeMedicoBusy ? (
+          <p className="text-xs text-rose-600">Caricamento...</p>
+        ) : scadenzeMedico.items.length === 0 ? (
+          <p className="text-xs text-rose-600 italic">Nessun rinnovo medico in scadenza nei prossimi 90 giorni.</p>
+        ) : (
+          <div className="space-y-1.5 max-h-64 overflow-auto">
+            {scadenzeMedico.items.slice(0, 10).map((r) => {
+              const g = r.giorni_rimanenti;
+              return (
+                <div key={r.id} className="flex items-center justify-between rounded-lg bg-white border border-rose-100 px-3 py-1.5">
+                  <div className="min-w-0">
+                    <span className="text-sm font-medium text-slate-800 truncate">
+                      {r.cognome || "–"} {r.nome || ""}
+                    </span>
+                    <span className="ml-2 text-xs text-slate-500">{r.categoria_patente || "B"}</span>
+                    {r.patente && <span className="ml-2 text-[10px] text-slate-400 tabular-nums">{r.patente}</span>}
+                  </div>
+                  <div className="text-right flex-shrink-0 ml-2">
+                    <p className={`text-xs ${scadenzaColor(g)}`}>{formatDataIT(r.data_scadenza)}</p>
+                    <p className={`text-[10px] ${scadenzaColor(g)}`}>
+                      {g < 0 ? `scad. ${Math.abs(g)}gg fa` : `tra ${g}gg`}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+            {scadenzeMedico.items.length > 10 && (
+              <p className="text-xs text-rose-600/70 text-center">
+                +{scadenzeMedico.items.length - 10} altri rinnovi nei prossimi 90 giorni
+              </p>
+            )}
+          </div>
+        )}
+      </section>
 
       {/* Accessi rapidi */}
       <section className="mt-5 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">

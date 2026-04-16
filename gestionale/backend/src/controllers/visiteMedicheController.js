@@ -102,6 +102,65 @@ async function statistiche(req, res) {
 }
 
 // ---------------------------------------------------------------------------
+// GET /api/visite-mediche/scadenze-medico
+// Ritorna i rinnovi medici in scadenza nei prossimi N giorni (default 90).
+// Aggrega in 3 bucket: entro 30, entro 60, entro 90 giorni.
+// ---------------------------------------------------------------------------
+async function scadenzeMedico(req, res) {
+  try {
+    const autoscuolaId = req.autoscuolaId;
+    const giorni = Math.min(parseInt(req.query.giorni || "90", 10), 365);
+    const limit = Math.min(parseInt(req.query.limit || "100", 10), 500);
+
+    const oggi = new Date().toISOString().split("T")[0];
+    const limite = new Date(Date.now() + giorni * 86400000).toISOString().split("T")[0];
+
+    const { data, error } = await supabase
+      .from("rinnovi_portale")
+      .select("id, marca_operativa, cognome, nome, codice_fiscale, patente_posseduta, data_scadenza, categoria_patente, candidato_id, dettaglio")
+      .eq("autoscuola_id", autoscuolaId)
+      .eq("tipo_rinnovo", "medico")
+      .not("data_scadenza", "is", null)
+      .gte("data_scadenza", oggi)
+      .lte("data_scadenza", limite)
+      .order("data_scadenza", { ascending: true })
+      .limit(limit);
+
+    if (error) return res.status(500).json({ error: error.message });
+
+    const oggiMs = Date.parse(oggi + "T00:00:00Z");
+    const items = (data || []).map((r) => {
+      const scadMs = Date.parse(String(r.data_scadenza).slice(0, 10) + "T00:00:00Z");
+      const giorniRimanenti = Math.round((scadMs - oggiMs) / 86400000);
+      return {
+        id: r.id,
+        marca_operativa: r.marca_operativa,
+        cognome: r.cognome,
+        nome: r.nome,
+        codice_fiscale: r.codice_fiscale,
+        patente: r.patente_posseduta,
+        categoria_patente: r.categoria_patente,
+        candidato_id: r.candidato_id,
+        data_scadenza: r.data_scadenza,
+        data_visita_medica: r.dettaglio?.data_visita_medica || null,
+        giorni_rimanenti: giorniRimanenti,
+      };
+    });
+
+    const counts = { giorni30: 0, giorni60: 0, giorni90: 0 };
+    for (const it of items) {
+      if (it.giorni_rimanenti <= 30) counts.giorni30 += 1;
+      if (it.giorni_rimanenti <= 60) counts.giorni60 += 1;
+      if (it.giorni_rimanenti <= 90) counts.giorni90 += 1;
+    }
+
+    res.json({ counts, items, totale: items.length });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+}
+
+// ---------------------------------------------------------------------------
 // GET /api/visite-mediche/:id
 // ---------------------------------------------------------------------------
 async function getById(req, res) {
@@ -205,4 +264,4 @@ async function remove(req, res) {
   }
 }
 
-module.exports = { list, getById, create, update, remove, prossime, statistiche };
+module.exports = { list, getById, create, update, remove, prossime, statistiche, scadenzeMedico };

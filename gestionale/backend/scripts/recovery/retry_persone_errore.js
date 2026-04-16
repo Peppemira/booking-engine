@@ -3,18 +3,18 @@
 // e rilancia fetch + dettaglio + upsert con retry + backoff esponenziale.
 //
 // Uso:
-//   node test_retry_persone_errore.js --log=PATH [--delay=500] [--max-retry=3]
+//   node scripts/recovery/retry_persone_errore.js --log=PATH [--delay=500] [--max-retry=3]
 //
 // Dove PATH è il percorso del file di log del run principale (es: il file .output del task background).
 
-require("dotenv").config({ path: require("path").resolve(__dirname, ".env") });
+require("dotenv").config({ path: require("path").resolve(__dirname, "..", "..", ".env") });
 const fs = require("fs");
 const cheerio = require("cheerio");
 const { createClient } = require("@supabase/supabase-js");
-const { loginDirectHttp } = require("./src/connector/portalSession");
-const { makeHttpClient } = require("./src/connector/portalHttp");
-const { leggiRinnoviMediciPerPersona } = require("./src/connector/portalSync");
-const { upsertRinnovoPortale } = require("./src/connector/syncArchivioStorico");
+const { loginDirectHttp } = require("../../src/connector/portalSession");
+const { makeHttpClient } = require("../../src/connector/portalHttp");
+const { leggiRinnoviMediciPerPersona } = require("../../src/connector/portalSync");
+const { upsertRinnovoPortale } = require("../../src/connector/syncArchivioStorico");
 
 const supabase = createClient(
   process.env.SUPABASE_URL,

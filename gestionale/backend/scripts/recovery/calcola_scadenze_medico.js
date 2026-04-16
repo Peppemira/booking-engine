@@ -1,7 +1,7 @@
 // Calcola + materializza data_scadenza sui rinnovi medici di GM.
 // Usa scadenzeService.calcolaScadenzaMedico (regole italiane art. 126 CdS).
 //
-// Uso: node test_calcola_scadenze_medico.js [--dry-run] [--limit=N]
+// Uso: node scripts/recovery/calcola_scadenze_medico.js [--dry-run] [--limit=N]
 //
 // Strategia:
 //   1. Carica tutti i rinnovi medici di GM (pagination, senza truncation).
@@ -9,9 +9,9 @@
 //   3. Per ogni rinnovo, carica il candidato (se linkato) per ottenere data_nascita + categoria_patente.
 //   4. Calcola la scadenza e la aggiorna in rinnovi_portale.data_scadenza.
 
-require("dotenv").config({ path: require("path").resolve(__dirname, ".env") });
+require("dotenv").config({ path: require("path").resolve(__dirname, "..", "..", ".env") });
 const { createClient } = require("@supabase/supabase-js");
-const { calcolaScadenzaMedico, parseDate } = require("./src/services/scadenzeService");
+const { calcolaScadenzaMedico, parseDate } = require("../../src/services/scadenzeService");
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
