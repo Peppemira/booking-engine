@@ -1,13 +1,22 @@
 // Calcola + materializza data_scadenza sui rinnovi medici di GM.
 // Usa scadenzeService.calcolaScadenzaMedico (regole italiane art. 126 CdS).
 //
-// Uso: node scripts/recovery/calcola_scadenze_medico.js [--dry-run] [--limit=N]
+// Uso: node scripts/recovery/calcola_scadenze_medico.js [--dry-run] [--limit=N] [--use-data-inserimento]
 //
 // Strategia:
 //   1. Carica tutti i rinnovi medici di GM (pagination, senza truncation).
 //   2. Per ogni rinnovo, estrae data_visita_medica da dettaglio (formato DD/MM/YYYY).
+//      Se assente e --use-data-inserimento, fallback su data_inserimento (entry portale).
 //   3. Per ogni rinnovo, carica il candidato (se linkato) per ottenere data_nascita + categoria_patente.
 //   4. Calcola la scadenza e la aggiorna in rinnovi_portale.data_scadenza.
+//
+// Note sul fallback --use-data-inserimento:
+//   I rinnovi vecchi (pre-2015) spesso non hanno data_visita_medica conservata
+//   nel dettaglio del portale. data_inserimento e' la data in cui l'autoscuola
+//   ha caricato la pratica sul portale e in pratica e' uguale (o entro pochi giorni)
+//   alla data della visita medica. Il fallback e' una stima ragionevole per
+//   chiudere il gap dei rinnovi storici, marcata internamente con regola
+//   suffisso "_dainserimento" per tracciabilita'.
 
 require("dotenv").config({ path: require("path").resolve(__dirname, "..", "..", ".env") });
 const { createClient } = require("@supabase/supabase-js");
@@ -21,6 +30,7 @@ const supabase = createClient(
 const GM = "9380513a-99ad-4067-adc7-493af2e083d1";
 
 const DRY_RUN = process.argv.includes("--dry-run");
+const USE_DATA_INSERIMENTO = process.argv.includes("--use-data-inserimento");
 const argLimit = process.argv.find((a) => a.startsWith("--limit="));
 const LIMIT = argLimit ? Number(argLimit.split("=")[1]) : 0;
 
@@ -30,7 +40,7 @@ async function fetchAllMedici() {
   for (let start = 0; start < 50000; start += PAGE) {
     const { data, error } = await supabase
       .from("rinnovi_portale")
-      .select("id, marca_operativa, codice_fiscale, data_nascita, candidato_id, data_scadenza, categoria_patente, dettaglio")
+      .select("id, marca_operativa, codice_fiscale, data_nascita, candidato_id, data_scadenza, categoria_patente, data_inserimento, dettaglio")
       .eq("autoscuola_id", GM)
       .eq("tipo_rinnovo", "medico")
       .range(start, start + PAGE - 1)
@@ -110,6 +120,7 @@ async function fetchCandidatiByCfs(cfs) {
     manca_data_nascita: 0,
     manca_candidato: 0,
     regola_eta_invalida: 0,
+    fallback_data_inserimento: 0,
     db_updated: 0,
     db_error: 0,
   };
@@ -118,7 +129,17 @@ async function fetchCandidatiByCfs(cfs) {
 
   for (const r of medici) {
     const det = r.dettaglio || {};
-    const dataVisita = det.data_visita_medica || det.dataVisitaMedica || null;
+    let dataVisita = det.data_visita_medica || det.dataVisitaMedica || null;
+    let usedFallback = false;
+
+    // Fallback: data_inserimento (per i rinnovi vecchi senza data_visita_medica)
+    if (!dataVisita && USE_DATA_INSERIMENTO) {
+      dataVisita = det.data_inserimento || r.data_inserimento || null;
+      if (dataVisita) {
+        usedFallback = true;
+        stats.fallback_data_inserimento += 1;
+      }
+    }
     if (!dataVisita) { stats.manca_data_visita += 1; continue; }
 
     // Ricava data_nascita + categoria dal candidate linkato (o da CF)
@@ -172,6 +193,9 @@ async function fetchCandidatiByCfs(cfs) {
   console.log(`Manca data_nascita:    ${stats.manca_data_nascita}`);
   console.log(`Manca candidato link:  ${stats.manca_candidato}`);
   console.log(`Età invalida:          ${stats.regola_eta_invalida}`);
+  if (USE_DATA_INSERIMENTO) {
+    console.log(`Fallback data_inserim: ${stats.fallback_data_inserimento} (stima da data_inserimento portale)`);
+  }
   console.log(`\nDistribuzione regole applicate:`);
   for (const [k, v] of Object.entries(byRegola).sort((a, b) => b[1] - a[1])) {
     console.log(`  ${k}: ${v}`);

@@ -78,11 +78,19 @@ node scripts/recovery/calcola_scadenze_medico.js
 
 # Solo primi 100
 node scripts/recovery/calcola_scadenze_medico.js --limit=100
+
+# Backfill rinnovi storici senza data_visita_medica nel dettaglio
+# (usa data_inserimento del portale come stima ragionevole)
+node scripts/recovery/calcola_scadenze_medico.js --use-data-inserimento
 ```
 
 **Argomenti:**
 - `--dry-run` — simula senza scrivere
 - `--limit=N` — processa solo i primi N rinnovi
+- `--use-data-inserimento` — fallback per rinnovi vecchi (tipicamente pre-2015) che
+  non hanno `data_visita_medica` salvata nel dettaglio JSONB del portale; usa
+  `data_inserimento` come stima (coincide con la data della visita o entro pochi
+  giorni). Necessario per chiudere il gap dei rinnovi storici.
 
 **Regole applicate (art. 126 CdS):**
 
@@ -98,7 +106,9 @@ node scripts/recovery/calcola_scadenze_medico.js --limit=100
 
 Fonte: `src/services/scadenzeService.js` (+ test unitari).
 
-Risultato ultimo run GM: **4328 / 4480 scadenze materializzate (97%)**.
+Risultato ultimo run GM: **4480 / 4480 scadenze materializzate (100%)** dopo
+backfill con `--use-data-inserimento` per i 152 rinnovi 2014 senza
+`data_visita_medica` nel dettaglio.
 
 ### Calcolo automatico durante sync
 
