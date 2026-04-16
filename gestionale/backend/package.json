@@ -8,6 +8,7 @@
     "test": "node --test tests/*.test.js",
     "test:auth": "node --test tests/auth.test.js",
     "test:integration": "node --test tests/api-integration.test.js",
+    "test:scadenze": "node --test tests/scadenzeService.test.js",
     "smoke:payment-actions": "node src/smokePaymentActions.js",
     "smoke:payment-history:readonly": "node src/smokePaymentHistoryReadOnly.js",
     "sync:archivio:autoscuole": "node src/syncArchivioAutoscuole.js",

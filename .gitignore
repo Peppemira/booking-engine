@@ -15,3 +15,8 @@ vault/
 diagnostica-dump/
 *.pdf
 Thumbs.db
+
+# backend scratch/debug output directories
+gestionale/backend/_*/
+gestionale/backend/logs/
+
