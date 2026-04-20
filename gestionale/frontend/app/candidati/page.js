@@ -61,6 +61,12 @@ function CandidatiPage() {
   const [rows, setRows] = useState([]);
   const [status, setStatus] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+  // Spostato in alto: selectedRow è usato in useCallback più sotto, va dichiarato prima
+  // (TDZ fix per ReferenceError 'Cannot access selectedRow before initialization').
+  const selectedRow = useMemo(
+    () => rows.find((r) => r.id === selectedId) || null,
+    [rows, selectedId]
+  );
   const [editMode, setEditMode] = useState("none");
   const [editor, setEditor] = useState(() => buildEmptyEditor("B"));
   const [editorBaseRawPortale, setEditorBaseRawPortale] = useState({});
@@ -398,11 +404,6 @@ function CandidatiPage() {
     });
   }
 
-
-  const selectedRow = useMemo(
-    () => rows.find((r) => r.id === selectedId) || null,
-    [rows, selectedId]
-  );
 
   const homonyms = useMemo(() => {
     if (!selectedRow) return [];
