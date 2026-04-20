@@ -3,27 +3,37 @@
 import Link from "next/link";
 import { ThemeToggle } from "../lib/ThemeProvider";
 
+// UX quick wins applicati 2026-04-17 (vedi docs/ux-audit-menu-2026-04-17.md):
+//  1. Rimosso "Portale - Funzioni" dalla sidebar di primo livello (resta accessibile da /portale)
+//  2. "Strumenti Utili" → "Utility"
+//  3. Disambiguati 3 voci 🌐 con label "Portale: …" e icone distinte
+//  4. Adottate 5 orfane non-redirect: candidati, istruttori, operatori, archivio-portale, rendiconto
+//  5. Allineate icone duplicate (📅 esami / 📋 sessioni-esame)
 const NAV_ITEMS = [
   { href: "/", key: "dashboard", label: "Dashboard", icon: "⌂" },
   { href: "/prenotazioni", key: "prenotazioni", label: "Prenotazioni e Radar", icon: "📡" },
-  { href: "/portale", key: "portale", label: "Portale Automobilista", icon: "🌐" },
-  { href: "/portale/funzioni", key: "portale-funzioni", label: "Portale - Funzioni", icon: "🗂️" },
+  { href: "/portale", key: "portale", label: "Portale: Sessioni & Verbali", icon: "🌐" },
+  { href: "/portal-sync", key: "portal-sync", label: "Portale: Lettura dati", icon: "🛰️" },
   { href: "/anagrafica-iscrizioni", key: "anagrafica-iscrizioni", label: "Anagrafica ed Iscrizioni", icon: "👤" },
+  { href: "/candidati", key: "candidati", label: "Candidati", icon: "🧑‍🎓" },
   { href: "/pratiche", key: "pratiche", label: "Pratiche", icon: "📂" },
+  { href: "/archivio-portale", key: "archivio-portale", label: "Archivio Portale", icon: "🗄️" },
   { href: "/trasmiss", key: "trasmiss", label: "Trasmissioni CED", icon: "📤" },
   { href: "/trasmissione-portale", key: "trasmissione-portale", label: "Trasmissione Portale", icon: "🏛️" },
-  { href: "/portal-sync", key: "portal-sync", label: "Lettura Portale", icon: "🌐" },
-  { href: "/sessioni-esame", key: "sessioni-esame", label: "Sessioni Esame", icon: "📅" },
+  { href: "/sessioni-esame", key: "sessioni-esame", label: "Sessioni Esame", icon: "📋" },
   { href: "/fogli-rosa-patenti", key: "fogli-rosa-patenti", label: "Fogli Rosa e Patenti", icon: "📄" },
   { href: "/esami", key: "esami", label: "Esami", icon: "📅" },
   { href: "/richieste-esame", key: "richieste-esame", label: "Richieste Esame", icon: "📝" },
   { href: "/moduli", key: "moduli", label: "Moduli", icon: "📋" },
   { href: "/guide", key: "guide", label: "Guide", icon: "🚗" },
   { href: "/corsi", key: "corsi", label: "Corsi", icon: "📚" },
+  { href: "/istruttori", key: "istruttori", label: "Istruttori", icon: "🧑‍🏫" },
+  { href: "/operatori", key: "operatori", label: "Operatori", icon: "🧑‍💼" },
   { href: "/pagamenti", key: "pagamenti", label: "Pagamenti", icon: "💰" },
+  { href: "/rendiconto", key: "rendiconto", label: "Rendiconto", icon: "🧾" },
   { href: "/documenti", key: "documenti", label: "Documenti", icon: "📁" },
   { href: "/statistiche", key: "statistiche", label: "Statistiche", icon: "📈" },
-  { href: "/servizi-online", key: "servizi-online", label: "Servizi on line", icon: "🌐" },
+  { href: "/servizi-online", key: "servizi-online", label: "Servizi on line", icon: "🛜" },
   { href: "/calendar", key: "calendar", label: "Calendario", icon: "🗓" },
   { href: "/punti-patente", key: "punti-patente", label: "Punti patente", icon: "🪪" },
   // ── Nuove sezioni ispirate a iPatenteCloud ──────────────────────────────
@@ -35,7 +45,7 @@ const NAV_ITEMS = [
   { href: "/scadenze-mediche", key: "scadenze-mediche", label: "Scadenze Mediche", icon: "⏳" },
   { href: "/preventivi", key: "preventivi", label: "Preventivi", icon: "📝" },
   // ────────────────────────────────────────────────────────────────────────
-  { href: "/strumenti-utili", key: "strumenti-utili", label: "Strumenti Utili", icon: "🔧" },
+  { href: "/strumenti-utili", key: "strumenti-utili", label: "Utility", icon: "🔧" },
   { href: "/impostazioni", key: "impostazioni", label: "Impostazioni", icon: "⚙️" },
 ];
 
