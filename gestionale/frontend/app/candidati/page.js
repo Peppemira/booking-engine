@@ -21,6 +21,7 @@ import {
   TIPO_ISCRIZIONE_OPTIONS,
 } from "../../lib/candidatoEditor";
 import { exportCSV } from "../../lib/exportTable";
+import SendLinkPopover from "../../lib/SendLinkPopover";
 
 /** URL servizio scanner locale (architettura 2 componenti: Gestionale Web ↔ Scanner Service localhost ↔ TWAIN/WIA) */
 const SCANNER_SERVICE_URL = process.env.NEXT_PUBLIC_SCANNER_SERVICE_URL || "http://localhost:5001";
@@ -1202,6 +1203,7 @@ function NuovaIscrizioneModal({
 }) {
   const set = (key, value) => setEditor((p) => ({ ...p, [key]: value }));
   const [showScansioneModal, setShowScansioneModal] = useState(false);
+  const [linkPopoverOpen, setLinkPopoverOpen] = useState(false);
   const fotoInputRef = useRef(null);
   const firmaInputRef = useRef(null);
   const handleFileFoto = (e) => {
@@ -1339,6 +1341,29 @@ function NuovaIscrizioneModal({
               <button type="button" onClick={openScansioneModal} className="rounded bg-violet-600 px-1.5 py-1 text-[9px] font-semibold text-white hover:bg-violet-700 w-full" title="Apri finestra acquisizione (Scanner / file)">Scanner</button>
               <Link href="/acquisizione-remota" className="rounded bg-violet-600 px-1.5 py-1 text-[9px] font-semibold text-white hover:bg-violet-700 w-full text-center block">Portale</Link>
               <Link href="/acquisizione-remota?tipo=cie" className="rounded bg-violet-600 px-1.5 py-1 text-[9px] font-semibold text-white hover:bg-violet-700 w-full text-center block">C.I. digitale</Link>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setLinkPopoverOpen((v) => !v)}
+                  className="rounded bg-violet-600 px-1.5 py-1 text-[9px] font-semibold text-white hover:bg-violet-700 w-full"
+                  title="Genera link e invia al candidato via Email o WhatsApp"
+                >
+                  📲 Invia link
+                </button>
+                {linkPopoverOpen && editor?.id && (
+                  <SendLinkPopover
+                    candidate={{
+                      id: editor.id,
+                      cognome: editor.cognome,
+                      nome: editor.nome,
+                      email: editor.email,
+                      telefono: editor.telefono,
+                      autoscuola_nome: "La tua autoscuola",
+                    }}
+                    onClose={() => setLinkPopoverOpen(false)}
+                  />
+                )}
+              </div>
             </div>
             <input ref={fotoInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileFoto} />
             <input ref={firmaInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileFirma} />
