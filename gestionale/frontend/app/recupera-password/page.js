@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { API_BASE } from "../../lib/authClient";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const API = API_BASE;
 
 export default function RecuperaPasswordPage() {
   // Step 1: richiesta reset (email)
