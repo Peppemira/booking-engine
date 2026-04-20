@@ -177,7 +177,7 @@ Il componente è autosufficiente (genera token, gestisce contatti, fa delivery) 
 ```sql
 CREATE TABLE IF NOT EXISTS remote_capture_deliveries (
   id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  token         uuid NOT NULL REFERENCES remote_capture_sessions(token) ON DELETE CASCADE,
+  token         text NOT NULL REFERENCES remote_capture_sessions(token) ON DELETE CASCADE,
   channel       text NOT NULL CHECK (channel IN ('email','whatsapp')),
   recipient     text NOT NULL,                    -- email o telefono normalizzato
   sent_at       timestamptz NOT NULL DEFAULT now(),

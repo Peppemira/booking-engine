@@ -49,7 +49,7 @@ Crea `gestionale/backend/sql/2026-04-17_remote_capture_deliveries.sql` con quest
 
 CREATE TABLE IF NOT EXISTS remote_capture_deliveries (
   id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  token         uuid NOT NULL REFERENCES remote_capture_sessions(token) ON DELETE CASCADE,
+  token         text NOT NULL REFERENCES remote_capture_sessions(token) ON DELETE CASCADE,
   channel       text NOT NULL CHECK (channel IN ('email','whatsapp')),
   recipient     text NOT NULL,
   sent_at       timestamptz NOT NULL DEFAULT now(),

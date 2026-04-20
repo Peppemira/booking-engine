@@ -5,7 +5,7 @@
 
 CREATE TABLE IF NOT EXISTS remote_capture_deliveries (
   id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  token         uuid NOT NULL REFERENCES remote_capture_sessions(token) ON DELETE CASCADE,
+  token         text NOT NULL REFERENCES remote_capture_sessions(token) ON DELETE CASCADE,  -- text per matchare PK di remote_capture_sessions
   channel       text NOT NULL CHECK (channel IN ('email','whatsapp')),
   recipient     text NOT NULL,
   sent_at       timestamptz NOT NULL DEFAULT now(),
