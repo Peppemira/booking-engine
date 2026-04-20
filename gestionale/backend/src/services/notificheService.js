@@ -133,7 +133,52 @@ const TEMPLATES = {
       Per info: ${v.telefono_scuola || ""}</p>`,
     text: (v) => `Gentile ${v.nome} ${v.cognome},\n\n${v.testo || ""}`,
   },
+  remote_capture_link: {
+    label: "Link acquisizione remota",
+    subject: (vars = {}) =>
+      `${vars.autoscuola || "La tua autoscuola"}: carica foto, firma e documenti`,
+    html: (vars = {}) => {
+      const tpl = `
+<p>Ciao {nome},</p>
+<p>{autoscuola} ha bisogno della tua fototessera, firma e copia dei documenti per completare la tua pratica.</p>
+<p>Clicca qui per caricarli dal tuo telefono:</p>
+<p><a href="{link}" style="display:inline-block;padding:14px 24px;background:#7c3aed;color:#fff;text-decoration:none;border-radius:8px">📱 Apri il caricamento</a></p>
+<p style="font-size:13px;color:#666">Il link scade il <strong>{scadenza}</strong> — bastano 5 minuti.</p>
+<p style="font-size:13px;color:#666">Se hai problemi rispondi a questa email.</p>`;
+      return Object.entries(vars).reduce(
+        (acc, [k, v]) => acc.replaceAll(`{${k}}`, String(v ?? "")),
+        tpl
+      );
+    },
+    text: (vars = {}) => {
+      const tpl = `Ciao {nome},
+{autoscuola} ti chiede foto, firma e documenti per la pratica.
+Carica tutto dal telefono qui (bastano 5 minuti):
+{link}
+Il link scade il {scadenza}.`;
+      return Object.entries(vars).reduce(
+        (acc, [k, v]) => acc.replaceAll(`{${k}}`, String(v ?? "")),
+        tpl
+      );
+    },
+  },
 };
+
+/**
+ * Genera il testo WhatsApp per il link acquisizione remota.
+ * Esportato per uso lato frontend (duplicato del template) e lato server (logging).
+ */
+function getRemoteCaptureWhatsappText(vars = {}) {
+  const tpl = `Ciao {nome}! 👋
+{autoscuola} ti chiede foto, firma e documenti per la pratica.
+Carica tutto dal telefono qui (bastano 5 minuti):
+{link}
+⏰ Il link scade il {scadenza}`;
+  return Object.entries(vars).reduce(
+    (acc, [k, v]) => acc.replaceAll(`{${k}}`, String(v ?? "")),
+    tpl
+  );
+}
 
 // ---------------------------------------------------------------------------
 // NotificheService
@@ -262,4 +307,5 @@ module.exports = {
   notificheService,
   TEMPLATES,
   TABLE_NOTIFICHE: TABLE,
+  getRemoteCaptureWhatsappText,
 };
