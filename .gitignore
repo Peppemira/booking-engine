@@ -24,3 +24,13 @@ Thumbs.db
 gestionale/backend/_*/
 gestionale/backend/logs/
 
+# Script di debug temporanei (sviluppo P1 portal sync — utili in locale, non in repo)
+gestionale/backend/scripts/test_*.js
+gestionale/backend/scripts/dump_page_fields.js
+gestionale/backend/scripts/analyze_substituted_patente.js
+verify-catalog.js
+
+# Claude Code local state
+.claude/settings.local.json
+.claude/worktrees/
+
