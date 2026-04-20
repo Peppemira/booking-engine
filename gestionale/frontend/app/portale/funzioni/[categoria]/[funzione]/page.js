@@ -49,6 +49,330 @@ function getDefaultDateRange(tabType) {
   return { from: formatDDMMYYYY(today), to: formatDDMMYYYY(to) };
 }
 
+/**
+ * Banner che appare quando il portale segnala che la patente digitata
+ * è stata sostituita da una nuova. Permette di aggiornare il candidato in DB.
+ *
+ * Props:
+ *   info: { oldPatente, newPatente, codiceFiscale, message }
+ *   onUpdated: callback(updatedRow) chiamato dopo update riuscito
+ */
+function PatenteSostituitaBanner({ info, onUpdated }) {
+  const [updating, setUpdating] = useState(false);
+  const [done, setDone] = useState(null);
+  const [err, setErr] = useState("");
+
+  const apply = async () => {
+    setErr("");
+    if (!info?.codiceFiscale) {
+      setErr("Codice Fiscale mancante: impossibile identificare il candidato");
+      return;
+    }
+    setUpdating(true);
+    try {
+      const base = getApiBase();
+      const res = await fetch(`${base}/api/portal/update-candidate-patente`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...authHeaders() },
+        body: JSON.stringify({
+          codiceFiscale: info.codiceFiscale,
+          oldPatente: info.oldPatente || undefined,
+          newPatente: info.newPatente,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.ok) {
+        setErr(data.error || `Errore HTTP ${res.status}`);
+      } else {
+        setDone(data.updated || data);
+        if (typeof onUpdated === "function") onUpdated(data.updated || data);
+      }
+    } catch (e) {
+      setErr(e.message || "Errore di rete");
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  if (done) {
+    return (
+      <div className="mb-4 rounded-2xl border border-emerald-300 bg-emerald-50 p-4 text-sm">
+        <div className="flex items-start gap-3">
+          <span className="text-2xl">✅</span>
+          <div className="flex-1">
+            <div className="font-bold text-emerald-800">Patente aggiornata in archivio</div>
+            <div className="mt-1 text-xs text-emerald-700">
+              Candidato <strong>{done.cognome} {done.nome}</strong> (CF {done.codice_fiscale})
+              <br/>Nuovo numero patente: <strong className="font-mono">{done.patente_numero}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mb-4 rounded-2xl border-2 border-amber-300 bg-amber-50 p-4 text-sm">
+      <div className="flex items-start gap-3">
+        <span className="text-2xl">⚠️</span>
+        <div className="flex-1">
+          <div className="font-bold text-amber-900">Il portale segnala una patente sostituita</div>
+          <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+            <div>
+              <div className="text-amber-700">Patente attuale (in archivio):</div>
+              <div className="font-mono font-bold text-slate-700">{info.oldPatente || "—"}</div>
+            </div>
+            <div>
+              <div className="text-amber-700">Nuova patente (dal portale):</div>
+              <div className="font-mono font-bold text-emerald-700">{info.newPatente}</div>
+            </div>
+          </div>
+          <div className="mt-2 text-[11px] italic text-amber-700">{info.message}</div>
+          {err && <div className="mt-2 rounded bg-red-100 p-2 text-xs text-red-700">{err}</div>}
+        </div>
+        <button
+          type="button"
+          onClick={apply}
+          disabled={updating || !info.codiceFiscale}
+          className="rounded-lg bg-amber-600 px-4 py-2 text-xs font-bold text-white hover:bg-amber-700 disabled:opacity-50"
+          title={!info.codiceFiscale ? "CF mancante" : "Aggiorna patente_numero del candidato in DB"}
+        >
+          {updating ? "Aggiorno..." : "Aggiorna candidato"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Banner che appare quando la pagina del portale contiene anagrafica candidato
+ * (risposta "Inserimento Richiesta Certificato Medico" dopo Solo CF).
+ * Permette di:
+ *  1) Vedere preview (dryRun) delle differenze tra dati portale e DB
+ *  2) Applicare l'update al candidato in DB
+ *
+ * Props:
+ *   anagrafica: object da results.portalAnagrafica (cognome, nome, data_nascita, ...)
+ *   patenteNuova?: string (se proviene da detectedPatenteUpdate, altrimenti usa anagrafica.patente_numero)
+ *   onSynced?: callback(updatedRow) chiamato dopo sync riuscito
+ */
+function SyncCandidateBanner({ anagrafica, patenteNuova, onSynced }) {
+  const [loading, setLoading] = useState(false);
+  const [preview, setPreview] = useState(null); // dryRun result
+  const [applied, setApplied] = useState(null); // post-apply result
+  const [err, setErr] = useState("");
+  const [includePunti, setIncludePunti] = useState(true);
+
+  const cf = anagrafica?.codice_fiscale || "";
+  const hasMinimum = !!cf && (anagrafica?.cognome || anagrafica?.nome);
+
+  const callSync = async (dryRun) => {
+    setErr("");
+    if (!cf) { setErr("CF mancante nei dati portale"); return; }
+    setLoading(true);
+    try {
+      const base = getApiBase();
+      const res = await fetch(`${base}/api/portal/sync-candidate-from-portal`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...authHeaders() },
+        body: JSON.stringify({
+          codiceFiscale: cf,
+          anagraficaPortale: anagrafica,
+          patenteNuova: patenteNuova || undefined,
+          includePunti,
+          dryRun,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.ok) {
+        setErr(data.error || `Errore HTTP ${res.status}`);
+        return null;
+      }
+      return data;
+    } catch (e) {
+      setErr(e.message || "Errore di rete");
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const showPreview = async () => {
+    const data = await callSync(true);
+    if (data) setPreview(data);
+  };
+
+  const applyChanges = async () => {
+    const data = await callSync(false);
+    if (data) {
+      setApplied(data);
+      setPreview(null);
+      if (typeof onSynced === "function") onSynced(data.updated || data);
+    }
+  };
+
+  const closeModal = () => { setPreview(null); setErr(""); };
+
+  // Stato finale: già applicato
+  if (applied) {
+    return (
+      <div className="mb-4 rounded-2xl border border-emerald-300 bg-emerald-50 p-4 text-sm">
+        <div className="flex items-start gap-3">
+          <span className="text-2xl">✅</span>
+          <div className="flex-1">
+            <div className="font-bold text-emerald-800">
+              Candidato sincronizzato dal portale
+            </div>
+            <div className="mt-1 text-xs text-emerald-700">
+              {applied.candidate?.cognome} {applied.candidate?.nome} (CF {applied.candidate?.codice_fiscale})
+              <br/>Campi aggiornati: <strong>{applied.willUpdateCount}</strong>
+              {applied.puntiError && (
+                <><br/><span className="text-amber-700 italic">Punti API non disponibile: {applied.puntiError}</span></>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="mb-4 rounded-2xl border border-indigo-300 bg-indigo-50 p-4 text-sm">
+        <div className="flex items-start gap-3">
+          <span className="text-2xl">🔄</span>
+          <div className="flex-1">
+            <div className="font-bold text-indigo-900">
+              Anagrafica candidato disponibile dal portale
+            </div>
+            <div className="mt-1 text-xs text-indigo-700">
+              {anagrafica?.cognome} {anagrafica?.nome}
+              {anagrafica?.data_nascita_raw && ` — Nato il ${anagrafica.data_nascita_raw}`}
+              {anagrafica?.comune_nascita && ` (${anagrafica.comune_nascita})`}
+              <br/>CF: <span className="font-mono">{cf || "—"}</span>
+              {anagrafica?.patente_numero && (
+                <> · Patente: <span className="font-mono">{anagrafica.patente_numero}</span></>
+              )}
+            </div>
+            <div className="mt-2 flex items-center gap-2 text-[11px]">
+              <label className="flex items-center gap-1 text-indigo-700">
+                <input
+                  type="checkbox"
+                  checked={includePunti}
+                  onChange={(e) => setIncludePunti(e.target.checked)}
+                />
+                Includi chiamata Punti Patente (per scadenza)
+              </label>
+            </div>
+            {err && <div className="mt-2 rounded bg-red-100 p-2 text-xs text-red-700">{err}</div>}
+          </div>
+          <button
+            type="button"
+            onClick={showPreview}
+            disabled={loading || !hasMinimum}
+            className="rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white hover:bg-indigo-700 disabled:opacity-50"
+            title={!hasMinimum ? "Servono almeno CF + cognome/nome" : "Mostra anteprima differenze"}
+          >
+            {loading ? "Verifica..." : "🔄 Sincronizza dal portale"}
+          </button>
+        </div>
+      </div>
+
+      {/* Modale diff preview */}
+      {preview && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={closeModal}>
+          <div
+            className="max-h-[85vh] w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-slate-200 px-5 py-3">
+              <div>
+                <div className="text-sm font-bold text-slate-800">
+                  Anteprima sincronizzazione candidato
+                </div>
+                <div className="text-[11px] text-slate-500">
+                  {preview.candidate?.cognome} {preview.candidate?.nome} · CF {preview.candidate?.codice_fiscale}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={closeModal}
+                className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+              >×</button>
+            </div>
+
+            <div className="max-h-[55vh] overflow-y-auto p-5">
+              {preview.diff && preview.diff.length > 0 ? (
+                <table className="w-full border-collapse text-xs">
+                  <thead className="bg-slate-50 text-left text-[11px] font-semibold uppercase text-slate-600">
+                    <tr>
+                      <th className="border-b border-slate-200 px-2 py-1.5">Campo</th>
+                      <th className="border-b border-slate-200 px-2 py-1.5">Valore in DB</th>
+                      <th className="border-b border-slate-200 px-2 py-1.5">Valore dal portale</th>
+                      <th className="border-b border-slate-200 px-2 py-1.5 text-center">Cambia?</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {preview.diff.map((row, i) => (
+                      <tr key={i} className={row.willChange ? "bg-amber-50" : "hover:bg-slate-50"}>
+                        <td className="border-b border-slate-100 px-2 py-1.5 font-mono text-slate-700">{row.field}</td>
+                        <td className="border-b border-slate-100 px-2 py-1.5 text-slate-500">{row.current ?? <span className="italic text-slate-300">(vuoto)</span>}</td>
+                        <td className="border-b border-slate-100 px-2 py-1.5 font-medium text-slate-800">{row.portal ?? "—"}</td>
+                        <td className="border-b border-slate-100 px-2 py-1.5 text-center">
+                          {row.willChange ? (
+                            <span className="rounded-full bg-amber-200 px-2 py-0.5 text-[9px] font-bold text-amber-900">SÌ</span>
+                          ) : (
+                            <span className="text-slate-300">=</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="rounded-lg bg-slate-100 p-4 text-center text-xs text-slate-500">
+                  Nessun campo da confrontare.
+                </div>
+              )}
+              {preview.puntiError && (
+                <div className="mt-3 rounded-lg bg-amber-50 p-2 text-[11px] text-amber-700">
+                  ⚠ Punti Patente API: {preview.puntiError}
+                </div>
+              )}
+              {err && <div className="mt-2 rounded bg-red-100 p-2 text-xs text-red-700">{err}</div>}
+            </div>
+
+            <div className="flex items-center justify-between gap-3 border-t border-slate-200 bg-slate-50 px-5 py-3">
+              <div className="text-[11px] text-slate-600">
+                {preview.willUpdateCount > 0
+                  ? <>Verranno aggiornati <strong>{preview.willUpdateCount}</strong> campi</>
+                  : <>Nessuna modifica necessaria</>}
+              </div>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+                >
+                  Annulla
+                </button>
+                <button
+                  type="button"
+                  onClick={applyChanges}
+                  disabled={loading || preview.willUpdateCount === 0}
+                  className="rounded-lg bg-indigo-600 px-4 py-1.5 text-xs font-bold text-white hover:bg-indigo-700 disabled:opacity-50"
+                >
+                  {loading ? "Aggiorno..." : "Conferma sincronizzazione"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 export default function FunzionePage() {
   const router = useRouter();
   const params = useParams();
@@ -68,6 +392,10 @@ export default function FunzionePage() {
   const [searching, setSearching] = useState(false);
   const [results, setResults] = useState(null);
   const [error, setError] = useState("");
+
+  // Stato form interattivo (per page-view con campi editabili)
+  const [formValues, setFormValues] = useState({});
+  const [submitting, setSubmitting] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -102,6 +430,9 @@ export default function FunzionePage() {
       setResults(null);
       setError("");
     }
+    // Reset form interattivo ogni volta che cambia la funzione
+    setFormValues({});
+    setSubmitting("");
   }, [funzioneSlug, funzione?.tabType]);
 
   async function handleLogout() {
@@ -115,6 +446,7 @@ export default function FunzionePage() {
     setSearching(true);
     setError("");
     setResults(null);
+    setFormValues({});
 
     try {
       const base = getApiBase();
@@ -162,6 +494,80 @@ export default function FunzionePage() {
       setSearching(false);
     }
   }, [hasTabType, hasCustomEndpoint, hasPageView, funzione, dataFrom, dataTo, stato, tipoEsame]);
+
+  // Handler submit form interattivo (solo per pageView con campi editabili)
+  const submitPageForm = useCallback(async (actionName) => {
+    if (!hasPageView || !funzione?.pageViewUrl) return;
+    setSubmitting(actionName);
+    setError("");
+    try {
+      const base = getApiBase();
+
+      // WYSIWYG: invia i valori VISIBILI nel form (portale + override utente).
+      // Se l'utente ha svuotato un campo (formValues[name] === ""), quella stringa
+      // vuota OVERRIDE il valore pre-compilato dal portale. Questo è essenziale
+      // per i casi tipo "ricerca con solo CF" dove il portale memorizza la
+      // patente da una sessione precedente.
+      const inputFields = (results?.formFields || []).filter(
+        (f) => f.type !== "submit" && f.type !== "button" && f.type !== "image"
+      );
+      const mergedFormData = {};
+      for (const f of inputFields) {
+        if (!f.name) continue;
+        if (Object.prototype.hasOwnProperty.call(formValues, f.name)) {
+          mergedFormData[f.name] = formValues[f.name];
+        } else if (f.value) {
+          mergedFormData[f.name] = f.value;
+        }
+      }
+
+      const res = await fetch(`${base}/api/portal/page-form-submit`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...authHeaders() },
+        body: JSON.stringify({
+          pageUrl: funzione.pageViewUrl,
+          formData: mergedFormData,
+          action: actionName,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.ok) {
+        setError(data.error || `Errore HTTP ${res.status}`);
+      } else {
+        setResults(data);
+        // Reset degli override utente: i nuovi valori display vengono da data.formFields
+        setFormValues({});
+        // Mostra eventuali messaggi di errore visibili sulla pagina del portale
+        if (data.errorMessages && data.errorMessages.length > 0) {
+          setError(`Portale: ${data.errorMessages.join(" — ")}`);
+        }
+      }
+    } catch (err) {
+      setError(err.message || "Errore di rete");
+    } finally {
+      setSubmitting("");
+    }
+  }, [hasPageView, funzione, formValues, results]);
+
+  // Helper: estrae label friendly da name complesso (es. "view.from.thePatente.numero" → "Numero patente")
+  const friendlyLabel = useCallback((name) => {
+    if (!name) return "";
+    // Prendi ultimi 2 segmenti dopo l'ultimo punto
+    const parts = name.split(".");
+    const last = parts[parts.length - 1] || name;
+    // CamelCase → spazi
+    const human = last
+      .replace(/([A-Z])/g, " $1")
+      .replace(/^./, (c) => c.toUpperCase())
+      .trim();
+    // Aggiungi contesto da penultimo segmento se rilevante
+    const prev = parts.length > 1 ? parts[parts.length - 2] : "";
+    if (prev && /patente|patente|cqc|persona|certificato|fis|cod/i.test(prev)) {
+      const prevHuman = prev.replace(/([A-Z])/g, " $1").replace(/^the/i, "").trim();
+      return `${human} (${prevHuman})`;
+    }
+    return human;
+  }, []);
 
   if (loading) {
     return (
@@ -410,8 +816,182 @@ export default function FunzionePage() {
                     <div className="text-xs text-slate-500 italic">Nessun risultato in formato tabellare.</div>
                   )}
 
-                  {/* Campi form rilevati (per page-view su pagine con form) */}
-                  {results.formFields && results.formFields.length > 0 && (
+                  {/* Campi form rilevati (per page-view su pagine con form) — INTERATTIVI */}
+                  {hasPageView && results.formFields && results.formFields.length > 0 && (() => {
+                    const inputFields = results.formFields.filter((f) => f.type !== "submit" && f.type !== "button" && f.type !== "image");
+                    const submitFields = results.formFields.filter((f) => f.type === "submit" || f.type === "button" || f.type === "image");
+                    return (
+                      <div className="mt-4 border-t border-slate-200 pt-4">
+                        <div className="mb-3 flex items-center gap-2 flex-wrap">
+                          <span className="text-sm font-bold text-slate-800">📝 Compila e invia</span>
+                          <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-bold text-indigo-700">
+                            {inputFields.length} campi · {submitFields.length} azioni
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const empties = {};
+                              for (const f of inputFields) if (f.name) empties[f.name] = "";
+                              setFormValues(empties);
+                            }}
+                            disabled={!!submitting}
+                            className="ml-auto rounded-lg bg-slate-200 px-3 py-1 text-[10px] font-semibold text-slate-700 hover:bg-slate-300 disabled:opacity-50"
+                            title="Imposta tutti i campi a stringa vuota (override valori pre-compilati dal portale)"
+                          >
+                            🧹 Svuota tutti i campi
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setFormValues({})}
+                            disabled={!!submitting}
+                            className="rounded-lg bg-slate-100 px-3 py-1 text-[10px] font-semibold text-slate-600 hover:bg-slate-200 disabled:opacity-50"
+                            title="Annulla le modifiche, ripristina i valori pre-compilati dal portale"
+                          >
+                            ↺ Ripristina valori portale
+                          </button>
+                        </div>
+
+                        {/* Banner: patente sostituita rilevata */}
+                        {results.detectedPatenteUpdate && (
+                          <PatenteSostituitaBanner
+                            info={results.detectedPatenteUpdate}
+                            onUpdated={(updated) => {
+                              setResults((prev) => ({ ...prev, detectedPatenteUpdate: null, _lastPatenteUpdate: updated }));
+                            }}
+                          />
+                        )}
+
+                        {/* Banner: anagrafica candidato disponibile dal portale */}
+                        {results.portalAnagrafica && results.portalAnagrafica.codice_fiscale && (
+                          <SyncCandidateBanner
+                            anagrafica={results.portalAnagrafica}
+                            patenteNuova={results.detectedPatenteUpdate?.newPatente || null}
+                            onSynced={(updated) => {
+                              setResults((prev) => ({ ...prev, _lastSyncedCandidate: updated }));
+                            }}
+                          />
+                        )}
+
+                        {inputFields.length > 0 && (
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                            {inputFields.map((field, idx) => {
+                              const userOverride = Object.prototype.hasOwnProperty.call(formValues, field.name);
+                              const value = userOverride ? formValues[field.name] : (field.value || "");
+                              const isPrefilledFromPortal = !!field.value && !userOverride;
+                              const onChange = (e) => {
+                                const v = field.type === "checkbox" ? e.target.checked : e.target.value;
+                                setFormValues((prev) => ({ ...prev, [field.name]: v }));
+                              };
+                              const clearField = () => setFormValues((prev) => ({ ...prev, [field.name]: "" }));
+                              // Priorità label: portale (label/value) → friendly da name
+                              const labelText = field.label || friendlyLabel(field.name);
+                              const inputClass = "w-full rounded-lg border border-slate-300 px-3 py-1.5 text-xs focus:border-indigo-500 focus:outline-none disabled:bg-slate-100";
+                              return (
+                                <div key={idx} className="space-y-1">
+                                  <label className="block text-[11px] font-semibold text-slate-600 flex items-center gap-1">
+                                    <span>{labelText}</span>
+                                    <span className="text-[9px] font-mono font-normal text-slate-400">{field.type}</span>
+                                    {isPrefilledFromPortal && (
+                                      <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[8px] font-bold text-amber-700" title="Valore pre-compilato dal portale (sarà inviato così com'è se non lo modifichi)">PRE-COMPILATO</span>
+                                    )}
+                                    {value && (
+                                      <button
+                                        type="button"
+                                        onClick={clearField}
+                                        disabled={!!submitting}
+                                        className="ml-auto rounded text-[10px] text-slate-400 hover:text-red-500 disabled:opacity-50"
+                                        title="Svuota questo campo"
+                                      >×</button>
+                                    )}
+                                  </label>
+                                  {field.type === "checkbox" ? (
+                                    <label className="flex items-center gap-2 text-xs text-slate-700">
+                                      <input
+                                        type="checkbox"
+                                        checked={!!value}
+                                        onChange={onChange}
+                                        disabled={!!submitting}
+                                        className="rounded border-slate-300"
+                                      />
+                                      {labelText}
+                                    </label>
+                                  ) : field.type === "select" ? (
+                                    <input
+                                      type="text"
+                                      placeholder="Valore (option value)"
+                                      value={value}
+                                      onChange={onChange}
+                                      disabled={!!submitting}
+                                      className={inputClass}
+                                    />
+                                  ) : field.type === "textarea" ? (
+                                    <textarea
+                                      rows={2}
+                                      placeholder={field.label || ""}
+                                      value={value}
+                                      onChange={onChange}
+                                      disabled={!!submitting}
+                                      className={inputClass}
+                                    />
+                                  ) : (
+                                    <input
+                                      type={field.type === "password" ? "password" : "text"}
+                                      placeholder={field.label || ""}
+                                      value={value}
+                                      onChange={onChange}
+                                      disabled={!!submitting}
+                                      className={inputClass}
+                                    />
+                                  )}
+                                  <div className="text-[9px] font-mono text-slate-400 break-all">{field.name}</div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+
+                        {submitFields.length > 0 && (
+                          <div className="flex flex-wrap gap-2">
+                            {submitFields.map((field, idx) => {
+                              const isClear = /clear|reset|annulla/i.test(field.name);
+                              const isPaging = /paging|search|cerca|pag/i.test(field.name);
+                              const cls = isClear
+                                ? "rounded-lg bg-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-300 disabled:opacity-50"
+                                : isPaging
+                                ? "rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+                                : "rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50";
+                              const cleanName = field.name.replace(/^action:/, "").replace(/_/g, " ");
+                              const isThisSubmitting = submitting === field.name;
+                              return (
+                                <button
+                                  key={idx}
+                                  type="button"
+                                  onClick={() => submitPageForm(field.name)}
+                                  disabled={!!submitting}
+                                  className={cls}
+                                  title={field.name}
+                                >
+                                  {isThisSubmitting ? "Invio..." : (field.label || cleanName)}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+
+                        {results.fillResult && (results.fillResult.skipped?.length > 0 || results.fillResult.filled?.length > 0) && (
+                          <div className="mt-3 rounded-lg bg-slate-50 p-2 text-[10px] text-slate-600">
+                            Compilati: <span className="font-bold text-emerald-700">{results.fillResult.filled?.length || 0}</span>
+                            {results.fillResult.skipped?.length > 0 && (
+                              <> · Skippati: <span className="font-bold text-amber-700">{results.fillResult.skipped.length}</span> ({results.fillResult.skipped.map((s) => s.name).join(", ")})</>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
+
+                  {/* Fallback per non-pageView (es. credito-residuo): mostra read-only */}
+                  {!hasPageView && results.formFields && results.formFields.length > 0 && (
                     <div className="mt-4 border-t border-slate-200 pt-3">
                       <div className="text-xs font-semibold text-slate-600 mb-2">
                         Campi form rilevati ({results.formFields.length})
@@ -425,10 +1005,6 @@ export default function FunzionePage() {
                           </div>
                         ))}
                       </div>
-                      <p className="mt-2 text-[10px] text-slate-500 italic">
-                        Suggerimento: questi campi possono essere compilati direttamente sul portale cliccando
-                        "Apri nel portale" nella sidebar.
-                      </p>
                     </div>
                   )}
                 </div>

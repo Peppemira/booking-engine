@@ -3525,6 +3525,210 @@ async function readPortalPageViaBrowser(pageUrl, options = {}) {
 }
 
 /**
+ * submitPortalFormViaBrowser — Apre una pagina del portale, compila i campi
+ * indicati in `formData` e clicca il bottone submit identificato da `actionName`.
+ * Ritorna l'HTML della pagina risultante dopo la submit.
+ *
+ * @param {string} pageUrl  URL relativa della pagina del portale (es. "/RichiestaPatenti/...")
+ * @param {Object} formData  Mappa { fieldName: value } per i campi del form (input/select/textarea)
+ * @param {string} actionName  Name dell'input submit da cliccare (es. "action:Read..._pagingAcq...")
+ * @param {Object} options  { username, password, pin, trace }
+ * @returns {Promise<string>} HTML della pagina risultante
+ */
+async function submitPortalFormViaBrowser(pageUrl, formData = {}, actionName = "", options = {}) {
+  const username = options.username || process.env.PORTAL_USER || process.env.PORTAL_USERNAME;
+  const password = options.password || process.env.PORTAL_PASS || process.env.PORTAL_PASSWORD;
+  const pin = options.pin || process.env.PORTAL_PIN;
+  const trace = Array.isArray(options.trace) ? options.trace : null;
+
+  if (!username || !password) {
+    throw new Error("PORTAL_USER/PORTAL_PASS mancanti nel .env");
+  }
+  if (!pageUrl || typeof pageUrl !== "string") {
+    throw new Error("pageUrl obbligatoria");
+  }
+
+  const PORTAL_BASE = "https://www.ilportaledellautomobilista.it";
+  const fullUrl = pageUrl.startsWith("http") ? pageUrl : `${PORTAL_BASE}${pageUrl}`;
+
+  pushDiag(trace, "browser.formSubmit.start", { fullUrl, actionName, fields: Object.keys(formData || {}) });
+
+  const { browser, page, isPersistent, releaseLock } = await getBrowserAndPageForSession(username, password, pin, trace);
+
+  try {
+    // --- LOGIN (skip se browser persistente gia' loggato) ---
+    let skipLogin = false;
+    if (isPersistent && persistentLastLoginAt > 0) {
+      try {
+        const currentUrl = await page.url();
+        if (currentUrl.includes("/prenotazione") || currentUrl.includes("/portale-automobilista") || currentUrl.includes("/web/") || currentUrl.includes("/sistema-pagamenti") || currentUrl.includes("/RichiestaPatenti")) {
+          skipLogin = true;
+          pushDiag(trace, "browser.formSubmit.login.skip", { url: currentUrl });
+        }
+      } catch { skipLogin = false; }
+    }
+
+    if (!skipLogin) {
+      await page.goto(`${PORTAL_BASE}/SSO/SSOLogin/Login_initAction.action`, { waitUntil: "domcontentloaded" });
+
+      const userSel = await waitFirstSelector(page, [
+        'input[name="loginView.beanUtente.userName"]', 'input[name="username"]', 'input[type="text"]',
+      ], 8000).catch(() => null);
+      const passSel = await waitFirstSelector(page, [
+        'input[name="loginView.beanUtente.password"]', 'input[name="password"]', 'input[type="password"]',
+      ], 8000).catch(() => null);
+
+      if (userSel && passSel) {
+        await page.click(userSel, { clickCount: 3 });
+        await page.type(userSel, username, { delay: 15 });
+        await page.click(passSel, { clickCount: 3 });
+        await page.type(passSel, password, { delay: 15 });
+
+        const loginBtnSel = 'input[name="action:Login_executeLogin"], input[type="submit"], button[type="submit"]';
+        await Promise.allSettled([
+          page.waitForNavigation({ waitUntil: "domcontentloaded", timeout: 60000 }),
+          page.click(loginBtnSel),
+        ]);
+
+        pushDiag(trace, "browser.formSubmit.login.done", { url: page.url() });
+        await handlePinIfPresent(page, pin);
+        if (isPersistent) persistentLastLoginAt = Date.now();
+      }
+    }
+
+    // --- NAVIGATE alla pagina del form ---
+    await page.goto(fullUrl, { waitUntil: "domcontentloaded" });
+    if (!skipLogin) await sleep(800);
+
+    // Handle dispatcher / PIN sulla pagina target
+    for (let i = 0; i < 6; i++) {
+      const hasPin = await page.$('input[name="loginView.pin"], input[name="pin"]');
+      if (hasPin) { await handlePinIfPresent(page, pin); await sleep(200); continue; }
+
+      const postForm = await page.$('form[name="postform"]');
+      if (postForm) {
+        await Promise.allSettled([
+          page.waitForNavigation({ waitUntil: "domcontentloaded", timeout: 30000 }),
+          page.$eval('form[name="postform"]', (form) => form.submit()),
+        ]);
+        await sleep(150);
+        continue;
+      }
+
+      break;
+    }
+
+    await sleep(skipLogin ? 300 : 600);
+
+    // --- COMPILA I CAMPI DEL FORM ---
+    const fillResult = await page.evaluate((data) => {
+      const filled = [];
+      const skipped = [];
+      for (const [name, value] of Object.entries(data || {})) {
+        // Cerca input/select/textarea con questo name (o id come fallback)
+        const escName = (window.CSS && CSS.escape) ? CSS.escape(name) : name.replace(/(["\\])/g, "\\$1");
+        let el = document.querySelector(`[name="${escName}"]`);
+        if (!el) el = document.getElementById(name);
+        if (!el) { skipped.push({ name, reason: "not_found" }); continue; }
+
+        const tag = el.tagName.toLowerCase();
+        const type = (el.getAttribute("type") || "").toLowerCase();
+
+        try {
+          if (tag === "select") {
+            el.value = value == null ? "" : String(value);
+            el.dispatchEvent(new Event("change", { bubbles: true }));
+            filled.push({ name, type: "select", value });
+          } else if (type === "checkbox" || type === "radio") {
+            el.checked = !!value;
+            el.dispatchEvent(new Event("change", { bubbles: true }));
+            filled.push({ name, type, value: !!value });
+          } else if (tag === "textarea" || (tag === "input" && type !== "submit" && type !== "button")) {
+            el.value = value == null ? "" : String(value);
+            el.dispatchEvent(new Event("input", { bubbles: true }));
+            el.dispatchEvent(new Event("change", { bubbles: true }));
+            filled.push({ name, type: type || tag, value });
+          } else {
+            skipped.push({ name, reason: `unsupported_${tag}_${type}` });
+          }
+        } catch (err) {
+          skipped.push({ name, reason: `error: ${err.message}` });
+        }
+      }
+      return { filled, skipped };
+    }, formData || {});
+
+    pushDiag(trace, "browser.formSubmit.fill", fillResult);
+
+    // --- CLICCA IL BOTTONE SUBMIT ---
+    if (actionName) {
+      const escAction = actionName.replace(/(["\\])/g, "\\$1");
+      const selector = `input[name="${escAction}"], button[name="${escAction}"]`;
+      const btn = await page.$(selector);
+      if (!btn) {
+        throw new Error(`Bottone submit non trovato per action="${actionName}"`);
+      }
+      await Promise.allSettled([
+        page.waitForNavigation({ waitUntil: "domcontentloaded", timeout: 60000 }),
+        page.click(selector),
+      ]);
+      pushDiag(trace, "browser.formSubmit.click.done", { actionName, url: page.url() });
+    } else {
+      // Fallback: submit del primo form trovato
+      const formExists = await page.$("form");
+      if (formExists) {
+        await Promise.allSettled([
+          page.waitForNavigation({ waitUntil: "domcontentloaded", timeout: 60000 }),
+          page.$eval("form", (form) => form.submit()),
+        ]);
+        pushDiag(trace, "browser.formSubmit.formSubmit.done", { url: page.url() });
+      }
+    }
+
+    // Handle dispatcher post-submit
+    for (let i = 0; i < 4; i++) {
+      const postForm = await page.$('form[name="postform"]');
+      if (postForm) {
+        await Promise.allSettled([
+          page.waitForNavigation({ waitUntil: "domcontentloaded", timeout: 30000 }),
+          page.$eval('form[name="postform"]', (form) => form.submit()),
+        ]);
+        await sleep(150);
+        continue;
+      }
+      break;
+    }
+
+    await sleep(400);
+
+    const resultHtml = await page.content();
+    pushDiag(trace, "browser.formSubmit.done", {
+      url: page.url(),
+      htmlLength: resultHtml.length,
+      title: await page.title().catch(() => ""),
+      filledCount: fillResult.filled.length,
+      skippedCount: fillResult.skipped.length,
+    });
+
+    // Salva per diagnostica
+    try {
+      const dumpDir = path.resolve(__dirname, "../../diagnostica-dump");
+      if (!fs.existsSync(dumpDir)) fs.mkdirSync(dumpDir, { recursive: true });
+      const safeName = pageUrl.replace(/[^a-zA-Z0-9]/g, "_").slice(0, 60);
+      const safeAction = String(actionName || "submit").replace(/[^a-zA-Z0-9]/g, "_").slice(0, 40);
+      fs.writeFileSync(path.join(dumpDir, `formSubmit-${safeName}-${safeAction}.html`), resultHtml || "", "utf8");
+    } catch (_) {}
+
+    return { html: resultHtml, fillResult };
+  } finally {
+    if (!isPersistent) {
+      await browser.close();
+    }
+    releaseLock();
+  }
+}
+
+/**
  * readSessioneDettaglioViaBrowser – Apre il portale via Puppeteer, fa la ricerca sessioni,
  * seleziona il radio button corrispondente a sessionIndex, clicca DETTAGLIO,
  * e parsa la pagina dettaglio restituendo campi + turni.
@@ -4900,6 +5104,7 @@ module.exports.diagnosePortalLogin = diagnosePortalLogin;
 module.exports.readSessioniQuizInterneViaBrowser = readSessioniQuizInterneViaBrowser;
 module.exports.readPortalSearchViaBrowser = readPortalSearchViaBrowser;
 module.exports.readPortalPageViaBrowser = readPortalPageViaBrowser;
+module.exports.submitPortalFormViaBrowser = submitPortalFormViaBrowser;
 module.exports.PORTAL_TAB_CONFIG = PORTAL_TAB_CONFIG;
 module.exports.runManualSessionFlowViaBrowser = runManualSessionFlowViaBrowser;
 module.exports.readSituazioneCandidatiDettaglioViaBrowser = readSituazioneCandidatiDettaglioViaBrowser;
