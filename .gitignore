@@ -1,6 +1,10 @@
 node_modules/
 .env
 .env.*
+# Eccezioni: file di esempio sono template senza secret e DEVONO essere in git
+!.env.example
+!.env.railway.example
+!.env.*.example
 dist/
 data/
 *.log
