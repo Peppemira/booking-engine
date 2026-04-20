@@ -794,6 +794,12 @@ app.get("/api/remote-capture/sessions/:token", requireAuth, async (req, res) => 
   }
 });
 
+// === P1: Endpoint delivery del link acquisizione remota ===
+// Body: { channel: "email"|"whatsapp", recipient: string, candidateName?: string }
+// Spec: docs/superpowers/specs/2026-04-17-p1-link-delivery-design.md
+const remoteCaptureDeliverHandler = require("./server/remoteCaptureDeliverHandler");
+app.post("/api/remote-capture/sessions/:token/deliver", requireAuth, remoteCaptureDeliverHandler);
+
 app.get("/remote-capture/:token", async (req, res) => {
   try {
     const token = String(req.params?.token || "").trim();
