@@ -61,13 +61,20 @@ const app = express();
 
 // Redirect alla UI: chi va su :3000 (backend) viene portato al frontend sulla 3001
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "http://localhost:3001";
-app.get("/", (req, res) => res.redirect(FRONTEND_ORIGIN));
-app.get("/login", (req, res) => res.redirect(FRONTEND_ORIGIN + "/login"));
-app.get("/Login", (req, res) => res.redirect(FRONTEND_ORIGIN + "/login"));
+const ALLOWED_ORIGINS = FRONTEND_ORIGIN.split(",").map((s) => s.trim()).filter(Boolean);
+const PRIMARY_ORIGIN = ALLOWED_ORIGINS[0] || "http://localhost:3001";
+app.get("/", (req, res) => res.redirect(PRIMARY_ORIGIN));
+app.get("/login", (req, res) => res.redirect(PRIMARY_ORIGIN + "/login"));
+app.get("/Login", (req, res) => res.redirect(PRIMARY_ORIGIN + "/login"));
 
 app.use(
   cors({
-    origin: FRONTEND_ORIGIN,
+    origin: function (origin, cb) {
+      // Permetti richieste server-to-server (no Origin) e le origini consentite (+ qualsiasi *.vercel.app)
+      if (!origin) return cb(null, true);
+      if (ALLOWED_ORIGINS.includes(origin) || /\.vercel\.app$/.test(origin)) return cb(null, true);
+      return cb(null, false);
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "Cache-Control"],
