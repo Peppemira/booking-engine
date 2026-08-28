@@ -446,6 +446,9 @@ function parseCandidatiInVerbaleHtml(html) {
     const tipoEsame      = norm($tds.eq(7).text());
 
     if (!cognome && !marcaOperativa) return;
+    // Solo righe con marca operativa vera (es. 98ME202128): il resto è
+    // arredamento della pagina (messaggi, calendario) che finiva nei candidati.
+    if (!/^\d{2}[A-Z]{2}\d{4,}$/i.test(marcaOperativa)) return;
 
     candidati.push({
       marcaOperativa,
@@ -483,10 +486,17 @@ async function fetchSchedaCandidato(client, {
 
   // Init della maschera «Richiesta Esame» + POST del form (vedi helper sopra:
   // la GET con azione in query string non è più accettata dal Portale).
-  const initUrl = `${BASE_URL}/RichiestaPatenti/richiestaEsame/Read_initAction.action`;
-  let html = (await client.get(initUrl, {
-    headers: { Referer: `${BASE_URL}/prenotazione/menu/LoadMenu_execute.action` },
-  })).data;
+  // pageStatus=SEARCH è obbligatorio: l'init nudo risponde 500.
+  const initUrl = `${BASE_URL}/RichiestaPatenti/richiestaEsame/Read_initAction.action?pageStatus=SEARCH`;
+  let html;
+  try {
+    html = (await client.get(initUrl, {
+      headers: { Referer: `${BASE_URL}/prenotazione/menu/LoadMenu_execute.action` },
+    })).data;
+  } catch (err) {
+    console.warn(`[syncArchivio] init Richiesta Esame: HTTP ${err?.response?.status || err.message}`);
+    return {};
+  }
   html = await seguiDispatcherEPin(client, html, initUrl, pin);
 
   const $ = cheerio.load(html || "");

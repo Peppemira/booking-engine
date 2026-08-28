@@ -588,4 +588,5 @@ module.exports = {
   importMassivo,
   importCandidate,
   importByPatente,
+  upsertCandidateToDB,
 };
