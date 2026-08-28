@@ -189,6 +189,11 @@ function risolviActionForm(form, fallbackUrl) {
 // STEP 1 — Lista verbali (sessions) da SituazioneCandidati
 // ---------------------------------------------------------------------------
 
+/** Data in formato Portale gg/mm/aaaa. */
+function fmtDataPortale(d) {
+  return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
+}
+
 /** Titolo pagina, per log senza dati personali. */
 function titoloPagina(html) {
   return (((html || "").match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1] || "")
@@ -331,7 +336,7 @@ async function fetchVerbaliList(client, { codiceAutoscuola, codUfficio, tipo = "
  * righe del documento e si tengono quelle "selezionabili" — con un input di
  * riga valorizzato (radio/hidden selectRowId o simile) e almeno due celle.
  */
-function parseVerbaliFromHtml(html) {
+function parseVerbaliFromHtml(html, silenzioso = false) {
   const $ = cheerio.load(html || "");
   const verbali = [];
   const visti = new Set();
@@ -358,7 +363,7 @@ function parseVerbaliFromHtml(html) {
     });
   });
 
-  if (!verbali.length) {
+  if (!verbali.length && !silenzioso) {
     // Diagnostica GDPR-safe: perché zero? (solo struttura, mai valori)
     const low = (html || "").toLowerCase();
     if (low.includes("nessun dato")) {
@@ -425,6 +430,98 @@ async function fetchCandidatiInVerbale(client, { idVerbale, paginaRisultati = ""
   console.log(`[syncArchivio] dettaglio riga: title = ${titoloPagina(html)}`);
 
   return parseCandidatiInVerbaleHtml(html);
+}
+
+// ---------------------------------------------------------------------------
+// STEP 1-ter — ARCHIVIO STORICO dai VERBALI SVOLTI (Conseguimento)
+// ---------------------------------------------------------------------------
+// La Situazione Candidati mostra solo i candidati correnti; lo STORICO
+// completo sta nei «Verbali Svolti» (indicazione del titolare, 28/08/2026):
+// maschera sessioneEsameAbilitazioneEP, ricerca per finestre di date e
+// Dettaglio per ogni verbale con l'elenco dei candidati esaminati.
+
+/** Ricerca Verbali Svolti in una finestra di date: init+POST col form vero. */
+async function eseguiRicercaVerbaliSvolti(client, { indicatore, dataDa, dataA, pin = null }) {
+  const initUrl = `${BASE_URL}/prenotazione/sessioneEsameAbilitazioneEP/Read_initActionVerbaliSvoltiConseguimento.action?pageStatus=SEARCH`;
+  let html = (await client.get(initUrl, {
+    headers: { Referer: `${BASE_URL}/prenotazione/menu/LoadMenu_execute.action` },
+  })).data;
+  html = await seguiDispatcherEPin(client, html, initUrl, pin);
+
+  const $ = cheerio.load(html || "");
+  const form = trovaFormRicerca($);
+  if (!form) {
+    console.warn("[syncArchivio] Verbali Svolti: nessun form, title =", titoloPagina(html));
+    return { verbali: [], html: "" };
+  }
+
+  const payload = costruisciPayloadDaForm($, form);
+  applicaCriteriSelect($, form, payload, { indicatoreTipoSessione: indicatore });
+  scriviPerFrammento(payload, "dataSessioneEsameFrom", dataDa);
+  scriviPerFrammento(payload, "dataSessioneEsameTo", dataA);
+  rimuoviAzioni(payload);
+  let azione = null;
+  form.find("input[name^='action:']").each((_, b) => {
+    const n = ($(b).attr("name") || "").toLowerCase();
+    if (!azione && n.includes("verbalisvolti")) azione = { n: $(b).attr("name"), v: $(b).attr("value") || "Ricerca" };
+  });
+  if (azione) payload.set(azione.n, azione.v);
+  else payload.set("action:ReadVerbaliSvolti_searchVerbaliSvoltiConseguimento", "Ricerca");
+
+  const action = risolviActionForm(form, initUrl);
+  let outHtml = (await client.post(action, serializePayloadRaw(payload), {
+    headers: { "Content-Type": "application/x-www-form-urlencoded", Referer: initUrl },
+  })).data;
+  outHtml = await seguiDispatcherEPin(client, outHtml, action, pin);
+  return { verbali: parseVerbaliFromHtml(outHtml, true), html: outHtml };
+}
+
+/** Dettaglio di un verbale svolto: candidati esaminati (marca, cognome, nome). */
+async function fetchCandidatiVerbaleSvolto(client, paginaRisultati, idVerbale, pin = null) {
+  const $ = cheerio.load(paginaRisultati || "");
+  const form = trovaFormRicerca($);
+  if (!form) return [];
+  const initReferer = `${BASE_URL}/prenotazione/sessioneEsameAbilitazioneEP/Read_initActionVerbaliSvoltiConseguimento.action`;
+
+  const payload = costruisciPayloadDaForm($, form);
+  if (!scriviPerFrammento(payload, "selectRowId", idVerbale)) {
+    const nomeRadio = $("input[name*='selectRowId' i]").first().attr("name")
+      || "sessioneEsameAbilitazioneEPView.sessioneEsameAbilitazioneEPFrom.selectRowId";
+    payload.append(nomeRadio, idVerbale);
+  }
+  rimuoviAzioni(payload);
+  let azione = null;
+  form.find("input[name^='action:']").each((_, b) => {
+    const n = ($(b).attr("name") || "").toLowerCase();
+    if (!azione && (n.includes("viewdetail") || n.includes("dettaglio")))
+      azione = { n: $(b).attr("name"), v: $(b).attr("value") || "Dettaglio" };
+  });
+  if (azione) payload.set(azione.n, azione.v);
+  else payload.set("action:Select_viewDetailVerbale", "Dettaglio");
+
+  const url = risolviActionForm(form, initReferer);
+  let { data: html } = await client.post(url, serializePayloadRaw(payload), {
+    headers: { "Content-Type": "application/x-www-form-urlencoded", Referer: initReferer },
+  });
+  html = await seguiDispatcherEPin(client, html, url, pin);
+
+  const $det = cheerio.load(html || "");
+  const candidati = [];
+  // colonne comuni quiz/guida: 1=marca, 2=abilitazione, 6=cognome, 7=nome, 8=data nascita
+  $det("#listSedutaEsameAbilitazioneEP tbody tr, table tbody tr").each((_, tr) => {
+    const $tds = $det(tr).find("td");
+    if ($tds.length < 8) return;
+    const marcaOperativa = norm($tds.eq(1).text());
+    if (!/^\d{2}[A-Z]{2}\d{4,}$/i.test(marcaOperativa)) return;
+    candidati.push({
+      marcaOperativa,
+      abilitazione: norm($tds.eq(2).text()),
+      cognome:      norm($tds.eq(6).text()),
+      nome:         norm($tds.eq(7).text()),
+      dataNascita:  norm($tds.eq(8).text()),
+    });
+  });
+  return candidati;
 }
 
 function parseCandidatiInVerbaleHtml(html) {
@@ -848,6 +945,61 @@ async function syncArchivioCompleto(opts = {}) {
         try { paginaRisultati = (await fetchVerbaliList(client, criteriRicerca)).html; }
         catch { paginaRisultati = ""; }
       }
+    }
+  }
+
+  // ── FASE 1-ter: ARCHIVIO STORICO dai VERBALI SVOLTI ───────────────────────
+  // Finestre di date da ARCHIVIO_ANNO_INIZIO (default 2000) a oggi, per i tre
+  // tipi di sessione: VSC (quiz/guida), VSQ (scritti), SCQC (CQC).
+  {
+    const pinPortale = credenziali?.pin || process.env.PORTAL_PIN || null;
+    const annoInizio = Number(process.env.ARCHIVIO_ANNO_INIZIO || 2000);
+    const windowDays = Number(process.env.ARCHIVIO_STORICO_WINDOW_DAYS || 180);
+    const INDICATORI = [["VSC", "Quiz/Guida"], ["VSQ", "Scritti"], ["SCQC", "CQC"]];
+    const fine = new Date();
+
+    for (const [indicatore, descr] of INDICATORI) {
+      let raccolti = 0, verbaliTot = 0, finestreConDati = 0;
+      let da = new Date(annoInizio, 0, 1);
+      while (da <= fine) {
+        let a = new Date(da);
+        a.setDate(a.getDate() + windowDays - 1);
+        if (a > fine) a = new Date(fine);
+        try {
+          let ricerca = await eseguiRicercaVerbaliSvolti(client, {
+            indicatore, dataDa: fmtDataPortale(da), dataA: fmtDataPortale(a), pin: pinPortale,
+          });
+          if (ricerca.verbali.length) {
+            finestreConDati++;
+            verbaliTot += ricerca.verbali.length;
+            for (const v of ricerca.verbali) {
+              if (!v.id_verbale) continue;
+              let cands = await fetchCandidatiVerbaleSvolto(client, ricerca.html, v.id_verbale, pinPortale);
+              if (!cands.length) {
+                // token monouso probabilmente consumato: ricerca fresca e secondo tentativo
+                ricerca = await eseguiRicercaVerbaliSvolti(client, {
+                  indicatore, dataDa: fmtDataPortale(da), dataA: fmtDataPortale(a), pin: pinPortale,
+                });
+                cands = await fetchCandidatiVerbaleSvolto(client, ricerca.html, v.id_verbale, pinPortale);
+              }
+              for (const c of cands) {
+                if (!candidatiMap.has(c.marcaOperativa)) {
+                  candidatiMap.set(c.marcaOperativa, { ...c, combo: { desc: `Verbali Svolti ${descr}` } });
+                  raccolti++;
+                }
+              }
+              await delay(100);
+            }
+          }
+        } catch (err) {
+          console.warn(`[syncArchivio] Verbali Svolti ${descr} ${fmtDataPortale(da)}-${fmtDataPortale(a)}:`, err.message);
+        }
+        da = new Date(a);
+        da.setDate(da.getDate() + 1);
+        await delay(150);
+      }
+      console.log(`[syncArchivio] Verbali Svolti ${descr}: ${verbaliTot} verbali in ${finestreConDati} finestre, ${raccolti} candidati nuovi`);
+      progress("verbali_svolti", verbaliTot, verbaliTot);
     }
   }
 
