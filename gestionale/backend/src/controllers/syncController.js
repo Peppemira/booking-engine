@@ -9,6 +9,7 @@ const { PortalService, PORTAL_BASE } = require("../services/portalService");
 const { syncService } = require("../services/syncService");
 const { syncArchivioCompleto, syncFotoFirmaCandidato } = require("../connector/syncArchivioCompleto");
 const { syncArchivioStoricoCompleto } = require("../connector/syncArchivioStorico");
+const { resolvePortalCredentials } = require("../server/portalHelpers");
 const {
   triggerManual: triggerArchivioScheduler,
   isArchivioSchedulerRunning,
@@ -136,6 +137,10 @@ async function syncArchivioCompletoHandler(req, res) {
     autoscuolaId = aut?.id || null;
   }
 
+  // Credenziali del record autoscuola del tenant (env come ripiego) — le env del
+  // container possono essere stantie rispetto a quelle aggiornate dal gestionale.
+  const credenziali = await resolvePortalCredentials(req);
+
   if (useSSE) {
     // Streaming SSE — invia aggiornamenti progressivi
     res.setHeader("Content-Type", "text/event-stream");
@@ -157,6 +162,7 @@ async function syncArchivioCompletoHandler(req, res) {
         codUfficioMctc,
         autoscuolaId,
         fetchDettaglio,
+        credenziali,
         onProgress: ({ fase, completati, totale, errori }) => {
           sendEvent({ event: "progress", fase, completati, totale, errori });
         },
@@ -175,6 +181,7 @@ async function syncArchivioCompletoHandler(req, res) {
         codUfficioMctc,
         autoscuolaId,
         fetchDettaglio,
+        credenziali,
       });
       res.json({ success: true, ...result });
     } catch (err) {
@@ -199,6 +206,7 @@ async function syncFotoFirmaHandler(req, res) {
       candidateId,
       idAutAg:        process.env.CODICE_AUTOSCUOLA || "",
       codUfficioMctc: process.env.PORTAL_UFFICIO_MCTC || "",
+      credenziali:    await resolvePortalCredentials(req),
     });
     res.json({ success: true, ...result });
   } catch (err) {
@@ -260,6 +268,7 @@ async function syncArchivioStoricoCompletoHandler(req, res) {
     idAutAg,
     codUfficioMctc,
     autoscuolaId,
+    credenziali: await resolvePortalCredentials(req),
     includeEsami,
     includeRinnoviPat,
     includeRinnoviMed,

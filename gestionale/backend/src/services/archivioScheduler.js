@@ -58,7 +58,7 @@ async function getAutoscuoleAttive() {
   if (envCodice) {
     const { data } = await supabase
       .from("autoscuole")
-      .select("id, codice_meccanografico, ufficio_mctc")
+      .select("id, codice_meccanografico, ufficio_mctc, portal_user, portal_pass, portal_pin")
       .eq("codice_meccanografico", envCodice)
       .maybeSingle();
     if (data) return [data];
@@ -67,9 +67,17 @@ async function getAutoscuoleAttive() {
   // Altrimenti prendi TUTTE le autoscuole che hanno credenziali portale
   const { data } = await supabase
     .from("autoscuole")
-    .select("id, codice_meccanografico, ufficio_mctc, portal_user")
+    .select("id, codice_meccanografico, ufficio_mctc, portal_user, portal_pass, portal_pin")
     .not("portal_user", "is", null);
   return data || [];
+}
+
+/** Credenziali portale dal record autoscuola (null se incomplete → login con le env). */
+function credenzialiDaAutoscuola(aut) {
+  if (aut?.portal_user && aut?.portal_pass) {
+    return { username: aut.portal_user, password: aut.portal_pass, pin: aut.portal_pin || process.env.PORTAL_PIN || null };
+  }
+  return null;
 }
 
 // ---------------------------------------------------------------------------
@@ -102,6 +110,7 @@ async function runIncremental() {
           idAutAg: aut.codice_meccanografico || "",
           codUfficioMctc: aut.ufficio_mctc || process.env.PORTAL_UFFICIO_MCTC || "",
           autoscuolaId: aut.id,
+          credenziali: credenzialiDaAutoscuola(aut),
           includeEsami: false,     // esami esclusi dall'incrementale (troppo lenti)
           includeRinnoviPat: true,
           includeRinnoviMed: true,
@@ -150,6 +159,7 @@ async function runDaily() {
           idAutAg: aut.codice_meccanografico || "",
           codUfficioMctc: aut.ufficio_mctc || process.env.PORTAL_UFFICIO_MCTC || "",
           autoscuolaId: aut.id,
+          credenziali: credenzialiDaAutoscuola(aut),
           includeEsami: true,
           includeRinnoviPat: true,
           includeRinnoviMed: true,
@@ -192,6 +202,7 @@ async function runWeekly() {
           idAutAg: aut.codice_meccanografico || "",
           codUfficioMctc: aut.ufficio_mctc || process.env.PORTAL_UFFICIO_MCTC || "",
           autoscuolaId: aut.id,
+          credenziali: credenzialiDaAutoscuola(aut),
           includeEsami: true,
           includeRinnoviPat: true,
           includeRinnoviMed: true,

@@ -458,6 +458,7 @@ async function syncArchivioCompleto(opts = {}) {
     autoscuolaId    = null,
     fetchDettaglio  = true,
     onProgress      = null,
+    credenziali     = null, // {username,password,pin} dal record autoscuola (resolvePortalCredentials)
   } = opts;
 
   if (!idAutAg) throw new Error("idAutAg (codice meccanografico) obbligatorio");
@@ -468,12 +469,12 @@ async function syncArchivioCompleto(opts = {}) {
     }
   };
 
-  // Login
+  // Login — credenziali del record autoscuola se fornite, env come ripiego
   progress("login", 0, 1);
   const jar = await loginDirectHttp({
-    username: process.env.PORTAL_USER || process.env.PORTAL_USERNAME,
-    password: process.env.PORTAL_PASS || process.env.PORTAL_PASSWORD,
-    pin:      process.env.PORTAL_PIN,
+    username: credenziali?.username || process.env.PORTAL_USER || process.env.PORTAL_USERNAME,
+    password: credenziali?.password || process.env.PORTAL_PASS || process.env.PORTAL_PASSWORD,
+    pin:      credenziali?.pin      || process.env.PORTAL_PIN,
   });
   const client = makeHttpClient(jar);
 
@@ -609,14 +610,15 @@ async function syncFotoFirmaCandidato(opts = {}) {
     candidateId,
     idAutAg        = process.env.CODICE_AUTOSCUOLA || "",
     codUfficioMctc = process.env.PORTAL_UFFICIO_MCTC || "",
+    credenziali    = null,
   } = opts;
 
   if (!marcaOperativa) throw new Error("marcaOperativa obbligatoria");
 
   const jar = await loginDirectHttp({
-    username: process.env.PORTAL_USER || process.env.PORTAL_USERNAME,
-    password: process.env.PORTAL_PASS || process.env.PORTAL_PASSWORD,
-    pin:      process.env.PORTAL_PIN,
+    username: credenziali?.username || process.env.PORTAL_USER || process.env.PORTAL_USERNAME,
+    password: credenziali?.password || process.env.PORTAL_PASS || process.env.PORTAL_PASSWORD,
+    pin:      credenziali?.pin      || process.env.PORTAL_PIN,
   });
   const client = makeHttpClient(jar);
 

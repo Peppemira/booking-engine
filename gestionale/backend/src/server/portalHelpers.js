@@ -22,6 +22,7 @@ async function resolvePortalCredentials(req) {
     }
 
     if (data?.portal_user && data?.portal_pass) {
+      console.log("[portalHelpers] credenziali portale: record autoscuola");
       return {
         username: data.portal_user,
         password: data.portal_pass,
@@ -30,6 +31,7 @@ async function resolvePortalCredentials(req) {
     }
   }
 
+  console.log("[portalHelpers] credenziali portale: env del container");
   return {
     username: process.env.PORTAL_USER || process.env.PORTAL_USERNAME,
     password: process.env.PORTAL_PASS || process.env.PORTAL_PASSWORD,
