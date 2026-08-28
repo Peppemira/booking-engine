@@ -22,11 +22,13 @@ async function list(req, res) {
     const limit  = Math.min(parseInt(req.query.limit || "200", 10), 500);
     const offset = parseInt(req.query.offset || "0", 10);
 
+    // NB: la colonna FK reale è candidate_id (candidato_id resta accettato
+    // come alias in query per compatibilità coi client vecchi).
     let q = supabase
       .from(TABLE)
       .select(`
         *,
-        candidates:candidato_id (
+        candidates:candidate_id (
           id, cognome, nome, codice_fiscale, categoria_patente,
           codice_foglio_rosa, data_nascita, comune_nascita, provincia_nascita
         )
@@ -36,8 +38,8 @@ async function list(req, res) {
 
     if (autoscuolaId) q = q.eq("autoscuola_id", autoscuolaId);
     const cid = candidate_id || candidato_id;
-    if (cid) q = q.eq("candidato_id", cid);
-    if (stato) q = q.eq("stato", stato);
+    if (cid) q = q.eq("candidate_id", cid);
+    if (stato) q = q.eq("stato_pratica", stato);
     if (tipo_pratica) q = q.eq("tipo_pratica", tipo_pratica);
 
     const { data, error, count } = await q;
@@ -57,10 +59,10 @@ async function getById(req, res) {
     const autoscuolaId = req.autoscuolaId || null;
     let q = supabase
       .from(TABLE)
-      .select("*, candidates:candidato_id (*)")
+      .select("*, candidates:candidate_id (*)")
       .eq("id", id)
       .maybeSingle();
-    if (autoscuolaId) q = supabase.from(TABLE).select("*, candidates:candidato_id (*)").eq("id", id).eq("autoscuola_id", autoscuolaId).maybeSingle();
+    if (autoscuolaId) q = supabase.from(TABLE).select("*, candidates:candidate_id (*)").eq("id", id).eq("autoscuola_id", autoscuolaId).maybeSingle();
     const { data, error } = await q;
     if (error) return res.status(500).json({ error: error.message });
     if (!data) return res.status(404).json({ error: "Pratica non trovata" });
@@ -80,8 +82,9 @@ async function create(req, res) {
   try {
     const autoscuolaId = req.autoscuolaId || null;
     const body = req.body || {};
-    if (!body.candidato_id) {
-      return res.status(400).json({ error: "candidato_id obbligatorio" });
+    const candidateId = body.candidate_id || body.candidato_id;
+    if (!candidateId) {
+      return res.status(400).json({ error: "candidate_id obbligatorio" });
     }
 
     const TIPO_TRASMISSIONE_MAP = {
@@ -99,15 +102,14 @@ async function create(req, res) {
       TIPO_TRASMISSIONE_MAP[body.tipo_pratica] ||
       "trasmissione_pratica_altro";
 
+    // Solo colonne che esistono davvero su pratiche_patente.
     const payload = {
-      candidato_id:              body.candidato_id,
+      candidate_id:              candidateId,
       tipo_pratica:              body.tipo_pratica            || "ESAME",
-      categoria:                 body.categoria               || body.categoria_patente || null,
       categoria_patente:         body.categoria_patente       || body.categoria        || null,
-      stato:                     body.stato                   || "attivo",
-      stato_pratica:             body.stato_pratica           || "attivo",
+      stato_pratica:             body.stato_pratica           || body.stato            || "attivo",
       tipo_trasmissione:         tipoTrasmissione,
-      data_richiesta:            body.data_richiesta          || new Date().toISOString().slice(0, 10),
+      data_iscrizione:           body.data_iscrizione         || body.data_richiesta   || new Date().toISOString().slice(0, 10),
       note:                      body.note                    || null,
       codice_autoscuola:         body.codice_autoscuola       || null,
       codice_estremi_pagamento:  body.codice_estremi_pagamento || null,
@@ -115,7 +117,7 @@ async function create(req, res) {
       ...(autoscuolaId && { autoscuola_id: autoscuolaId }),
     };
 
-    const { data, error } = await supabase.from(TABLE).insert(payload).select("*, candidates:candidato_id (*)").single();
+    const { data, error } = await supabase.from(TABLE).insert(payload).select("*, candidates:candidate_id (*)").single();
     if (error) return res.status(500).json({ error: error.message });
     res.status(201).json({ success: true, pratica: data });
   } catch (e) {
@@ -131,19 +133,30 @@ async function update(req, res) {
     const { id } = req.params;
     const autoscuolaId = req.autoscuolaId || null;
     const body = req.body || {};
+    // Solo colonne reali di pratiche_patente (niente updated_at: non esiste).
     const allowed = [
-      "tipo_pratica", "categoria", "categoria_patente", "stato", "stato_pratica",
-      "tipo_trasmissione", "data_richiesta", "note", "codice_autoscuola",
-      "codice_estremi_pagamento", "progressivo_portale", "id_richiesta_portale",
+      "tipo_pratica", "categoria_patente", "stato_pratica",
+      "tipo_trasmissione", "data_iscrizione", "note", "codice_autoscuola",
+      "codice_estremi_pagamento", "progressivo_portale", "richiesta_esame_id",
       "data_trasmissione_portale", "messaggio_portale", "bollettini",
-      "foto_path", "firma_path", "ultimo_errore_portale",
+      "foto_path", "firma_path", "ultimo_errore_portale", "marca_operativa",
+      "codice_statino", "data_emissione_statino", "data_scadenza_statino",
+      "data_esame_teoria", "data_esame_pratica", "tipo_pagamento",
+      "codice_pagamento", "committente_id", "log_trasmissione",
     ];
-    const payload = { updated_at: new Date().toISOString() };
+    const payload = {};
+    // Alias dei client vecchi → colonne reali
+    if (body.stato !== undefined && body.stato_pratica === undefined) body.stato_pratica = body.stato;
+    if (body.categoria !== undefined && body.categoria_patente === undefined) body.categoria_patente = body.categoria;
+    if (body.data_richiesta !== undefined && body.data_iscrizione === undefined) body.data_iscrizione = body.data_richiesta;
     allowed.forEach((k) => {
       if (body[k] !== undefined) payload[k] = body[k];
     });
     if (payload.bollettini && typeof payload.bollettini === "object") {
       payload.bollettini = JSON.stringify(payload.bollettini);
+    }
+    if (!Object.keys(payload).length) {
+      return res.status(400).json({ error: "Nessun campo aggiornabile nel body" });
     }
 
     let q = supabase.from(TABLE).update(payload).eq("id", id).select().single();
