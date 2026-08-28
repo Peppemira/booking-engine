@@ -315,29 +315,40 @@ async function fetchVerbaliList(client, { codiceAutoscuola, codUfficio, tipo = "
   outHtml = await seguiDispatcherEPin(client, outHtml, action, pin);
   let verbali = parseVerbaliFromHtml(outHtml);
   console.log(`[syncArchivio] dopo POST: title = ${titoloPagina(outHtml)}, righe = ${verbali.length}`);
-  if (verbali.length) return verbali;
+  if (verbali.length) return { verbali, html: outHtml };
 
   // Doppio binario del gestionale: GET secca sul paging, Referer = init.
   let pagHtml = (await client.get(pagingUrl, { headers: { Referer: initUrl } })).data;
   pagHtml = await seguiDispatcherEPin(client, pagHtml, pagingUrl, pin);
   verbali = parseVerbaliFromHtml(pagHtml);
   console.log(`[syncArchivio] dopo GET paging: title = ${titoloPagina(pagHtml)}, righe = ${verbali.length}`);
-  return verbali;
+  return { verbali, html: verbali.length ? pagHtml : outHtml };
 }
 
+/**
+ * Estrae le righe della griglia risultati. La griglia NON è la prima tabella
+ * della pagina (quella è layout): come il gestionale, si scandiscono TUTTE le
+ * righe del documento e si tengono quelle "selezionabili" — con un input di
+ * riga valorizzato (radio/hidden selectRowId o simile) e almeno due celle.
+ */
 function parseVerbaliFromHtml(html) {
   const $ = cheerio.load(html || "");
   const verbali = [];
+  const visti = new Set();
 
-  // Il portale usa #listTable per la lista dei verbali
-  const table = $("#listTable > tbody, table tbody").first();
-  table.find("tr").each((_, tr) => {
+  $("tr").each((_, tr) => {
     const $tr = $(tr);
-    // L'id_verbale è in un input nascosto nella prima cella
-    const idVerbale = $tr.find("td input[type='hidden'], td > input").first().val();
-    if (!idVerbale) return;
+    const $tds = $tr.find("td");
+    if ($tds.length < 2) return;
+    // input di riga: preferisci quelli col nome selectRowId, poi qualunque input in cella
+    let $inp = $tr.find("input[name*='selectRowId' i]").first();
+    if (!$inp.length) $inp = $tr.find("td input[type='radio'], td input[type='hidden'], td > input").first();
+    if (!$inp.length) return;
+    const idVerbale = String($inp.attr("value") || "").trim();
+    if (!idVerbale || visti.has(idVerbale)) return;
+    visti.add(idVerbale);
 
-    const cells = $tr.find("td").map((__, td) => norm($(td).text())).get();
+    const cells = $tds.map((__, td) => norm($(td).text())).get();
     verbali.push({
       id_verbale: idVerbale,
       data:       cells[1] || cells[0] || "",
@@ -347,6 +358,18 @@ function parseVerbaliFromHtml(html) {
     });
   });
 
+  if (!verbali.length) {
+    // Diagnostica GDPR-safe: perché zero? (solo struttura, mai valori)
+    const low = (html || "").toLowerCase();
+    if (low.includes("nessun dato")) {
+      console.log("[syncArchivio]   ↳ la pagina dice «nessun dato» per questi criteri");
+    } else {
+      const tabelle = $("table").map((_, t) => $(t).find("tr").length).get().join(",");
+      const inputRiga = $("input[name*='selectRowId' i]").length;
+      console.log(`[syncArchivio]   ↳ griglia non riconosciuta: tabelle(righe)=[${tabelle}] inputSelectRowId=${inputRiga}`);
+    }
+  }
+
   return verbali;
 }
 
@@ -355,27 +378,51 @@ function parseVerbaliFromHtml(html) {
 // ---------------------------------------------------------------------------
 
 /**
- * Per ogni verbale, ottiene la lista dei candidati prenotati.
- * Richiede il POST al form ReadSituazioneCandidati_searchSituazioneCandidati.
+ * Per ogni riga della griglia risultati, apre il Dettaglio (lettura) e
+ * restituisce i candidati. Il POST è costruito dal form della PAGINA DEI
+ * RISULTATI (token Struts freschi inclusi): il radio di riga viene spuntato
+ * e l'azione viewElement/dettaglio si legge dal DOM, come fa il gestionale.
  */
-async function fetchCandidatiInVerbale(client, { idVerbale, token = "" }) {
-  const url =
-    `${BASE_URL}/prenotazione/richiestaEmissioneDocumentoAbilitazioneEP/ReadSituazioneCandidati_searchSituazioneCandidati.action`;
+async function fetchCandidatiInVerbale(client, { idVerbale, paginaRisultati = "", pin = null }) {
+  const $ = cheerio.load(paginaRisultati || "");
+  const form = trovaFormRicerca($);
+  const initReferer = `${BASE_URL}/prenotazione/richiestaEmissioneDocumentoAbilitazioneEP/Read_initActionSituazioneCandidati.action`;
 
-  const payload = new URLSearchParams();
-  if (token) {
-    payload.set("struts.token.name", "tokenListRicercaSituazioneCandidati");
-    payload.set("tokenListRicercaSituazioneCandidati", token);
+  let payload, url;
+  if (form) {
+    payload = costruisciPayloadDaForm($, form);
+    if (!scriviPerFrammento(payload, "selectRowId", idVerbale)) {
+      // il radio non spuntato non è nel payload: recupera il suo nome dal DOM
+      const nomeRadio = $("input[name*='selectRowId' i]").first().attr("name")
+        || "richiestaEmissioneDocumentoAbilitazioneEPView.situazioneCandidatiBean.selectRowId";
+      payload.append(nomeRadio, idVerbale);
+    }
+    rimuoviAzioni(payload);
+    let azione = null;
+    form.find("input[name^='action:']").each((_, b) => {
+      const n = ($(b).attr("name") || "").toLowerCase();
+      if (!azione && (n.includes("viewelement") || n.includes("dettaglio")))
+        azione = { n: $(b).attr("name"), v: $(b).attr("value") || "Dettaglio" };
+    });
+    if (azione) payload.set(azione.n, azione.v);
+    else payload.set("action:SelectSituazioneCandidati_viewElementSituazioneCandidati", "Dettaglio");
+    url = risolviActionForm(form, initReferer);
+  } else {
+    // ripiego: POST a secco come il vecchio flusso
+    payload = new URLSearchParams();
+    payload.set("richiestaEmissioneDocumentoAbilitazioneEPView.situazioneCandidatiBean.selectRowId", idVerbale);
+    payload.set("action:SelectSituazioneCandidati_viewElementSituazioneCandidati", "Dettaglio");
+    url = `${BASE_URL}/prenotazione/richiestaEmissioneDocumentoAbilitazioneEP/ReadSituazioneCandidati_searchSituazioneCandidati.action`;
   }
-  payload.set("richiestaEmissioneDocumentoAbilitazioneEPView.situazioneCandidatiBean.selectRowId", idVerbale);
-  payload.set("action:SelectSituazioneCandidati_viewElementSituazioneCandidati", "Dettaglio");
 
-  const { data: html } = await client.post(url, serializePayloadRaw(payload), {
+  let { data: html } = await client.post(url, serializePayloadRaw(payload), {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
-      Referer: `${BASE_URL}/prenotazione/richiestaEmissioneDocumentoAbilitazioneEP/Read_initActionSituazioneCandidati.action`,
+      Referer: initReferer,
     },
   });
+  html = await seguiDispatcherEPin(client, html, url, pin);
+  console.log(`[syncArchivio] dettaglio riga: title = ${titoloPagina(html)}`);
 
   return parseCandidatiInVerbaleHtml(html);
 }
@@ -744,27 +791,38 @@ async function syncArchivioCompleto(opts = {}) {
     const comb = COMBINAZIONI[ci];
     progress("verbali", ci, COMBINAZIONI.length);
 
+    const pinPortale = credenziali?.pin || process.env.PORTAL_PIN || null;
+    const criteriRicerca = {
+      codiceAutoscuola: idAutAg,
+      codUfficio: codUfficioMctc,
+      tipo:      comb.tipo,
+      tipoProva: comb.tipoProva,
+      pin:       pinPortale,
+    };
+
     let verbali = [];
+    let paginaRisultati = "";
     try {
-      verbali = await fetchVerbaliList(client, {
-        codiceAutoscuola: idAutAg,
-        codUfficio: codUfficioMctc,
-        tipo:      comb.tipo,
-        tipoProva: comb.tipoProva,
-        pin:       credenziali?.pin || process.env.PORTAL_PIN || null,
-      });
+      const ricerca = await fetchVerbaliList(client, criteriRicerca);
+      verbali = ricerca.verbali;
+      paginaRisultati = ricerca.html;
       console.log(`[syncArchivio] ${comb.desc}: ${verbali.length} verbali`);
     } catch (err) {
       console.warn(`[syncArchivio] Errore verbali ${comb.desc}:`, err.message);
       continue;
     }
 
-    // Per ogni verbale, recupera candidati
-    for (const verbale of verbali) {
+    // Per ogni riga, apri il Dettaglio partendo dalla pagina risultati (token
+    // freschi); i token Struts sono monouso, quindi dopo ogni Dettaglio la
+    // ricerca viene rieseguita per la riga successiva.
+    for (let vi = 0; vi < verbali.length; vi++) {
+      const verbale = verbali[vi];
       if (!verbale.id_verbale) continue;
       try {
         const cands = await fetchCandidatiInVerbale(client, {
           idVerbale: verbale.id_verbale,
+          paginaRisultati,
+          pin: pinPortale,
         });
         for (const c of cands) {
           if (!c.marcaOperativa) continue;
@@ -776,6 +834,10 @@ async function syncArchivioCompleto(opts = {}) {
         console.warn(`[syncArchivio] Errore candidati verbale ${verbale.id_verbale}:`, err.message);
       }
       await delay(100); // throttle
+      if (vi < verbali.length - 1) {
+        try { paginaRisultati = (await fetchVerbaliList(client, criteriRicerca)).html; }
+        catch { paginaRisultati = ""; }
+      }
     }
   }
 
