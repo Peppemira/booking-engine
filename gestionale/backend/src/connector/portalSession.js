@@ -2694,22 +2694,21 @@ class PortalSession {
 }
 
 // =============================================================================
-// LOGIN DIRETTO VIA HTTP (SECONDO TRUCCO — STESSO MECCANISMO iPatenteCloud)
+// LOGIN DIRETTO VIA HTTP (SENZA BROWSER)
 // =============================================================================
-// Invece di lanciare Puppeteer, mandiamo direttamente una GET alla action URL
-// con le credenziali in query string — esattamente come fa iPatenteCloud con
-// url_portale_login_nopin / url_portale_login_pin.
+// Via primaria: POST del form a Login_initAction.action + catena dispatcher
+// SSO/PIN — lo stesso meccanismo del gestionale IO PATENTE, che il Portale
+// accetta. La vecchia GET con credenziali in query string (stile iPatenteCloud)
+// resta come fallback: da agosto 2026 il Portale la rimbalza sulla pagina di
+// login, ma se un giorno il POST smettesse di funzionare torna utile.
 // Tempo: ~100-300ms vs 8-15 secondi con Puppeteer.
 // La sessione SSO viene stabilita dalla risposta HTTP (cookie JSESSIONID, ecc.)
 // =============================================================================
 
 /**
- * Login diretto via HTTP senza browser — ~100ms
- * Replica esatta del meccanismo di iPatenteCloud (portale.js riga 7-9).
- *
- * Se il PIN è fornito, costruisce il chain URL embedded come fa iPatenteCloud:
- *   gotoRedirect = DispatcherEntry_executeDispatch.action?loginView.pin=PIN&...
- * Se il PIN non è fornito, gotoRedirect punta direttamente alla home.
+ * Login diretto via HTTP senza browser — ~100-300ms
+ * POST del form di login + catena dispatcher SSO; il PIN viene validato
+ * quando il Portale interpone la pagina «SSO - Pin Validation».
  *
  * @param {object} options
  * @param {string} options.username
@@ -2730,18 +2729,11 @@ async function loginDirectHttp(options = {}) {
   const client = makeHttpClient(jar);
 
   // =========================================================================
-  // STEP 1: Login con credenziali — redirect semplice alla homepage
-  // Usa un redirect semplice per evitare 404 con URL triple-encoded.
+  // STEP 1: Login con credenziali — POST del form (via primaria) con
+  // fallback alla vecchia GET con credenziali in query string.
   // =========================================================================
   const homeRedirect = "https:%2F%2Fwww.ilportaledellautomobilista.it%2Fweb%2Fportale-automobilista%2Fhomepage-professionista%3Finit";
-
-  const loginUrl =
-    "https://www.ilportaledellautomobilista.it/SSO/SSOLogin/Login_initAction.action" +
-    "?loginView.gotoRedirect=" + homeRedirect +
-    "&orgname=" +
-    "&loginView.beanUtente.userName=" + encodeURIComponent(username) +
-    "&loginView.beanUtente.password=" + encodeURIComponent(password) +
-    "&action:Login_executeLogin=Accedi";
+  const loginUrl = "https://www.ilportaledellautomobilista.it/SSO/SSOLogin/Login_initAction.action";
 
   console.log("[portalSession] loginDirectHttp STEP1: invio login per utente", username);
 
@@ -2776,41 +2768,160 @@ async function loginDirectHttp(options = {}) {
     throw lastErr;
   }
 
-  let response;
-  try {
-    response = await getWithRetry(loginUrl, { maxRedirects: 15 }, 4);
-  } catch (err) {
-    // Se homepage-professionista dà 404, riprova con la homepage generica
-    if (err?.response?.status === 404) {
-      console.warn("[portalSession] loginDirectHttp: homepage-professionista 404, provo redirect generico");
-      const fallbackRedirect = "https:%2F%2Fwww.ilportaledellautomobilista.it%2Fweb%2Fportale-automobilista%2Fhome%3Flogged%3Dtrue";
-      const fallbackLoginUrl =
-        "https://www.ilportaledellautomobilista.it/SSO/SSOLogin/Login_initAction.action" +
-        "?loginView.gotoRedirect=" + fallbackRedirect +
-        "&orgname=" +
-        "&loginView.beanUtente.userName=" + encodeURIComponent(username) +
-        "&loginView.beanUtente.password=" + encodeURIComponent(password) +
-        "&action:Login_executeLogin=Accedi";
-      response = await getWithRetry(fallbackLoginUrl, { maxRedirects: 15 }, 4);
-    } else {
-      throw err;
+  // POST di un form x-www-form-urlencoded con gli stessi retry di rete di getWithRetry.
+  async function postFormWithRetry(url, params, cfg = {}, maxAttempts = 4) {
+    let lastErr;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        return await client.post(url, serializePayloadRaw(params), {
+          headers: { "Content-Type": "application/x-www-form-urlencoded", ...(cfg.headers || {}) },
+          maxRedirects: cfg.maxRedirects ?? 15,
+        });
+      } catch (err) {
+        lastErr = err;
+        const code = String(err?.code || err?.cause?.code || "");
+        const status = err?.response?.status;
+        if (status && status !== 502 && status !== 503 && status !== 504) throw err;
+        if (!TRANSIENT_NET_CODES.has(code) && !/ECONN|ETIMED|socket hang/i.test(String(err?.message || ""))) {
+          throw err;
+        }
+        if (attempt < maxAttempts) {
+          const delayMs = 500 * attempt + Math.floor(Math.random() * 300);
+          console.warn(`[portalSession] loginDirectHttp STEP1: ${code || "network"} (POST) al tentativo ${attempt}/${maxAttempts}, retry tra ${delayMs}ms...`);
+          await new Promise((r) => setTimeout(r, delayMs));
+        }
+      }
     }
+    throw lastErr;
   }
 
-  const finalUrl   = String(response?.request?.res?.responseUrl || response?.config?.url || "").toLowerCase();
-  const htmlLower  = String(response?.data || "").toLowerCase();
-  const htmlTitle  = (String(response?.data || "").match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1] || "";
+  // Segue l'auto-submit del dispatcher SSO e l'eventuale pagina «SSO - Pin
+  // Validation» che il Portale interpone dopo il login (catena del gestionale).
+  let pinGestitoInCatena = false;
+  async function seguiCatenaSsoPin(resp, currentUrl) {
+    const cheerio = require("cheerio");
+    for (let i = 0; i < 6; i++) {
+      const html = typeof resp?.data === "string" ? resp.data : "";
+      const low = html.toLowerCase();
+      const $ = cheerio.load(html || "");
 
-  console.log("[portalSession] loginDirectHttp STEP1: finalUrl =", finalUrl.slice(0, 200));
-  console.log("[portalSession] loginDirectHttp STEP1: title =", htmlTitle.replace(/\s+/g, " ").trim().slice(0, 100));
-  console.log("[portalSession] loginDirectHttp STEP1: htmlLen =", String(response?.data || "").length);
+      if (low.includes("sso - pin validation") || low.includes("loginview.pin")) {
+        if (!pin) break; // il chiamante vedrà la pagina PIN e fallirà con messaggio chiaro
+        let form = $("form#LoginForm, form[name='LoginForm']").first();
+        if (!form.length) form = $("form").first();
+        if (!form.length) break;
+        const action = form.attr("action");
+        const resolved = action
+          ? (action.startsWith("http") ? action : "https://www.ilportaledellautomobilista.it" + action)
+          : "https://www.ilportaledellautomobilista.it/SSO/SSOLogin/DispatcherEntry_executeDispatch.action";
+        const data = new URLSearchParams();
+        form.find("input[type='hidden']").each((_, input) => {
+          const name = $(input).attr("name");
+          if (name) data.append(name, $(input).attr("value") || "");
+        });
+        data.set("loginView.pin", pin);
+        data.set("action:Pin_executePinValidation", "Conferma");
+        console.log("[portalSession] loginDirectHttp STEP1: catena SSO → POST ri-validazione PIN");
+        resp = await postFormWithRetry(resolved, data, { headers: { Referer: currentUrl } });
+        currentUrl = resolved;
+        pinGestitoInCatena = true;
+        continue;
+      }
 
-  const loginFailed =
-    htmlLower.includes("credenziali errate") ||
-    htmlLower.includes("username o password errat") ||
-    (finalUrl.includes("/sso/ssologin/") && htmlLower.includes("login_initaction"));
+      if (low.includes("dispatcherentry_executedispatch")) {
+        let form = $("form[name='postform'], form[name='postForm']").first();
+        if (!form.length) form = $("form").first();
+        if (!form.length) break;
+        const action = form.attr("action");
+        const resolved = action
+          ? (action.startsWith("http") ? action : "https://www.ilportaledellautomobilista.it" + action)
+          : currentUrl;
+        const data = new URLSearchParams();
+        form.find("input").each((_, input) => {
+          const name = $(input).attr("name");
+          const type = String($(input).attr("type") || "").toLowerCase();
+          if (!name || type === "submit" || type === "button" || type === "image") return;
+          data.append(name, $(input).attr("value") || "");
+        });
+        console.log("[portalSession] loginDirectHttp STEP1: catena SSO → POST dispatcher");
+        resp = await postFormWithRetry(resolved, data, { headers: { Referer: currentUrl } });
+        currentUrl = resolved;
+        continue;
+      }
 
-  if (loginFailed) {
+      break;
+    }
+    return resp;
+  }
+
+  // Esito del login: falliti = ancora sulla pagina di login o messaggio d'errore.
+  function esitoLogin(resp) {
+    const finalUrl  = String(resp?.request?.res?.responseUrl || resp?.config?.url || "").toLowerCase();
+    const htmlLower = String(resp?.data || "").toLowerCase();
+    const htmlTitle = (String(resp?.data || "").match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1] || "";
+    const failed =
+      htmlLower.includes("credenziali errate") ||
+      htmlLower.includes("username o password errat") ||
+      htmlLower.includes("beanutente.password") ||
+      htmlLower.includes("login_executelogin") ||
+      (finalUrl.includes("/sso/ssologin/") && htmlLower.includes("login_initaction"));
+    return { failed, finalUrl, htmlTitle };
+  }
+
+  function logEsito(etichetta, resp, esito) {
+    console.log(`[portalSession] loginDirectHttp STEP1 (${etichetta}): finalUrl =`, esito.finalUrl.slice(0, 200));
+    console.log(`[portalSession] loginDirectHttp STEP1 (${etichetta}): title =`, esito.htmlTitle.replace(/\s+/g, " ").trim().slice(0, 100));
+    console.log(`[portalSession] loginDirectHttp STEP1 (${etichetta}): htmlLen =`, String(resp?.data || "").length);
+  }
+
+  // ── Via primaria: POST del form di login (come il gestionale) ─────────────
+  const loginForm = new URLSearchParams();
+  loginForm.append("loginView.gotoRedirect", "");
+  loginForm.append("orgname", "");
+  loginForm.append("loginView.beanUtente.userName", username);
+  loginForm.append("loginView.beanUtente.password", password);
+  loginForm.append("action:Login_executeLogin", "Accedi");
+
+  let response = await postFormWithRetry(loginUrl, loginForm, { maxRedirects: 15, headers: { Referer: loginUrl } }, 4);
+  response = await seguiCatenaSsoPin(response, loginUrl);
+  let esito = esitoLogin(response);
+  logEsito("POST", response, esito);
+
+  // ── Fallback: vecchia GET con credenziali in query string ─────────────────
+  if (esito.failed) {
+    console.warn("[portalSession] loginDirectHttp STEP1: POST rimbalzato, provo la GET legacy...");
+    const legacyLoginUrl =
+      loginUrl +
+      "?loginView.gotoRedirect=" + homeRedirect +
+      "&orgname=" +
+      "&loginView.beanUtente.userName=" + encodeURIComponent(username) +
+      "&loginView.beanUtente.password=" + encodeURIComponent(password) +
+      "&action:Login_executeLogin=Accedi";
+    try {
+      response = await getWithRetry(legacyLoginUrl, { maxRedirects: 15 }, 4);
+    } catch (err) {
+      // Se homepage-professionista dà 404, riprova con la homepage generica
+      if (err?.response?.status === 404) {
+        console.warn("[portalSession] loginDirectHttp: homepage-professionista 404, provo redirect generico");
+        const fallbackRedirect = "https:%2F%2Fwww.ilportaledellautomobilista.it%2Fweb%2Fportale-automobilista%2Fhome%3Flogged%3Dtrue";
+        const fallbackLoginUrl =
+          loginUrl +
+          "?loginView.gotoRedirect=" + fallbackRedirect +
+          "&orgname=" +
+          "&loginView.beanUtente.userName=" + encodeURIComponent(username) +
+          "&loginView.beanUtente.password=" + encodeURIComponent(password) +
+          "&action:Login_executeLogin=Accedi";
+        response = await getWithRetry(fallbackLoginUrl, { maxRedirects: 15 }, 4);
+      } else {
+        throw err;
+      }
+    }
+    response = await seguiCatenaSsoPin(response, loginUrl);
+    esito = esitoLogin(response);
+    logEsito("GET legacy", response, esito);
+  }
+
+  if (esito.failed) {
     const msg = extractPortalMessage(response?.data || "") || "Credenziali errate o sessione non avviata";
     console.error("[portalSession] loginDirectHttp FALLITO:", msg);
     throw new Error(`Login diretto fallito: ${msg}`);
@@ -2823,7 +2934,9 @@ async function loginDirectHttp(options = {}) {
   // Invece di annidare il PIN nel redirect del login, lo facciamo come step
   // separato — più robusto e compatibile col flusso del portale.
   // =========================================================================
-  if (pin) {
+  if (pin && pinGestitoInCatena) {
+    console.log("[portalSession] loginDirectHttp STEP2: PIN già validato nella catena SSO, skip");
+  } else if (pin) {
     console.log("[portalSession] loginDirectHttp STEP2: validazione PIN...");
 
     // Controlla se la risposta del login è già una pagina PIN
