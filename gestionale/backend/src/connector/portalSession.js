@@ -2774,7 +2774,11 @@ async function loginDirectHttp(options = {}) {
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
         return await client.post(url, serializePayloadRaw(params), {
-          headers: { "Content-Type": "application/x-www-form-urlencoded", ...(cfg.headers || {}) },
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Origin: "https://www.ilportaledellautomobilista.it",
+            ...(cfg.headers || {}),
+          },
           maxRedirects: cfg.maxRedirects ?? 15,
         });
       } catch (err) {

@@ -439,6 +439,7 @@ async function syncArchivioStoricoCompleto(opts = {}) {
     tipoSync     = "full",
     triggerSource = "manuale",
     onProgress   = null,
+    credenziali  = null, // {username,password,pin} dal record autoscuola
   } = opts;
 
   const started = Date.now();
@@ -490,9 +491,9 @@ async function syncArchivioStoricoCompleto(opts = {}) {
     // ── STEP 0: Login una volta, riuso client per tutte le chiamate ──────────
     progress("login", { message: "Login al portale in corso..." });
     const jar = await loginDirectHttp({
-      username: process.env.PORTAL_USER || process.env.PORTAL_USERNAME,
-      password: process.env.PORTAL_PASS || process.env.PORTAL_PASSWORD,
-      pin:      process.env.PORTAL_PIN,
+      username: credenziali?.username || process.env.PORTAL_USER || process.env.PORTAL_USERNAME,
+      password: credenziali?.password || process.env.PORTAL_PASS || process.env.PORTAL_PASSWORD,
+      pin:      credenziali?.pin      || process.env.PORTAL_PIN,
     });
     const client = makeHttpClient(jar);
 
