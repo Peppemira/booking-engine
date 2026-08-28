@@ -67,39 +67,173 @@ async function mapConcurrent(arr, fn, maxConcurrency = 3) {
 }
 
 // ---------------------------------------------------------------------------
+// HELPER — init + POST del form (pattern del gestionale IO PATENTE)
+// ---------------------------------------------------------------------------
+// Da agosto 2026 il Portale ignora i parametri e le azioni Struts passati in
+// query string su una GET: la maschera torna vuota e il parser conta zero.
+// Il flusso che il Portale accetta (collaudato ogni giorno dal gestionale) è:
+// GET della pagina init → catena dispatcher SSO → POST del form VERO, coi
+// token nascosti letti dal DOM e i criteri scritti sopra i campi del form.
+
+/** Segue l'auto-submit del dispatcher SSO e l'eventuale pagina PIN. */
+async function seguiDispatcherEPin(client, html, refererUrl, pin = null) {
+  for (let i = 0; i < 6; i++) {
+    if (typeof html !== "string") break;
+    const low = html.toLowerCase();
+    const $ = cheerio.load(html || "");
+
+    if (low.includes("sso - pin validation") || low.includes("loginview.pin")) {
+      const pinValue = pin || process.env.PORTAL_PIN || "";
+      if (!pinValue) break;
+      const form = $("form#LoginForm, form[name='LoginForm']").first().length
+        ? $("form#LoginForm, form[name='LoginForm']").first() : $("form").first();
+      if (!form.length) break;
+      const action = form.attr("action");
+      const resolved = action ? (action.startsWith("http") ? action : BASE_URL + action) : refererUrl;
+      const data = new URLSearchParams();
+      form.find("input[type='hidden']").each((_, inp) => {
+        const n = $(inp).attr("name");
+        if (n) data.append(n, $(inp).attr("value") || "");
+      });
+      data.set("loginView.pin", pinValue);
+      data.set("action:Pin_executePinValidation", "Conferma");
+      html = (await client.post(resolved, serializePayloadRaw(data), {
+        headers: { "Content-Type": "application/x-www-form-urlencoded", Referer: refererUrl },
+      })).data;
+      continue;
+    }
+
+    if (low.includes("dispatcherentry_executedispatch")) {
+      const form = $("form[name='postform'], form[name='postForm']").first().length
+        ? $("form[name='postform'], form[name='postForm']").first() : $("form").first();
+      if (!form.length) break;
+      const action = form.attr("action");
+      const resolved = action ? (action.startsWith("http") ? action : BASE_URL + action) : refererUrl;
+      const data = new URLSearchParams();
+      form.find("input").each((_, inp) => {
+        const n = $(inp).attr("name");
+        const t = String($(inp).attr("type") || "").toLowerCase();
+        if (!n || t === "submit" || t === "button" || t === "image") return;
+        data.append(n, $(inp).attr("value") || "");
+      });
+      html = (await client.post(resolved, serializePayloadRaw(data), {
+        headers: { "Content-Type": "application/x-www-form-urlencoded", Referer: refererUrl },
+      })).data;
+      continue;
+    }
+
+    break;
+  }
+  return html;
+}
+
+/**
+ * Raccoglie TUTTI i campi di un form come farebbe il browser: hidden e testo
+ * col loro value, tendine con l'option scelta, caselle/radio solo se spuntate,
+ * nomi ripetuti conservati (Struts ne è pieno). I pulsanti restano fuori.
+ */
+function costruisciPayloadDaForm($, form) {
+  const payload = new URLSearchParams();
+  form.find("input, select, textarea").each((_, el) => {
+    const $el = $(el);
+    const name = $el.attr("name");
+    if (!name) return;
+    const tag = String(el.tagName || el.name || "").toLowerCase();
+    if (tag === "select") {
+      const $opt = $el.find("option[selected]").first().length
+        ? $el.find("option[selected]").first() : $el.find("option").first();
+      payload.append(name, $opt.attr("value") ?? $opt.text() ?? "");
+      return;
+    }
+    if (tag === "textarea") { payload.append(name, $el.text() || ""); return; }
+    const type = String($el.attr("type") || "text").toLowerCase();
+    if (type === "submit" || type === "button" || type === "image" || type === "file") return;
+    if (type === "checkbox" || type === "radio") {
+      if ($el.attr("checked") !== undefined) payload.append(name, $el.attr("value") || "on");
+      return;
+    }
+    payload.append(name, $el.attr("value") || "");
+  });
+  return payload;
+}
+
+/** Scrive `value` su ogni campo del payload il cui nome contiene il frammento (case-insensitive). */
+function scriviPerFrammento(payload, frammento, value, escludi = null) {
+  const f = frammento.toLowerCase();
+  let scritti = 0;
+  for (const key of Array.from(new Set(payload.keys()))) {
+    const low = key.toLowerCase();
+    if (!low.includes(f)) continue;
+    if (escludi && low.includes(escludi.toLowerCase())) continue;
+    payload.set(key, value);
+    scritti++;
+  }
+  return scritti;
+}
+
+/** Rimuove tutte le azioni Struts (`action:*`) presenti nel payload. */
+function rimuoviAzioni(payload) {
+  for (const key of Array.from(new Set(payload.keys()))) {
+    if (key.startsWith("action:")) payload.delete(key);
+  }
+}
+
+/** Risolve l'action di un form rispetto alla base del Portale. */
+function risolviActionForm(form, fallbackUrl) {
+  const action = form.attr("action");
+  if (!action) return fallbackUrl;
+  return action.startsWith("http") ? action : BASE_URL + action;
+}
+
+// ---------------------------------------------------------------------------
 // STEP 1 — Lista verbali (sessions) da SituazioneCandidati
 // ---------------------------------------------------------------------------
 
 /**
- * Recupera la lista dei verbali/sedute da Read_initActionSituazioneCandidati.action.
+ * Recupera la lista dei verbali/sedute: init della maschera Situazione
+ * Candidati, poi POST del form con i criteri (tutti gli stati, tutte le date).
  * Returns array di { id_verbale, data, tipo, ... }
  */
-async function fetchVerbaliList(client, { codiceAutoscuola, codUfficio, tipo = "P", tipoProva = "T" }) {
-  const baseUrl =
+async function fetchVerbaliList(client, { codiceAutoscuola, codUfficio, tipo = "P", tipoProva = "T", pin = null }) {
+  const initUrl =
     `${BASE_URL}/prenotazione/richiestaEmissioneDocumentoAbilitazioneEP/Read_initActionSituazioneCandidati.action`;
 
-  const params = new URLSearchParams();
-  params.set("richiestaEmissioneDocumentoAbilitazioneEPView.situazioneCandidatiBean.indicatoreTipoSessione", "C");
-  params.set("richiestaEmissioneDocumentoAbilitazioneEPView.situazioneCandidatiBean.indicatoreConseguimentoEsame", tipo);
-  if (codUfficio) {
-    params.set("richiestaEmissioneDocumentoAbilitazioneEPView.situazioneCandidatiBean.theDisponibilitaEsaminatoreEP.codUfficioMCTC", codUfficio);
-  }
-  if (codiceAutoscuola) {
-    params.set("richiestaEmissioneDocumentoAbilitazioneEPView.situazioneCandidatiBean.theRichiestaEmissioneDocumentoAbilitazioneEP.codiceIdentificativoAutoscuolaAgenzia", codiceAutoscuola);
-  }
-  // Stato vuoto = tutti (attivi + storici)
-  params.set("richiestaEmissioneDocumentoAbilitazioneEPView.situazioneCandidatiBean.indicatoreStatoCandidati", "");
-  params.set("richiestaEmissioneDocumentoAbilitazioneEPView.situazioneCandidatiBean.indicatoreTipoProvaEsame", "");
-  params.set("richiestaEmissioneDocumentoAbilitazioneEPView.situazioneCandidatiBean.indicatoreStatoRichiesta", "");
-  params.set("richiestaEmissioneDocumentoAbilitazioneEPView.situazioneCandidatiBean.indicatoreTipoProvaEsameDaPrenotare", tipoProva);
-  params.set("richiestaEmissioneDocumentoAbilitazioneEPView.situazioneCandidatiBean.dataFrom", "");
-  params.set("richiestaEmissioneDocumentoAbilitazioneEPView.situazioneCandidatiBean.dataTo", "");
-  params.set("action:ReadSituazioneCandidati_pagingSituazioneCandidati", "Ricerca");
+  let html = (await client.get(initUrl, {
+    headers: { Referer: `${BASE_URL}/prenotazione/menu/LoadMenu_execute.action` },
+  })).data;
+  html = await seguiDispatcherEPin(client, html, initUrl, pin);
 
-  const url = `${baseUrl}?${serializePayloadRaw(params)}`;
-  const { data: html } = await client.get(url);
+  const $ = cheerio.load(html || "");
+  let form = $("form").filter((_, f) => ($(f).html() || "").includes("situazioneCandidatiBean")).first();
+  if (!form.length) form = $("form").first();
+  if (!form.length) {
+    const title = ((html || "").match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1] || "";
+    console.warn("[syncArchivio] maschera Situazione Candidati senza form, title =", title.trim().slice(0, 80));
+    return [];
+  }
 
-  return parseVerbaliFromHtml(html);
+  const payload = costruisciPayloadDaForm($, form);
+  scriviPerFrammento(payload, "indicatoreTipoSessione", "C");
+  scriviPerFrammento(payload, "indicatoreConseguimentoEsame", tipo);
+  if (codUfficio) scriviPerFrammento(payload, "codUfficioMCTC", codUfficio);
+  if (codiceAutoscuola) scriviPerFrammento(payload, "codiceIdentificativoAutoscuolaAgenzia", codiceAutoscuola);
+  // Stato vuoto = tutti (attivi + storici); date vuote = tutte
+  scriviPerFrammento(payload, "indicatoreStatoCandidati", "");
+  scriviPerFrammento(payload, "indicatoreTipoProvaEsameDaPrenotare", tipoProva);
+  scriviPerFrammento(payload, "indicatoreTipoProvaEsame", "", "daprenotare");
+  scriviPerFrammento(payload, "indicatoreStatoRichiesta", "");
+  scriviPerFrammento(payload, "dataFrom", "");
+  scriviPerFrammento(payload, "dataTo", "");
+  rimuoviAzioni(payload);
+  payload.set("action:ReadSituazioneCandidati_pagingSituazioneCandidati", "Ricerca");
+
+  const action = risolviActionForm(form, initUrl);
+  let outHtml = (await client.post(action, serializePayloadRaw(payload), {
+    headers: { "Content-Type": "application/x-www-form-urlencoded", Referer: initUrl },
+  })).data;
+  outHtml = await seguiDispatcherEPin(client, outHtml, action, pin);
+
+  return parseVerbaliFromHtml(outHtml);
 }
 
 function parseVerbaliFromHtml(html) {
@@ -207,33 +341,49 @@ async function fetchSchedaCandidato(client, {
   codUfficioMctc,
   marcaOperativa,
   codiceFiscale = "",
+  pin = null,
 }) {
   const useEstesa = marcaOperativa && !String(marcaOperativa).startsWith("98");
 
-  const params = new URLSearchParams({
-    "richiestaPerEsameView.richiestaFrom.idAutAg":                                       String(idAutAg || ""),
-    "richiestaPerEsameView.richiestaFrom.theUfficioMctcOperativo.codiceUffOperativo":    String(codUfficioMctc || ""),
-    "richiestaPerEsameView.richiestaFrom.marcaOperativa":                                String(marcaOperativa || ""),
-    "richiestaPerEsameView.richiestaFrom.patente":                                       "",
-    "richiestaPerEsameView.richiestaFrom.theAnagrafica.codiceFiscale":                   String(codiceFiscale || ""),
-    "richiestaPerEsameView.cognome":                                                     "",
-    "richiestaPerEsameView.nome":                                                        "",
-    "richiestaPerEsameView.dataNascita":                                                 "",
-    "richiestaPerEsameView.richiestaFrom.theAnagrafica.theComuneNascita.theProvinciaNascita.selectRowId": "",
-    "richiestaPerEsameView.richiestaFrom.theAnagrafica.theComuneNascita.selectRowId":    "",
-    "richiestaPerEsameView.richiestaFrom.theAnagrafica.theStatoEstero.selectRowId":      "",
-    "richiestaPerEsameView.richiestaFrom.theTipoStatoRichiesta.codiceStatoRichiesta":    "",
-    "action:Read_paging":                                                                "Ricerca",
-  });
+  // Init della maschera «Richiesta Esame» + POST del form (vedi helper sopra:
+  // la GET con azione in query string non è più accettata dal Portale).
+  const initUrl = `${BASE_URL}/RichiestaPatenti/richiestaEsame/Read_initAction.action`;
+  let html = (await client.get(initUrl, {
+    headers: { Referer: `${BASE_URL}/prenotazione/menu/LoadMenu_execute.action` },
+  })).data;
+  html = await seguiDispatcherEPin(client, html, initUrl, pin);
 
-  if (useEstesa) {
-    params.set("richiestaPerEsameView.richiestaFrom.indicatoreRicercaEstesa", "S");
+  const $ = cheerio.load(html || "");
+  let form = $("form").filter((_, f) => ($(f).html() || "").includes("richiestaPerEsameView")).first();
+  if (!form.length) form = $("form").first();
+  if (!form.length) {
+    const title = ((html || "").match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1] || "";
+    console.warn("[syncArchivio] maschera Richiesta Esame senza form, title =", title.trim().slice(0, 80));
+    return {};
   }
 
-  const url = `${BASE_URL}/RichiestaPatenti/richiestaEsame/Read_initAction.action?${serializePayloadRaw(params)}`;
-  const { data: html } = await client.get(url);
+  const payload = costruisciPayloadDaForm($, form);
+  scriviPerFrammento(payload, "richiestaFrom.idAutAg", String(idAutAg || ""));
+  scriviPerFrammento(payload, "codiceUffOperativo", String(codUfficioMctc || ""));
+  scriviPerFrammento(payload, "richiestaFrom.marcaOperativa", String(marcaOperativa || ""));
+  if (codiceFiscale) scriviPerFrammento(payload, "theAnagrafica.codiceFiscale", String(codiceFiscale));
+  if (useEstesa) {
+    // La casella «ricerca estesa» include i candidati storici: se il form la
+    // espone come checkbox non spuntata non è nel payload — va aggiunta.
+    if (!scriviPerFrammento(payload, "indicatoreRicercaEstesa", "S")) {
+      payload.set("richiestaPerEsameView.richiestaFrom.indicatoreRicercaEstesa", "S");
+    }
+  }
+  rimuoviAzioni(payload);
+  payload.set("action:Read_paging", "Ricerca");
 
-  return parseSchedaCandidatoHtml(html);
+  const action = risolviActionForm(form, initUrl);
+  let outHtml = (await client.post(action, serializePayloadRaw(payload), {
+    headers: { "Content-Type": "application/x-www-form-urlencoded", Referer: initUrl },
+  })).data;
+  outHtml = await seguiDispatcherEPin(client, outHtml, action, pin);
+
+  return parseSchedaCandidatoHtml(outHtml);
 }
 
 /**
@@ -506,6 +656,7 @@ async function syncArchivioCompleto(opts = {}) {
         codUfficio: codUfficioMctc,
         tipo:      comb.tipo,
         tipoProva: comb.tipoProva,
+        pin:       credenziali?.pin || process.env.PORTAL_PIN || null,
       });
       console.log(`[syncArchivio] ${comb.desc}: ${verbali.length} verbali`);
     } catch (err) {
@@ -559,6 +710,7 @@ async function syncArchivioCompleto(opts = {}) {
             idAutAg,
             codUfficioMctc,
             marcaOperativa: candidatoRow.marcaOperativa,
+            pin: credenziali?.pin || process.env.PORTAL_PIN || null,
           });
           await delay(SYNC_DETAIL_DELAY_MS);
         } catch (err) {
@@ -622,7 +774,10 @@ async function syncFotoFirmaCandidato(opts = {}) {
   });
   const client = makeHttpClient(jar);
 
-  const scheda = await fetchSchedaCandidato(client, { idAutAg, codUfficioMctc, marcaOperativa });
+  const scheda = await fetchSchedaCandidato(client, {
+    idAutAg, codUfficioMctc, marcaOperativa,
+    pin: credenziali?.pin || process.env.PORTAL_PIN || null,
+  });
   const cfSlug = String(candidateId || marcaOperativa).replace(/[^a-zA-Z0-9]/g, "_").toLowerCase();
 
   const fotoUrl  = await uploadImageToStorage(scheda.foto_base64, `${cfSlug}/foto.jpg`);
