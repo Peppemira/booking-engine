@@ -189,51 +189,140 @@ function risolviActionForm(form, fallbackUrl) {
 // STEP 1 — Lista verbali (sessions) da SituazioneCandidati
 // ---------------------------------------------------------------------------
 
+/** Titolo pagina, per log senza dati personali. */
+function titoloPagina(html) {
+  return (((html || "").match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1] || "")
+    .replace(/\s+/g, " ").trim().slice(0, 80);
+}
+
 /**
- * Recupera la lista dei verbali/sedute: init della maschera Situazione
- * Candidati, poi POST del form con i criteri (tutti gli stati, tutte le date).
+ * Sceglie il form di ricerca come il gestionale: non il postform del
+ * dispatcher né i form SSO, ma quello con PIÙ campi.
+ */
+function trovaFormRicerca($) {
+  let migliore = null, campiMax = -1;
+  $("form").each((_, f) => {
+    const $f = $(f);
+    const action = String($f.attr("action") || "").toLowerCase();
+    if (action.includes("dispatcherentry") || action.includes("/sso/")) return;
+    const campi = $f.find("input, select, textarea").length;
+    if (campi > campiMax) { campiMax = campi; migliore = $f; }
+  });
+  return migliore;
+}
+
+/**
+ * Sceglie l'option giusta di ogni select del form LEGGENDO le option reali
+ * (mai valori inventati): criterio esplicito per frammento di nome se la sua
+ * option esiste; altrimenti selected → «tutti/tutte» → prima con value.
+ * Gli indicatori obbligatori lasciati vuoti fanno fallire la validazione
+ * della maschera (lezione del gestionale) — per questo mai stringhe a caso.
+ */
+function applicaCriteriSelect($, form, payload, criteri) {
+  form.find("select").each((_, sel) => {
+    const $sel = $(sel);
+    const name = $sel.attr("name");
+    if (!name) return;
+    const options = $sel.find("option").toArray();
+    if (!options.length) return;
+
+    const frammento = Object.keys(criteri)
+      .filter((f) => name.toLowerCase().includes(f.toLowerCase()))
+      .sort((a, b) => b.length - a.length)[0];
+    if (frammento !== undefined) {
+      const voluto = criteri[frammento];
+      const opzione = options.find((o) => String($(o).attr("value") ?? "") === voluto)
+        || options.find((o) => String($(o).text() || "").trim().toLowerCase() === String(voluto).toLowerCase());
+      if (opzione) { payload.set(name, $(opzione).attr("value") ?? ""); return; }
+    }
+
+    let scelta = options.find((o) => $(o).attr("selected") !== undefined);
+    scelta = scelta || options.find((o) => {
+      const txt = String($(o).text() || "").trim().toLowerCase();
+      return ($(o).attr("value") || "") !== "" && (txt === "tutti" || txt === "tutte" || txt.startsWith("tutt"));
+    });
+    scelta = scelta || options.find((o) => ($(o).attr("value") || "") !== "");
+    scelta = scelta || options[0];
+    payload.set(name, $(scelta).attr("value") ?? "");
+  });
+}
+
+/**
+ * Recupera la lista dei verbali/sedute dalla maschera Situazione Candidati:
+ * init (?pageStatus=SEARCH) → catena SSO → POST del form con criteri scelti
+ * fra le option reali → se la risposta non ha righe, GET del paging con
+ * Referer (il doppio binario del gestionale).
  * Returns array di { id_verbale, data, tipo, ... }
  */
 async function fetchVerbaliList(client, { codiceAutoscuola, codUfficio, tipo = "P", tipoProva = "T", pin = null }) {
-  const initUrl =
-    `${BASE_URL}/prenotazione/richiestaEmissioneDocumentoAbilitazioneEP/Read_initActionSituazioneCandidati.action`;
+  const namespaceUrl = `${BASE_URL}/prenotazione/richiestaEmissioneDocumentoAbilitazioneEP`;
+  const initUrl = `${namespaceUrl}/Read_initActionSituazioneCandidati.action?pageStatus=SEARCH`;
+  const pagingUrl = `${namespaceUrl}/ReadSituazioneCandidati_pagingSituazioneCandidati.action`;
 
   let html = (await client.get(initUrl, {
     headers: { Referer: `${BASE_URL}/prenotazione/menu/LoadMenu_execute.action` },
   })).data;
   html = await seguiDispatcherEPin(client, html, initUrl, pin);
+  console.log(`[syncArchivio] init Situazione Candidati (${tipo}/${tipoProva}): title = ${titoloPagina(html)}`);
 
   const $ = cheerio.load(html || "");
-  let form = $("form").filter((_, f) => ($(f).html() || "").includes("situazioneCandidatiBean")).first();
-  if (!form.length) form = $("form").first();
-  if (!form.length) {
-    const title = ((html || "").match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1] || "";
-    console.warn("[syncArchivio] maschera Situazione Candidati senza form, title =", title.trim().slice(0, 80));
+  const form = trovaFormRicerca($);
+  if (!form) {
+    console.warn("[syncArchivio] Situazione Candidati: nessun form di ricerca nella pagina init");
     return [];
   }
 
   const payload = costruisciPayloadDaForm($, form);
-  scriviPerFrammento(payload, "indicatoreTipoSessione", "C");
-  scriviPerFrammento(payload, "indicatoreConseguimentoEsame", tipo);
+  applicaCriteriSelect($, form, payload, {
+    indicatoreTipoSessione: "C",
+    indicatoreConseguimentoEsame: tipo,
+    indicatoreTipoProvaEsameDaPrenotare: tipoProva,
+  });
   if (codUfficio) scriviPerFrammento(payload, "codUfficioMCTC", codUfficio);
   if (codiceAutoscuola) scriviPerFrammento(payload, "codiceIdentificativoAutoscuolaAgenzia", codiceAutoscuola);
-  // Stato vuoto = tutti (attivi + storici); date vuote = tutte
-  scriviPerFrammento(payload, "indicatoreStatoCandidati", "");
-  scriviPerFrammento(payload, "indicatoreTipoProvaEsameDaPrenotare", tipoProva);
-  scriviPerFrammento(payload, "indicatoreTipoProvaEsame", "", "daprenotare");
-  scriviPerFrammento(payload, "indicatoreStatoRichiesta", "");
-  scriviPerFrammento(payload, "dataFrom", "");
-  scriviPerFrammento(payload, "dataTo", "");
+  // Date largo passato → oggi (come l'import anagrafica del gestionale:
+  // lasciarle vuote può non passare la validazione della maschera).
+  const oggi = new Date();
+  const fmt = (d) => `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
+  const seiAnniFa = new Date(oggi); seiAnniFa.setFullYear(oggi.getFullYear() - 6);
+  scriviPerFrammento(payload, "dataFrom", fmt(seiAnniFa));
+  scriviPerFrammento(payload, "dataTo", fmt(oggi));
+
+  // Bottone azione: quello del form se parla di Situazione Candidati, altrimenti il paging noto.
   rimuoviAzioni(payload);
-  payload.set("action:ReadSituazioneCandidati_pagingSituazioneCandidati", "Ricerca");
+  let azione = null;
+  form.find("input[name^='action:']").each((_, b) => {
+    const n = $(b).attr("name") || "";
+    if (!azione && n.toLowerCase().includes("situazionecandidati")) azione = { n, v: $(b).attr("value") || "Ricerca" };
+  });
+  if (!azione) {
+    const primo = form.find("input[name^='action:']").first();
+    if (primo.length) azione = { n: primo.attr("name"), v: primo.attr("value") || "Ricerca" };
+  }
+  if (azione) payload.set(azione.n, azione.v);
+  else payload.set("action:ReadSituazioneCandidati_pagingSituazioneCandidati", "Ricerca");
+
+  // Diagnostico GDPR-safe: solo NOMI campo, con flag "valorizzato".
+  const campiInfo = Array.from(new Set(payload.keys()))
+    .filter((k) => !k.startsWith("action:")).slice(0, 40)
+    .map((k) => k.split(".").pop() + (payload.get(k) ? "=✓" : "")).join(",");
+  console.log(`[syncArchivio] POST ricerca (${tipo}/${tipoProva}): campi ${campiInfo}`);
 
   const action = risolviActionForm(form, initUrl);
   let outHtml = (await client.post(action, serializePayloadRaw(payload), {
     headers: { "Content-Type": "application/x-www-form-urlencoded", Referer: initUrl },
   })).data;
   outHtml = await seguiDispatcherEPin(client, outHtml, action, pin);
+  let verbali = parseVerbaliFromHtml(outHtml);
+  console.log(`[syncArchivio] dopo POST: title = ${titoloPagina(outHtml)}, righe = ${verbali.length}`);
+  if (verbali.length) return verbali;
 
-  return parseVerbaliFromHtml(outHtml);
+  // Doppio binario del gestionale: GET secca sul paging, Referer = init.
+  let pagHtml = (await client.get(pagingUrl, { headers: { Referer: initUrl } })).data;
+  pagHtml = await seguiDispatcherEPin(client, pagHtml, pagingUrl, pin);
+  verbali = parseVerbaliFromHtml(pagHtml);
+  console.log(`[syncArchivio] dopo GET paging: title = ${titoloPagina(pagHtml)}, righe = ${verbali.length}`);
+  return verbali;
 }
 
 function parseVerbaliFromHtml(html) {
@@ -354,15 +443,14 @@ async function fetchSchedaCandidato(client, {
   html = await seguiDispatcherEPin(client, html, initUrl, pin);
 
   const $ = cheerio.load(html || "");
-  let form = $("form").filter((_, f) => ($(f).html() || "").includes("richiestaPerEsameView")).first();
-  if (!form.length) form = $("form").first();
-  if (!form.length) {
-    const title = ((html || "").match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1] || "";
-    console.warn("[syncArchivio] maschera Richiesta Esame senza form, title =", title.trim().slice(0, 80));
+  const form = trovaFormRicerca($);
+  if (!form) {
+    console.warn("[syncArchivio] maschera Richiesta Esame senza form, title =", titoloPagina(html));
     return {};
   }
 
   const payload = costruisciPayloadDaForm($, form);
+  applicaCriteriSelect($, form, payload, {});
   scriviPerFrammento(payload, "richiestaFrom.idAutAg", String(idAutAg || ""));
   scriviPerFrammento(payload, "codiceUffOperativo", String(codUfficioMctc || ""));
   scriviPerFrammento(payload, "richiestaFrom.marcaOperativa", String(marcaOperativa || ""));
@@ -375,7 +463,14 @@ async function fetchSchedaCandidato(client, {
     }
   }
   rimuoviAzioni(payload);
-  payload.set("action:Read_paging", "Ricerca");
+  let azioneScheda = null;
+  form.find("input[name^='action:']").each((_, b) => {
+    const n = ($(b).attr("name") || "").toLowerCase();
+    if (!azioneScheda && (n.includes("paging") || n.includes("ricerca")))
+      azioneScheda = { n: $(b).attr("name"), v: $(b).attr("value") || "Ricerca" };
+  });
+  if (azioneScheda) payload.set(azioneScheda.n, azioneScheda.v);
+  else payload.set("action:Read_paging", "Ricerca");
 
   const action = risolviActionForm(form, initUrl);
   let outHtml = (await client.post(action, serializePayloadRaw(payload), {
