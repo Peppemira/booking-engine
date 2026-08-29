@@ -440,48 +440,130 @@ async function fetchCandidatiInVerbale(client, { idVerbale, paginaRisultati = ""
 // maschera sessioneEsameAbilitazioneEP, ricerca per finestre di date e
 // Dettaglio per ogni verbale con l'elenco dei candidati esaminati.
 
-/** Ricerca Verbali Svolti in una finestra di date: init+POST col form vero. */
-async function eseguiRicercaVerbaliSvolti(client, { indicatore, dataDa, dataA, pin = null }) {
-  const initUrl = `${BASE_URL}/prenotazione/sessioneEsameAbilitazioneEP/Read_initActionVerbaliSvoltiConseguimento.action?pageStatus=SEARCH`;
-  let html = (await client.get(initUrl, {
-    headers: { Referer: `${BASE_URL}/prenotazione/menu/LoadMenu_execute.action` },
-  })).data;
-  html = await seguiDispatcherEPin(client, html, initUrl, pin);
+// Le 4 sezioni dei Verbali Svolti, come nel gestionale (PortaleNativeService.Verbali.cs):
+// init SENZA il prefisso /prenotazione (con /prenotazione risponde 404) e azione di
+// ricerca propria per sezione. Il Portale impone MAX 7 GIORNI per finestra.
+const SEZIONI_VERBALI_SVOLTI = [
+  { init: "/sessioneEsameAbilitazioneEP/Read_initActionVerbaliSvoltiConseguimento.action?pageStatus=SEARCH",
+    azione: "action:ReadConseguimento_pagingConseguimento", codice: "VSC", desc: "Conseguimento" },
+  { init: "/sessioneEsameAbilitazioneEP/Read_initActionVerbaliSvoltiCqc.action?pageStatus=SEARCH",
+    azione: "action:ReadCqc_pagingCQC", codice: "VSQ", desc: "CQC" },
+  { init: "/sessioneEsameAbilitazioneEP/Read_initActionVerbaliSvoltiRevisione.action?pageStatus=SEARCH",
+    azione: "action:ReadRevisione_pagingRevisione", codice: "VSR", desc: "Revisione patente" },
+  { init: "/sessioneEsameAbilitazioneEP/Read_initActionVerbaliSvoltiCqcRev.action?pageStatus=SEARCH",
+    azione: "action:ReadRevisione_pagingRevisione", codice: "VSRCQCC", desc: "Revisione CQC" },
+];
 
-  const $ = cheerio.load(html || "");
-  const form = trovaFormRicerca($);
-  if (!form) {
-    console.warn("[syncArchivio] Verbali Svolti: nessun form, title =", titoloPagina(html));
-    return { verbali: [], html: "" };
-  }
-
-  const payload = costruisciPayloadDaForm($, form);
-  applicaCriteriSelect($, form, payload, { indicatoreTipoSessione: indicatore });
-  scriviPerFrammento(payload, "dataSessioneEsameFrom", dataDa);
-  scriviPerFrammento(payload, "dataSessioneEsameTo", dataA);
-  rimuoviAzioni(payload);
-  let azione = null;
-  form.find("input[name^='action:']").each((_, b) => {
-    const n = ($(b).attr("name") || "").toLowerCase();
-    if (!azione && n.includes("verbalisvolti")) azione = { n: $(b).attr("name"), v: $(b).attr("value") || "Ricerca" };
-  });
-  if (azione) payload.set(azione.n, azione.v);
-  else payload.set("action:ReadVerbaliSvolti_searchVerbaliSvoltiConseguimento", "Ricerca");
-
-  const action = risolviActionForm(form, initUrl);
-  let outHtml = (await client.post(action, serializePayloadRaw(payload), {
-    headers: { "Content-Type": "application/x-www-form-urlencoded", Referer: initUrl },
-  })).data;
-  outHtml = await seguiDispatcherEPin(client, outHtml, action, pin);
-  return { verbali: parseVerbaliFromHtml(outHtml, true), html: outHtml };
+/** Il titolo indica la HOME del Portale? (endpoint init non valido → rimbalzo). */
+function paginaHome(html) {
+  const t = titoloPagina(html).toLowerCase();
+  return t.endsWith("- home") || t.endsWith("- homepage") || t.includes("home professionista")
+    || t.includes("homepage professionista");
 }
 
-/** Dettaglio di un verbale svolto: candidati esaminati (marca, cognome, nome). */
+/** Tabella "principale" della pagina (quella con più righe): intestazioni + celle testo. */
+function parseTabellaGrande(html) {
+  const $ = cheerio.load(html || "");
+  let migliore = null, righeMax = -1;
+  $("table").each((_, t) => {
+    const n = $(t).find("tr").length;
+    if (n > righeMax) { righeMax = n; migliore = $(t); }
+  });
+  if (!migliore) return { colonne: [], righe: [] };
+  const colonne = migliore.find("th").map((_, th) => norm($(th).text())).get();
+  const righe = [];
+  migliore.find("tr").each((_, tr) => {
+    const celle = $(tr).find("td").map((__, td) => norm($(td).text())).get();
+    if (celle.length >= 2) righe.push(celle);
+  });
+  return { colonne, righe };
+}
+
+/**
+ * Ricerca Verbali Svolti di UNA sezione in una finestra ≤7 giorni: init+POST
+ * col form vero, campi come il gestionale (codUfficioMCTC, coppia
+ * dataVerbaleEsameAbilitazione/…TO, codiceTipoProvaSedutaEsame vuoto = tutte).
+ */
+async function eseguiRicercaVerbaliSvolti(client, { sezione, dataDa, dataA, ufficio, pin = null }) {
+  const vuoto = { verbali: [], html: "", tabella: { colonne: [], righe: [] } };
+  // prova prima il namespace del gestionale, poi la variante /prenotazione
+  for (const prefisso of ["", "/prenotazione"]) {
+    const initUrl = `${BASE_URL}${prefisso}${sezione.init}`;
+    let html;
+    try {
+      html = (await client.get(initUrl, {
+        headers: { Referer: `${BASE_URL}/prenotazione/menu/LoadMenu_execute.action` },
+      })).data;
+    } catch (err) {
+      if (err?.response?.status === 404) continue;
+      throw err;
+    }
+    html = await seguiDispatcherEPin(client, html, initUrl, pin);
+    if (paginaHome(html)) continue; // endpoint non valido: prova la variante
+
+    const $ = cheerio.load(html || "");
+    const form = trovaFormRicerca($);
+    if (!form) {
+      console.warn(`[syncArchivio] Verbali Svolti ${sezione.codice}: nessun form, title =`, titoloPagina(html));
+      return vuoto;
+    }
+
+    const payload = costruisciPayloadDaForm($, form);
+    for (const key of Array.from(new Set(payload.keys()))) {
+      if (key.includes("codUfficioMCTC")) payload.set(key, ufficio || "");
+      else if (key.includes("dataVerbaleEsameAbilitazioneTO")) payload.set(key, dataA);
+      else if (key.endsWith("dataVerbaleEsameAbilitazione")) payload.set(key, dataDa);
+      else if (key.includes("codiceTipoProvaSedutaEsame")) payload.set(key, ""); // tutte le prove
+    }
+    rimuoviAzioni(payload);
+    payload.set(sezione.azione, "Ricerca");
+
+    const action = risolviActionForm(form, initUrl);
+    let outHtml = (await client.post(action, serializePayloadRaw(payload), {
+      headers: { "Content-Type": "application/x-www-form-urlencoded", Referer: initUrl },
+    })).data;
+    outHtml = await seguiDispatcherEPin(client, outHtml, action, pin);
+    if (paginaHome(outHtml)) continue;
+
+    // Paging: segue le eventuali pagine successive (di norma 1 con finestre di 7gg)
+    const verbali = parseVerbaliFromHtml(outHtml, true);
+    const tabella = parseTabellaGrande(outHtml);
+    let pagHtml = outHtml;
+    for (let pag = 2; pag <= 10; pag++) {
+      const $p = cheerio.load(pagHtml || "");
+      let next = null;
+      $p("a[href]").each((_, aEl) => {
+        if (next) return;
+        const testo = norm($p(aEl).text()).toLowerCase();
+        const href = String($p(aEl).attr("href") || "");
+        if (href.startsWith("javascript:") || href === "#") return;
+        const hrefLow = href.toLowerCase();
+        if (testo === "»" || testo === "›" || testo === ">" || testo.includes("success") || testo.includes("avanti")
+            || (hrefLow.includes("paging") && (hrefLow.includes("page") || hrefLow.includes("pagina"))))
+          next = href.startsWith("http") ? href : BASE_URL + href;
+      });
+      if (!next) break;
+      try { pagHtml = (await client.get(next, { headers: { Referer: action } })).data; }
+      catch { break; }
+      if (paginaHome(pagHtml)) break;
+      const vN = parseVerbaliFromHtml(pagHtml, true);
+      const tN = parseTabellaGrande(pagHtml);
+      if (!vN.length && !tN.righe.length) break;
+      for (const v of vN) if (!verbali.some((x) => x.id_verbale === v.id_verbale)) verbali.push(v);
+      tabella.righe.push(...tN.righe);
+    }
+
+    return { verbali, html: outHtml, tabella };
+  }
+  throw new Error("init Verbali Svolti non raggiungibile (404/home su entrambe le varianti)");
+}
+
+/** Dettaglio di un verbale svolto: candidati esaminati con esito e celle grezze. */
 async function fetchCandidatiVerbaleSvolto(client, paginaRisultati, idVerbale, pin = null) {
   const $ = cheerio.load(paginaRisultati || "");
   const form = trovaFormRicerca($);
   if (!form) return [];
-  const initReferer = `${BASE_URL}/prenotazione/sessioneEsameAbilitazioneEP/Read_initActionVerbaliSvoltiConseguimento.action`;
+  const initReferer = `${BASE_URL}/sessioneEsameAbilitazioneEP/Read_initActionVerbaliSvoltiConseguimento.action`;
 
   const payload = costruisciPayloadDaForm($, form);
   if (!scriviPerFrammento(payload, "selectRowId", idVerbale)) {
@@ -507,21 +589,135 @@ async function fetchCandidatiVerbaleSvolto(client, paginaRisultati, idVerbale, p
 
   const $det = cheerio.load(html || "");
   const candidati = [];
-  // colonne comuni quiz/guida: 1=marca, 2=abilitazione, 6=cognome, 7=nome, 8=data nascita
+  // colonne comuni quiz/guida: 1=marca, 2=abilitazione, 6=cognome, 7=nome, 8=data nascita;
+  // esito: col 12 nei quiz, col 10 nelle guide (iPatente) — si tiene il primo non vuoto e
+  // TUTTE le celle grezze, così nulla dei verbali va perso (schede quiz/esiti compresi).
   $det("#listSedutaEsameAbilitazioneEP tbody tr, table tbody tr").each((_, tr) => {
     const $tds = $det(tr).find("td");
     if ($tds.length < 8) return;
     const marcaOperativa = norm($tds.eq(1).text());
     if (!/^\d{2}[A-Z]{2}\d{4,}$/i.test(marcaOperativa)) return;
+    const celle = $tds.map((__, td) => norm($det(td).text())).get();
     candidati.push({
       marcaOperativa,
-      abilitazione: norm($tds.eq(2).text()),
-      cognome:      norm($tds.eq(6).text()),
-      nome:         norm($tds.eq(7).text()),
-      dataNascita:  norm($tds.eq(8).text()),
+      abilitazione: celle[2] || "",
+      cognome:      celle[6] || "",
+      nome:         celle[7] || "",
+      dataNascita:  celle[8] || "",
+      esito:        celle[12] || celle[10] || "",
+      celle,
     });
   });
   return candidati;
+}
+
+/** gg/mm/aaaa → aaaa-mm-gg (null se non è una data). */
+function dataIso(gma) {
+  const m = String(gma || "").match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  return m ? `${m[3]}-${m[2]}-${m[1]}` : null;
+}
+
+/**
+ * Salva le righe di seduta in verbali_svolti (stessa mappatura per frammento
+ * di intestazione del gestionale; dedupe su autoscuola+tipo+data+numero).
+ */
+async function salvaVerbaliSvoltiSupabase({ colonne, righe }, tipoVerbale, autoscuolaId) {
+  if (!autoscuolaId || !righe.length) return 0;
+  const idx = (pred) => colonne.findIndex((c) => pred((c || "").trim().toLowerCase()));
+  const iData = idx((c) => c.includes("data"));
+  const iEsame = idx((c) => c === "esame" || (c.includes("esame") && !c.includes("data")));
+  const iFo = idx((c) => c.startsWith("f.o") || c.includes("fascia"));
+  const iVerb = idx((c) => c === "verb." || c === "verb" || (c.includes("verb") && !c.includes("data") && !c.includes("stato")));
+  const iCand = idx((c) => c.includes("cand"));
+  const iStato = idx((c) => c.includes("stato"));
+  const iUff = idx((c) => c.includes("uff") || c.includes("prov"));
+  const iDesc = idx((c) => c.includes("desc"));
+  const iIndir = idx((c) => c.includes("indir"));
+
+  let inseriti = 0;
+  for (const r of righe) {
+    const val = (i) => (i >= 0 && i < r.length ? (r[i] || "").trim() : "");
+    const dataVerb = dataIso(val(iData));
+    const numero = parseInt(val(iVerb), 10) || 0;
+    if (!dataVerb && !numero) continue; // riga non-dati
+
+    let q = supabase
+      .from("verbali_svolti")
+      .select("id", { count: "exact", head: true })
+      .eq("autoscuola_id", autoscuolaId)
+      .eq("tipo_verbale", tipoVerbale);
+    q = dataVerb ? q.eq("data_verbale", dataVerb) : q.is("data_verbale", null);
+    q = numero ? q.eq("numero_verbale", numero) : q.is("numero_verbale", null);
+    const { count } = await q;
+    if (count > 0) continue;
+
+    const raw = {};
+    colonne.forEach((c, i) => { const k = c || `col${i}`; if (!(k in raw)) raw[k] = val(i); });
+    const { error } = await supabase.from("verbali_svolti").insert({
+      autoscuola_id: autoscuolaId,
+      data_verbale: dataVerb,
+      tipo_esame: val(iEsame),
+      fascia_oraria: val(iFo),
+      numero_verbale: numero || null,
+      candidati_prenotati: parseInt(val(iCand), 10) || null,
+      stato_verbale: val(iStato),
+      ufficio_provinciale: val(iUff),
+      desc_localita: val(iDesc),
+      indirizzo: val(iIndir),
+      tipo_verbale: tipoVerbale,
+      raw_html: JSON.stringify(raw),
+      synced_at: new Date().toISOString(),
+    });
+    if (!error) inseriti++;
+  }
+  return inseriti;
+}
+
+/**
+ * Salva gli esiti per candidato in esiti_esami, risolvendo candidato_id dalla
+ * marca operativa (i candidati sono già stati upsertati dalla FASE 2).
+ * Dedupe su autoscuola+candidato+verbale+data.
+ */
+async function salvaEsitiEsami(esiti, autoscuolaId) {
+  if (!autoscuolaId || !esiti.length) return 0;
+  const marche = Array.from(new Set(esiti.map((e) => e.marcaOperativa)));
+  const idPerMarca = new Map();
+  for (let i = 0; i < marche.length; i += 100) {
+    const blocco = marche.slice(i, i + 100);
+    const { data } = await supabase
+      .from("candidates").select("id, marca_operativa")
+      .eq("autoscuola_id", autoscuolaId).in("marca_operativa", blocco);
+    for (const row of data || []) idPerMarca.set(row.marca_operativa, row.id);
+  }
+
+  let inseriti = 0;
+  for (const e of esiti) {
+    const candidatoId = idPerMarca.get(e.marcaOperativa);
+    if (!candidatoId) continue;
+    const dataEsame = dataIso(e.dataVerbale) || null;
+    const { count } = await supabase
+      .from("esiti_esami")
+      .select("id", { count: "exact", head: true })
+      .eq("autoscuola_id", autoscuolaId)
+      .eq("candidato_id", candidatoId)
+      .eq("id_verbale_portale", e.idVerbale || "")
+      .eq("tipo_esame", e.tipoSezione || "");
+    if (count > 0) continue;
+
+    const { error } = await supabase.from("esiti_esami").insert({
+      autoscuola_id: autoscuolaId,
+      candidato_id: candidatoId,
+      data_esame: dataEsame,
+      tipo_esame: e.tipoSezione || "",
+      codice_sessione: e.numeroVerbale || null,
+      esito: e.esito || null,
+      id_verbale_portale: e.idVerbale || null,
+      data_sync_portale: new Date().toISOString(),
+      note: JSON.stringify({ abilitazione: e.abilitazione, celle: e.celle }),
+    });
+    if (!error) inseriti++;
+  }
+  return inseriti;
 }
 
 function parseCandidatiInVerbaleHtml(html) {
@@ -868,14 +1064,15 @@ async function syncArchivioCompleto(opts = {}) {
     }
   };
 
-  // Login — credenziali del record autoscuola se fornite, env come ripiego
+  // Login — credenziali del record autoscuola se fornite, env come ripiego.
+  // faiLogin è riusabile: il giro storico dura ore e la sessione va rinfrescata.
   progress("login", 0, 1);
-  const jar = await loginDirectHttp({
+  const faiLogin = async () => makeHttpClient(await loginDirectHttp({
     username: credenziali?.username || process.env.PORTAL_USER || process.env.PORTAL_USERNAME,
     password: credenziali?.password || process.env.PORTAL_PASS || process.env.PORTAL_PASSWORD,
     pin:      credenziali?.pin      || process.env.PORTAL_PIN,
-  });
-  const client = makeHttpClient(jar);
+  }));
+  let client = await faiLogin();
 
   // Combinazioni iPatenteCloud (replica completa GeCA Trasmiss):
   //   P = Patente, Q = CQC
@@ -949,59 +1146,93 @@ async function syncArchivioCompleto(opts = {}) {
   }
 
   // ── FASE 1-ter: ARCHIVIO STORICO dai VERBALI SVOLTI ───────────────────────
-  // Finestre di date da ARCHIVIO_ANNO_INIZIO (default 2000) a oggi, per i tre
-  // tipi di sessione: VSC (quiz/guida), VSQ (scritti), SCQC (CQC).
+  // Come il gestionale (PortaleNativeService.Verbali.cs): 4 sezioni, finestre
+  // di MAX 7 GIORNI (limite del Portale) da ARCHIVIO_ANNO_INIZIO (default 2000)
+  // a oggi. Le sezioni girano in parallelo, ognuna con la propria sessione,
+  // re-login ogni 30 finestre. Ogni verbale: riga di seduta → verbali_svolti;
+  // Dettaglio → candidati con esito (anagrafica + esiti_esami).
+  const esitiRaccolti = [];
   {
     const pinPortale = credenziali?.pin || process.env.PORTAL_PIN || null;
     const annoInizio = Number(process.env.ARCHIVIO_ANNO_INIZIO || 2000);
-    const windowDays = Number(process.env.ARCHIVIO_STORICO_WINDOW_DAYS || 180);
-    const INDICATORI = [["VSC", "Quiz/Guida"], ["VSQ", "Scritti"], ["SCQC", "CQC"]];
     const fine = new Date();
 
-    for (const [indicatore, descr] of INDICATORI) {
-      let raccolti = 0, verbaliTot = 0, finestreConDati = 0;
+    const lavoraSezione = async (sezione) => {
+      let clientSez = await faiLogin();
+      let finestreDaLogin = 0;
+      let raccolti = 0, verbaliTot = 0, finestreConDati = 0, salvatiSedute = 0, finestreFatte = 0;
       let da = new Date(annoInizio, 0, 1);
       while (da <= fine) {
         let a = new Date(da);
-        a.setDate(a.getDate() + windowDays - 1);
+        a.setDate(a.getDate() + 6); // finestra di 7 giorni, limite del Portale
         if (a > fine) a = new Date(fine);
+        if (finestreDaLogin >= 30) { // sessione fresca a intervalli regolari
+          try { clientSez = await faiLogin(); finestreDaLogin = 0; } catch { /* riusa la vecchia */ }
+        }
         try {
-          let ricerca = await eseguiRicercaVerbaliSvolti(client, {
-            indicatore, dataDa: fmtDataPortale(da), dataA: fmtDataPortale(a), pin: pinPortale,
+          let ricerca = await eseguiRicercaVerbaliSvolti(clientSez, {
+            sezione, dataDa: fmtDataPortale(da), dataA: fmtDataPortale(a),
+            ufficio: codUfficioMctc, pin: pinPortale,
           });
+          if (ricerca.tabella.righe.length) {
+            salvatiSedute += await salvaVerbaliSvoltiSupabase(ricerca.tabella, sezione.codice, autoscuolaId)
+              .catch((e) => { console.warn(`[syncArchivio] verbali_svolti ${sezione.codice}:`, e.message); return 0; });
+          }
           if (ricerca.verbali.length) {
             finestreConDati++;
             verbaliTot += ricerca.verbali.length;
             for (const v of ricerca.verbali) {
               if (!v.id_verbale) continue;
-              let cands = await fetchCandidatiVerbaleSvolto(client, ricerca.html, v.id_verbale, pinPortale);
+              let cands = await fetchCandidatiVerbaleSvolto(clientSez, ricerca.html, v.id_verbale, pinPortale);
               if (!cands.length) {
                 // token monouso probabilmente consumato: ricerca fresca e secondo tentativo
-                ricerca = await eseguiRicercaVerbaliSvolti(client, {
-                  indicatore, dataDa: fmtDataPortale(da), dataA: fmtDataPortale(a), pin: pinPortale,
+                ricerca = await eseguiRicercaVerbaliSvolti(clientSez, {
+                  sezione, dataDa: fmtDataPortale(da), dataA: fmtDataPortale(a),
+                  ufficio: codUfficioMctc, pin: pinPortale,
                 });
-                cands = await fetchCandidatiVerbaleSvolto(client, ricerca.html, v.id_verbale, pinPortale);
+                cands = await fetchCandidatiVerbaleSvolto(clientSez, ricerca.html, v.id_verbale, pinPortale);
               }
               for (const c of cands) {
                 if (!candidatiMap.has(c.marcaOperativa)) {
-                  candidatiMap.set(c.marcaOperativa, { ...c, combo: { desc: `Verbali Svolti ${descr}` } });
+                  candidatiMap.set(c.marcaOperativa, { ...c, combo: { desc: `Verbali Svolti ${sezione.desc}` } });
                   raccolti++;
                 }
+                esitiRaccolti.push({
+                  marcaOperativa: c.marcaOperativa,
+                  abilitazione: c.abilitazione,
+                  esito: c.esito,
+                  celle: c.celle,
+                  idVerbale: v.id_verbale,
+                  numeroVerbale: v.raw?.[4] || null,
+                  dataVerbale: v.data || "",
+                  tipoSezione: sezione.codice,
+                });
               }
               await delay(100);
             }
           }
         } catch (err) {
-          console.warn(`[syncArchivio] Verbali Svolti ${descr} ${fmtDataPortale(da)}-${fmtDataPortale(a)}:`, err.message);
+          console.warn(`[syncArchivio] Verbali Svolti ${sezione.desc} ${fmtDataPortale(da)}-${fmtDataPortale(a)}:`, err.message);
+          try { clientSez = await faiLogin(); finestreDaLogin = 0; } catch { /* riprova col vecchio */ }
         }
+        finestreFatte++;
+        finestreDaLogin++;
+        if (finestreFatte % 100 === 0)
+          console.log(`[syncArchivio] Verbali Svolti ${sezione.desc}: al ${fmtDataPortale(a)} — ${verbaliTot} verbali, ${raccolti} candidati finora`);
         da = new Date(a);
         da.setDate(da.getDate() + 1);
         await delay(150);
       }
-      console.log(`[syncArchivio] Verbali Svolti ${descr}: ${verbaliTot} verbali in ${finestreConDati} finestre, ${raccolti} candidati nuovi`);
+      console.log(`[syncArchivio] Verbali Svolti ${sezione.desc}: ${verbaliTot} verbali in ${finestreConDati} finestre, ${raccolti} candidati nuovi, ${salvatiSedute} sedute salvate`);
       progress("verbali_svolti", verbaliTot, verbaliTot);
-    }
+    };
+
+    await Promise.all(SEZIONI_VERBALI_SVOLTI.map((s) =>
+      lavoraSezione(s).catch((e) => console.warn(`[syncArchivio] sezione ${s.codice}:`, e.message))));
   }
+
+  // Sessione fresca per la FASE 2: il giro storico può aver consumato ore.
+  try { client = await faiLogin(); } catch { /* riusa la sessione esistente */ }
 
   const candidatiList = Array.from(candidatiMap.values());
   console.log(`[syncArchivio] Trovati ${candidatiList.length} candidati unici`);
@@ -1052,6 +1283,19 @@ async function syncArchivioCompleto(opts = {}) {
 
   await mapConcurrent(candidatiList, processCandidate, SYNC_MAX_CONCURRENCY);
 
+  // ── FASE 3: esiti d'esame per candidato (dai Dettagli dei Verbali Svolti) ──
+  // Va DOPO la FASE 2: la risoluzione marca → candidato_id richiede che i
+  // candidati siano già in tabella.
+  let esitiSalvati = 0;
+  if (esitiRaccolti.length) {
+    try {
+      esitiSalvati = await salvaEsitiEsami(esitiRaccolti, autoscuolaId);
+      console.log(`[syncArchivio] Esiti esami: ${esitiSalvati} salvati su ${esitiRaccolti.length} raccolti`);
+    } catch (err) {
+      console.warn("[syncArchivio] Errore salvataggio esiti:", err.message);
+    }
+  }
+
   progress("completato", candidatiList.length, candidatiList.length, errors);
   console.log(`[syncArchivio] Completato: ${inserted} inseriti/aggiornati, ${errors} errori`);
 
@@ -1061,6 +1305,7 @@ async function syncArchivioCompleto(opts = {}) {
     updated,
     errors,
     skipped,
+    esiti: esitiSalvati,
   };
 }
 
