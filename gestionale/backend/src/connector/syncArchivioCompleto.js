@@ -26,7 +26,7 @@ require("dotenv").config({ quiet: true });
 
 const cheerio = require("cheerio");
 const { loginDirectHttp } = require("./portalSession");
-const { makeHttpClient, serializePayloadRaw } = require("./portalHttp");
+const { makeHttpClient, serializePayloadRaw, warmPrenotazioneContext, loadMenu } = require("./portalHttp");
 const { upsertCandidateToDB } = require("./importByPatente");
 const supabase = require("../database/supabase");
 
@@ -98,7 +98,7 @@ async function seguiDispatcherEPin(client, html, refererUrl, pin = null) {
       data.set("loginView.pin", pinValue);
       data.set("action:Pin_executePinValidation", "Conferma");
       html = (await client.post(resolved, serializePayloadRaw(data), {
-        headers: { "Content-Type": "application/x-www-form-urlencoded", Referer: refererUrl },
+        headers: { "Content-Type": "application/x-www-form-urlencoded", Origin: BASE_URL, Referer: refererUrl },
       })).data;
       continue;
     }
@@ -117,7 +117,7 @@ async function seguiDispatcherEPin(client, html, refererUrl, pin = null) {
         data.append(n, $(inp).attr("value") || "");
       });
       html = (await client.post(resolved, serializePayloadRaw(data), {
-        headers: { "Content-Type": "application/x-www-form-urlencoded", Referer: refererUrl },
+        headers: { "Content-Type": "application/x-www-form-urlencoded", Origin: BASE_URL, Referer: refererUrl },
       })).data;
       continue;
     }
@@ -315,7 +315,7 @@ async function fetchVerbaliList(client, { codiceAutoscuola, codUfficio, tipo = "
 
   const action = risolviActionForm(form, initUrl);
   let outHtml = (await client.post(action, serializePayloadRaw(payload), {
-    headers: { "Content-Type": "application/x-www-form-urlencoded", Referer: initUrl },
+    headers: { "Content-Type": "application/x-www-form-urlencoded", Origin: BASE_URL, Referer: initUrl },
   })).data;
   outHtml = await seguiDispatcherEPin(client, outHtml, action, pin);
   let verbali = parseVerbaliFromHtml(outHtml);
@@ -423,6 +423,7 @@ async function fetchCandidatiInVerbale(client, { idVerbale, paginaRisultati = ""
   let { data: html } = await client.post(url, serializePayloadRaw(payload), {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
+      Origin: BASE_URL,
       Referer: initReferer,
     },
   });
@@ -441,7 +442,8 @@ async function fetchCandidatiInVerbale(client, { idVerbale, paginaRisultati = ""
 // Dettaglio per ogni verbale con l'elenco dei candidati esaminati.
 
 // Le 4 sezioni dei Verbali Svolti, come nel gestionale (PortaleNativeService.Verbali.cs):
-// init SENZA il prefisso /prenotazione (con /prenotazione risponde 404) e azione di
+// init provato con e senza il prefisso /prenotazione (il Portale cambia risposta nel
+// tempo: 404, 403 del WAF o rimbalzo alla home a seconda del giorno) e azione di
 // ricerca propria per sezione. Il Portale impone MAX 7 GIORNI per finestra.
 const SEZIONI_VERBALI_SVOLTI = [
   { init: "/sessioneEsameAbilitazioneEP/Read_initActionVerbaliSvoltiConseguimento.action?pageStatus=SEARCH",
@@ -486,8 +488,12 @@ function parseTabellaGrande(html) {
  */
 async function eseguiRicercaVerbaliSvolti(client, { sezione, dataDa, dataA, ufficio, pin = null }) {
   const vuoto = { verbali: [], html: "", tabella: { colonne: [], righe: [] } };
-  // prova prima il namespace del gestionale, poi la variante /prenotazione
-  for (const prefisso of ["", "/prenotazione"]) {
+  // Prima la variante /prenotazione (l'unica usata con successo dal resto del
+  // sistema), poi quella nuda. Un errore HTTP sull'init (403 del WAF compreso:
+  // dal 29/08 risponde 403 dove prima dava 404) NON è fatale finché resta una
+  // variante da provare — si rilancia solo se falliscono tutte.
+  let ultimoErroreInit = null;
+  for (const prefisso of ["/prenotazione", ""]) {
     const initUrl = `${BASE_URL}${prefisso}${sezione.init}`;
     let html;
     try {
@@ -495,8 +501,8 @@ async function eseguiRicercaVerbaliSvolti(client, { sezione, dataDa, dataA, uffi
         headers: { Referer: `${BASE_URL}/prenotazione/menu/LoadMenu_execute.action` },
       })).data;
     } catch (err) {
-      if (err?.response?.status === 404) continue;
-      throw err;
+      ultimoErroreInit = err;
+      continue;
     }
     html = await seguiDispatcherEPin(client, html, initUrl, pin);
     if (paginaHome(html)) continue; // endpoint non valido: prova la variante
@@ -520,7 +526,7 @@ async function eseguiRicercaVerbaliSvolti(client, { sezione, dataDa, dataA, uffi
 
     const action = risolviActionForm(form, initUrl);
     let outHtml = (await client.post(action, serializePayloadRaw(payload), {
-      headers: { "Content-Type": "application/x-www-form-urlencoded", Referer: initUrl },
+      headers: { "Content-Type": "application/x-www-form-urlencoded", Origin: BASE_URL, Referer: initUrl },
     })).data;
     outHtml = await seguiDispatcherEPin(client, outHtml, action, pin);
     if (paginaHome(outHtml)) continue;
@@ -553,17 +559,21 @@ async function eseguiRicercaVerbaliSvolti(client, { sezione, dataDa, dataA, uffi
       tabella.righe.push(...tN.righe);
     }
 
-    return { verbali, html: outHtml, tabella };
+    return { verbali, html: outHtml, tabella, initUrl };
   }
-  throw new Error("init Verbali Svolti non raggiungibile (404/home su entrambe le varianti)");
+  if (ultimoErroreInit) throw ultimoErroreInit;
+  throw new Error("init Verbali Svolti non raggiungibile (home su entrambe le varianti)");
 }
 
 /** Dettaglio di un verbale svolto: candidati esaminati con esito e celle grezze. */
-async function fetchCandidatiVerbaleSvolto(client, paginaRisultati, idVerbale, pin = null) {
+async function fetchCandidatiVerbaleSvolto(client, paginaRisultati, idVerbale, pin = null, referer = null) {
   const $ = cheerio.load(paginaRisultati || "");
   const form = trovaFormRicerca($);
   if (!form) return [];
-  const initReferer = `${BASE_URL}/sessioneEsameAbilitazioneEP/Read_initActionVerbaliSvoltiConseguimento.action`;
+  // Referer = l'init della sezione che ha davvero prodotto la pagina risultati
+  // (lo passa il chiamante); il valore fisso resta solo come ripiego.
+  const initReferer = referer
+    || `${BASE_URL}/prenotazione/sessioneEsameAbilitazioneEP/Read_initActionVerbaliSvoltiConseguimento.action`;
 
   const payload = costruisciPayloadDaForm($, form);
   if (!scriviPerFrammento(payload, "selectRowId", idVerbale)) {
@@ -583,7 +593,7 @@ async function fetchCandidatiVerbaleSvolto(client, paginaRisultati, idVerbale, p
 
   const url = risolviActionForm(form, initReferer);
   let { data: html } = await client.post(url, serializePayloadRaw(payload), {
-    headers: { "Content-Type": "application/x-www-form-urlencoded", Referer: initReferer },
+    headers: { "Content-Type": "application/x-www-form-urlencoded", Origin: BASE_URL, Referer: initReferer },
   });
   html = await seguiDispatcherEPin(client, html, url, pin);
 
@@ -626,9 +636,11 @@ async function leggiCursore(autoscuolaId, chiave) {
 
 async function scriviCursore(autoscuolaId, chiave, valore) {
   if (!autoscuolaId) return;
-  await supabase.from("sync_cursori").upsert(
+  const { error } = await supabase.from("sync_cursori").upsert(
     { autoscuola_id: autoscuolaId, chiave, valore, updated_at: new Date().toISOString() },
     { onConflict: "autoscuola_id,chiave" });
+  // supabase-js non rigetta: l'errore va guardato, o il cursore non avanza in silenzio
+  if (error) console.warn(`[syncArchivio] cursore ${chiave} non salvato:`, error.message);
 }
 
 /** gg/mm/aaaa → aaaa-mm-gg (null se non è una data). */
@@ -844,7 +856,7 @@ async function fetchSchedaCandidato(client, {
 
   const action = risolviActionForm(form, initUrl);
   let outHtml = (await client.post(action, serializePayloadRaw(payload), {
-    headers: { "Content-Type": "application/x-www-form-urlencoded", Referer: initUrl },
+    headers: { "Content-Type": "application/x-www-form-urlencoded", Origin: BASE_URL, Referer: initUrl },
   })).data;
   outHtml = await seguiDispatcherEPin(client, outHtml, action, pin);
 
@@ -1089,11 +1101,19 @@ async function syncArchivioCompleto(opts = {}) {
   // Login — credenziali del record autoscuola se fornite, env come ripiego.
   // faiLogin è riusabile: il giro storico dura ore e la sessione va rinfrescata.
   progress("login", 0, 1);
-  const faiLogin = async () => makeHttpClient(await loginDirectHttp({
-    username: credenziali?.username || process.env.PORTAL_USER || process.env.PORTAL_USERNAME,
-    password: credenziali?.password || process.env.PORTAL_PASS || process.env.PORTAL_PASSWORD,
-    pin:      credenziali?.pin      || process.env.PORTAL_PIN,
-  }));
+  const faiLogin = async () => {
+    const c = makeHttpClient(await loginDirectHttp({
+      username: credenziali?.username || process.env.PORTAL_USER || process.env.PORTAL_USERNAME,
+      password: credenziali?.password || process.env.PORTAL_PASS || process.env.PORTAL_PASSWORD,
+      pin:      credenziali?.pin      || process.env.PORTAL_PIN,
+    }));
+    // Warm-up del contesto /prenotazione, come fa il gestionale dopo il login:
+    // senza questo passaggio le pagine successive rimbalzano alla home e il
+    // Referer al menu dichiarato dalle richieste non è mai stato visitato.
+    try { await warmPrenotazioneContext(c); } catch { /* non fatale */ }
+    try { await loadMenu(c); } catch { /* non fatale */ }
+    return c;
+  };
   let client = await faiLogin();
   progress("login", 1, 1, 0, "✓ Login al Portale riuscito");
 
@@ -1173,21 +1193,24 @@ async function syncArchivioCompleto(opts = {}) {
   // ── FASE 1-ter: ARCHIVIO STORICO dai VERBALI SVOLTI ───────────────────────
   // Come il gestionale (PortaleNativeService.Verbali.cs): 4 sezioni, finestre
   // di MAX 7 GIORNI (limite del Portale) da ARCHIVIO_ANNO_INIZIO (default 2000)
-  // a oggi. Le sezioni girano in parallelo, ognuna con la propria sessione,
+  // a oggi. Le sezioni girano in SERIE sulla sessione della FASE 1,
   // re-login ogni 30 finestre. Ogni verbale: riga di seduta → verbali_svolti;
   // Dettaglio → candidati con esito (anagrafica + esiti_esami).
   const esitiRaccolti = [];
+  // Interruttore globale: al primo accenno di rifiuto sistematico (403) il
+  // giro storico si SOSPENDE — martellare il Portale rischia il blocco
+  // dell'utenza. Il lavoro fatto è salvo e il cursore riparte da lì.
+  let sospeso403 = false;
   {
     const pinPortale = credenziali?.pin || process.env.PORTAL_PIN || null;
     const annoInizio = Number(process.env.ARCHIVIO_ANNO_INIZIO || 2000);
     const fine = new Date();
-    // Interruttore globale: al primo accenno di rifiuto sistematico (403) il
-    // giro storico si SOSPENDE — martellare il Portale rischia il blocco
-    // dell'utenza. Il lavoro fatto è salvo e il cursore riparte da lì.
-    let sospeso403 = false;
 
     const lavoraSezione = async (sezione) => {
-      let clientSez = await faiLogin();
+      // Si riusa la sessione della FASE 1, già accettata dal Portale: un
+      // secondo login immediato dallo stesso IP è proprio il pattern che il
+      // rate-limit punisce. Il re-login resta a cadenza fissa (ogni 30 finestre).
+      let clientSez = client;
       let finestreDaLogin = 0;
       let erroriConsecutivi = 0, errori403Consecutivi = 0;
       let raccolti = 0, verbaliTot = 0, finestreConDati = 0, salvatiSedute = 0, finestreFatte = 0;
@@ -1229,14 +1252,14 @@ async function syncArchivioCompleto(opts = {}) {
               `  ${sezione.desc} ${fmtDataPortale(da)}–${fmtDataPortale(a)}: ${ricerca.verbali.length} verbali`);
             for (const v of ricerca.verbali) {
               if (!v.id_verbale) continue;
-              let cands = await fetchCandidatiVerbaleSvolto(clientSez, ricerca.html, v.id_verbale, pinPortale);
+              let cands = await fetchCandidatiVerbaleSvolto(clientSez, ricerca.html, v.id_verbale, pinPortale, ricerca.initUrl);
               if (!cands.length) {
                 // token monouso probabilmente consumato: ricerca fresca e secondo tentativo
                 ricerca = await eseguiRicercaVerbaliSvolti(clientSez, {
                   sezione, dataDa: fmtDataPortale(da), dataA: fmtDataPortale(a),
                   ufficio: codUfficioMctc, pin: pinPortale,
                 });
-                cands = await fetchCandidatiVerbaleSvolto(clientSez, ricerca.html, v.id_verbale, pinPortale);
+                cands = await fetchCandidatiVerbaleSvolto(clientSez, ricerca.html, v.id_verbale, pinPortale, ricerca.initUrl);
               }
               for (const c of cands) {
                 if (!candidatiMap.has(c.marcaOperativa)) {
@@ -1317,7 +1340,8 @@ async function syncArchivioCompleto(opts = {}) {
     `Candidati unici raccolti: ${candidatiList.length} — scarico le schede individuali…`);
 
   if (candidatiList.length === 0) {
-    return { inserted: 0, updated: 0, errors: 0, skipped: 0, found: 0 };
+    return { inserted: 0, updated: 0, errors: 0, skipped: 0, found: 0,
+             storicoSospeso: sospeso403, schedeSospese: false };
   }
 
   // ── FASE 2: scheda individuale + upsert ───────────────────────────────────
@@ -1402,6 +1426,10 @@ async function syncArchivioCompleto(opts = {}) {
     errors,
     skipped,
     esiti: esitiSalvati,
+    // Flag per il gestionale: se il giro storico o le schede sono stati
+    // respinti dal Portale, può attivare il proprio canale di ripiego.
+    storicoSospeso: sospeso403,
+    schedeSospese,
   };
 }
 
