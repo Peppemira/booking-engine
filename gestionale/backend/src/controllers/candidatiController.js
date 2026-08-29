@@ -414,15 +414,17 @@ async function syncFromPortale(req, res) {
         if (cand.marca_operativa) {
           let q = supabase.from("candidates").select("id,codice_fiscale").eq("marca_operativa", cand.marca_operativa);
           q = withTenantFilter(q, req);
-          const { data: found } = await q.maybeSingle();
-          existing = found;
+          // limit(1) e non maybeSingle(): con duplicati già presenti maybeSingle
+          // dà errore e si ricadrebbe in INSERT, aggiungendone un altro ancora.
+          const { data: found } = await q.order("created_at", { ascending: true }).limit(1);
+          existing = found && found[0];
         }
         if (!existing) {
           let q = supabase.from("candidates").select("id,codice_fiscale")
             .ilike("cognome", cognomeUp).ilike("nome", nomeUp);
           q = withTenantFilter(q, req);
-          const { data: found } = await q.maybeSingle();
-          existing = found;
+          const { data: found } = await q.order("created_at", { ascending: true }).limit(1);
+          existing = found && found[0];
         }
 
         const payload = {
@@ -449,7 +451,13 @@ async function syncFromPortale(req, res) {
           updated++;
         } else {
           // Insert — genera CF placeholder se mancante
-          payload.codice_fiscale = `PORTAL-${(cand.marca_operativa || `${cognomeUp}-${nomeUp}`).replace(/[^A-Z0-9]/g, "").slice(0, 30)}-${Date.now() % 100000}`;
+          // Segnaposto DETERMINISTICO (mai Date.now(): cambiava ad ogni giro e
+          // faceva rinascere la stessa persona ad ogni scarico). TEMP_<marca> è
+          // il formato che il gestionale scioglie da solo col CF vero.
+          const baseId = String(cand.marca_operativa || `${cognomeUp}${nomeUp}`)
+            .toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 40);
+          if (!baseId) throw new Error("candidato non identificabile: né marca operativa né nominativo");
+          payload.codice_fiscale = `TEMP_${baseId}`;
           if (autoscuolaId) payload.autoscuola_id = autoscuolaId;
           await supabase.from("candidates").insert([payload]);
           inserted++;

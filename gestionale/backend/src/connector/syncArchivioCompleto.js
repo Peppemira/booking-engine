@@ -819,8 +819,11 @@ async function fetchSchedaCandidato(client, {
       headers: { Referer: `${BASE_URL}/prenotazione/menu/LoadMenu_execute.action` },
     })).data;
   } catch (err) {
+    // NON si restituisce {} in silenzio: così il chiamante conta l'errore e
+    // l'interruttore delle schede può scattare (prima restava a zero e si
+    // continuava a chiedere schede a un Portale che le stava rifiutando).
     console.warn(`[syncArchivio] init Richiesta Esame: HTTP ${err?.response?.status || err.message}`);
-    return {};
+    throw err;
   }
   html = await seguiDispatcherEPin(client, html, initUrl, pin);
 
@@ -828,7 +831,7 @@ async function fetchSchedaCandidato(client, {
   const form = trovaFormRicerca($);
   if (!form) {
     console.warn("[syncArchivio] maschera Richiesta Esame senza form, title =", titoloPagina(html));
-    return {};
+    throw new Error("maschera Richiesta Esame senza form (rimbalzo o rifiuto del Portale)");
   }
 
   const payload = costruisciPayloadDaForm($, form);
