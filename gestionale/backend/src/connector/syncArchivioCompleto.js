@@ -1310,11 +1310,17 @@ async function syncArchivioCompleto(opts = {}) {
 
   progress("upsert", 0, candidatiList.length);
 
+  // Interruttore anche qui: se il Portale rifiuta le schede in serie (403/500
+  // da rate-limit), si smette di chiederle e si upserta coi soli dati di lista
+  // — le schede arriveranno al prossimo scarico a blocco rientrato.
+  let schedeErroriConsecutivi = 0;
+  let schedeSospese = false;
+
   const processCandidate = async (candidatoRow, i) => {
     try {
       let scheda = {};
 
-      if (fetchDettaglio && candidatoRow.marcaOperativa) {
+      if (fetchDettaglio && candidatoRow.marcaOperativa && !schedeSospese) {
         try {
           scheda = await fetchSchedaCandidato(client, {
             idAutAg,
@@ -1322,10 +1328,16 @@ async function syncArchivioCompleto(opts = {}) {
             marcaOperativa: candidatoRow.marcaOperativa,
             pin: credenziali?.pin || process.env.PORTAL_PIN || null,
           });
+          schedeErroriConsecutivi = 0;
           await delay(SYNC_DETAIL_DELAY_MS);
         } catch (err) {
           console.warn(`[syncArchivio] Errore scheda ${candidatoRow.marcaOperativa}:`, err.message);
           scheda = {};
+          schedeErroriConsecutivi++;
+          if (schedeErroriConsecutivi >= 8 && !schedeSospese) {
+            schedeSospese = true;
+            console.warn("[syncArchivio] Schede individuali: troppi errori consecutivi (rate-limit?) — SOSPESE per questo giro, si upserta coi dati di lista.");
+          }
         }
       }
 
