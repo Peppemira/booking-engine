@@ -611,6 +611,26 @@ async function fetchCandidatiVerbaleSvolto(client, paginaRisultati, idVerbale, p
   return candidati;
 }
 
+// ── Cursori di ripresa (tabella sync_cursori) ───────────────────────────────
+// Il giro storico dura ore e può venire interrotto (403 del Portale, riavvii):
+// l'ultima finestra completata per sezione si salva su Supabase e alla
+// ripartenza si riprende da lì invece di ripercorrere anni già fatti.
+
+async function leggiCursore(autoscuolaId, chiave) {
+  if (!autoscuolaId) return null;
+  const { data } = await supabase
+    .from("sync_cursori").select("valore")
+    .eq("autoscuola_id", autoscuolaId).eq("chiave", chiave).maybeSingle();
+  return data?.valore || null;
+}
+
+async function scriviCursore(autoscuolaId, chiave, valore) {
+  if (!autoscuolaId) return;
+  await supabase.from("sync_cursori").upsert(
+    { autoscuola_id: autoscuolaId, chiave, valore, updated_at: new Date().toISOString() },
+    { onConflict: "autoscuola_id,chiave" });
+}
+
 /** gg/mm/aaaa → aaaa-mm-gg (null se non è una data). */
 function dataIso(gma) {
   const m = String(gma || "").match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
@@ -1156,13 +1176,30 @@ async function syncArchivioCompleto(opts = {}) {
     const pinPortale = credenziali?.pin || process.env.PORTAL_PIN || null;
     const annoInizio = Number(process.env.ARCHIVIO_ANNO_INIZIO || 2000);
     const fine = new Date();
+    // Interruttore globale: al primo accenno di rifiuto sistematico (403) il
+    // giro storico si SOSPENDE — martellare il Portale rischia il blocco
+    // dell'utenza. Il lavoro fatto è salvo e il cursore riparte da lì.
+    let sospeso403 = false;
 
     const lavoraSezione = async (sezione) => {
       let clientSez = await faiLogin();
       let finestreDaLogin = 0;
+      let erroriConsecutivi = 0, errori403Consecutivi = 0;
       let raccolti = 0, verbaliTot = 0, finestreConDati = 0, salvatiSedute = 0, finestreFatte = 0;
+
+      // Ripresa dal cursore: ultima finestra completata per questa sezione.
+      const chiaveCursore = `verbali_svolti:${sezione.codice}`;
       let da = new Date(annoInizio, 0, 1);
-      while (da <= fine) {
+      const cursore = await leggiCursore(autoscuolaId, chiaveCursore).catch(() => null);
+      if (cursore) {
+        const ripresa = new Date(cursore);
+        if (!isNaN(ripresa) && ripresa > da) {
+          da = ripresa; da.setDate(da.getDate() + 1);
+          console.log(`[syncArchivio] Verbali Svolti ${sezione.desc}: riprendo dal ${fmtDataPortale(da)}`);
+        }
+      }
+
+      while (da <= fine && !sospeso403) {
         let a = new Date(da);
         a.setDate(a.getDate() + 6); // finestra di 7 giorni, limite del Portale
         if (a > fine) a = new Date(fine);
@@ -1208,12 +1245,31 @@ async function syncArchivioCompleto(opts = {}) {
                   tipoSezione: sezione.codice,
                 });
               }
-              await delay(100);
+              await delay(250);
             }
           }
+          erroriConsecutivi = 0;
+          errori403Consecutivi = 0;
+          // Finestra completata: avanza il cursore (aaaa-mm-gg dell'estremo superiore).
+          await scriviCursore(autoscuolaId, chiaveCursore, a.toISOString().slice(0, 10)).catch(() => {});
         } catch (err) {
+          const status = err?.response?.status;
+          erroriConsecutivi++;
+          errori403Consecutivi = status === 403 ? errori403Consecutivi + 1 : 0;
           console.warn(`[syncArchivio] Verbali Svolti ${sezione.desc} ${fmtDataPortale(da)}-${fmtDataPortale(a)}:`, err.message);
-          try { clientSez = await faiLogin(); finestreDaLogin = 0; } catch { /* riprova col vecchio */ }
+          // NIENTE re-login qui: con un 403 non serve e a raffica diventa una
+          // tempesta di login (lezione del 29/08). Solo attesa crescente.
+          await delay(Math.min(2000 * erroriConsecutivi, 30000));
+          if (errori403Consecutivi >= 5) {
+            console.warn(`[syncArchivio] Verbali Svolti ${sezione.desc}: il Portale rifiuta le richieste (403 ripetuti) — GIRO STORICO SOSPESO, si riprenderà dal cursore al prossimo scarico.`);
+            sospeso403 = true;
+            break;
+          }
+          if (erroriConsecutivi >= 10) {
+            console.warn(`[syncArchivio] Verbali Svolti ${sezione.desc}: troppi errori consecutivi — sezione sospesa, si riprenderà dal cursore.`);
+            break;
+          }
+          continue; // NON avanzare il cursore: la finestra fallita si ritenta al prossimo giro
         }
         finestreFatte++;
         finestreDaLogin++;
@@ -1221,14 +1277,18 @@ async function syncArchivioCompleto(opts = {}) {
           console.log(`[syncArchivio] Verbali Svolti ${sezione.desc}: al ${fmtDataPortale(a)} — ${verbaliTot} verbali, ${raccolti} candidati finora`);
         da = new Date(a);
         da.setDate(da.getDate() + 1);
-        await delay(150);
+        await delay(400);
       }
       console.log(`[syncArchivio] Verbali Svolti ${sezione.desc}: ${verbaliTot} verbali in ${finestreConDati} finestre, ${raccolti} candidati nuovi, ${salvatiSedute} sedute salvate`);
       progress("verbali_svolti", verbaliTot, verbaliTot);
     };
 
-    await Promise.all(SEZIONI_VERBALI_SVOLTI.map((s) =>
-      lavoraSezione(s).catch((e) => console.warn(`[syncArchivio] sezione ${s.codice}:`, e.message))));
+    // Sezioni in SERIE, non in parallelo: quattro sessioni simultanee più i
+    // dettagli hanno fatto scattare il rate-limit del Portale (29/08).
+    for (const s of SEZIONI_VERBALI_SVOLTI) {
+      if (sospeso403) break;
+      await lavoraSezione(s).catch((e) => console.warn(`[syncArchivio] sezione ${s.codice}:`, e.message));
+    }
   }
 
   // Sessione fresca per la FASE 2: il giro storico può aver consumato ore.
