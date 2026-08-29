@@ -163,8 +163,8 @@ async function syncArchivioCompletoHandler(req, res) {
         autoscuolaId,
         fetchDettaglio,
         credenziali,
-        onProgress: ({ fase, completati, totale, errori }) => {
-          sendEvent({ event: "progress", fase, completati, totale, errori });
+        onProgress: (p) => {
+          sendEvent({ event: "progress", ...p });
         },
       });
       sendEvent({ event: "done", ...result });

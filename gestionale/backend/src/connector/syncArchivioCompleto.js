@@ -1078,9 +1078,11 @@ async function syncArchivioCompleto(opts = {}) {
 
   if (!idAutAg) throw new Error("idAutAg (codice meccanografico) obbligatorio");
 
-  const progress = (fase, completati, totale, errori = 0) => {
+  // messaggio: riga leggibile mostrata IN DIRETTA nel log del gestionale (SSE).
+  // GDPR: mai nomi, marche o dati personali — solo sezioni, date e conteggi.
+  const progress = (fase, completati, totale, errori = 0, messaggio = "") => {
     if (typeof onProgress === "function") {
-      onProgress({ fase, completati, totale, errori });
+      onProgress({ fase, completati, totale, errori, messaggio });
     }
   };
 
@@ -1093,6 +1095,7 @@ async function syncArchivioCompleto(opts = {}) {
     pin:      credenziali?.pin      || process.env.PORTAL_PIN,
   }));
   let client = await faiLogin();
+  progress("login", 1, 1, 0, "✓ Login al Portale riuscito");
 
   // Combinazioni iPatenteCloud (replica completa GeCA Trasmiss):
   //   P = Patente, Q = CQC
@@ -1131,6 +1134,8 @@ async function syncArchivioCompleto(opts = {}) {
       verbali = ricerca.verbali;
       paginaRisultati = ricerca.html;
       console.log(`[syncArchivio] ${comb.desc}: ${verbali.length} verbali`);
+      progress("situazione", ci + 1, COMBINAZIONI.length, 0,
+        `Situazione Candidati — ${comb.desc}: ${verbali.length} gruppi`);
     } catch (err) {
       console.warn(`[syncArchivio] Errore verbali ${comb.desc}:`, err.message);
       continue;
@@ -1199,6 +1204,8 @@ async function syncArchivioCompleto(opts = {}) {
         }
       }
 
+      progress("verbali_svolti", 0, 0, 0,
+        `▶ Verbali Svolti — ${sezione.desc}: dal ${fmtDataPortale(da)} a oggi (finestre di 7 giorni)`);
       while (da <= fine && !sospeso403) {
         let a = new Date(da);
         a.setDate(a.getDate() + 6); // finestra di 7 giorni, limite del Portale
@@ -1218,6 +1225,8 @@ async function syncArchivioCompleto(opts = {}) {
           if (ricerca.verbali.length) {
             finestreConDati++;
             verbaliTot += ricerca.verbali.length;
+            progress("verbali_svolti", verbaliTot, 0, 0,
+              `  ${sezione.desc} ${fmtDataPortale(da)}–${fmtDataPortale(a)}: ${ricerca.verbali.length} verbali`);
             for (const v of ricerca.verbali) {
               if (!v.id_verbale) continue;
               let cands = await fetchCandidatiVerbaleSvolto(clientSez, ricerca.html, v.id_verbale, pinPortale);
@@ -1262,11 +1271,15 @@ async function syncArchivioCompleto(opts = {}) {
           await delay(Math.min(2000 * erroriConsecutivi, 30000));
           if (errori403Consecutivi >= 5) {
             console.warn(`[syncArchivio] Verbali Svolti ${sezione.desc}: il Portale rifiuta le richieste (403 ripetuti) — GIRO STORICO SOSPESO, si riprenderà dal cursore al prossimo scarico.`);
+            progress("verbali_svolti", verbaliTot, 0, erroriConsecutivi,
+              `⚠ Il Portale rifiuta le richieste (403): giro storico SOSPESO — riprenderà dal punto salvato al prossimo scarico`);
             sospeso403 = true;
             break;
           }
           if (erroriConsecutivi >= 10) {
             console.warn(`[syncArchivio] Verbali Svolti ${sezione.desc}: troppi errori consecutivi — sezione sospesa, si riprenderà dal cursore.`);
+            progress("verbali_svolti", verbaliTot, 0, erroriConsecutivi,
+              `⚠ ${sezione.desc}: troppi errori consecutivi — sezione sospesa (riprenderà dal punto salvato)`);
             break;
           }
           continue; // NON avanzare il cursore: la finestra fallita si ritenta al prossimo giro
@@ -1275,12 +1288,16 @@ async function syncArchivioCompleto(opts = {}) {
         finestreDaLogin++;
         if (finestreFatte % 100 === 0)
           console.log(`[syncArchivio] Verbali Svolti ${sezione.desc}: al ${fmtDataPortale(a)} — ${verbaliTot} verbali, ${raccolti} candidati finora`);
+        if (finestreFatte % 25 === 0)
+          progress("verbali_svolti", verbaliTot, 0, 0,
+            `  ${sezione.desc}: arrivato al ${fmtDataPortale(a)} — ${verbaliTot} verbali, ${raccolti} candidati finora`);
         da = new Date(a);
         da.setDate(da.getDate() + 1);
         await delay(400);
       }
       console.log(`[syncArchivio] Verbali Svolti ${sezione.desc}: ${verbaliTot} verbali in ${finestreConDati} finestre, ${raccolti} candidati nuovi, ${salvatiSedute} sedute salvate`);
-      progress("verbali_svolti", verbaliTot, verbaliTot);
+      progress("verbali_svolti", verbaliTot, verbaliTot, 0,
+        `✓ Verbali Svolti — ${sezione.desc}: ${verbaliTot} verbali, ${raccolti} candidati nuovi, ${salvatiSedute} sedute salvate`);
     };
 
     // Sezioni in SERIE, non in parallelo: quattro sessioni simultanee più i
@@ -1296,7 +1313,8 @@ async function syncArchivioCompleto(opts = {}) {
 
   const candidatiList = Array.from(candidatiMap.values());
   console.log(`[syncArchivio] Trovati ${candidatiList.length} candidati unici`);
-  progress("candidati_trovati", candidatiList.length, candidatiList.length);
+  progress("candidati_trovati", candidatiList.length, candidatiList.length, 0,
+    `Candidati unici raccolti: ${candidatiList.length} — scarico le schede individuali…`);
 
   if (candidatiList.length === 0) {
     return { inserted: 0, updated: 0, errors: 0, skipped: 0, found: 0 };
@@ -1337,6 +1355,8 @@ async function syncArchivioCompleto(opts = {}) {
           if (schedeErroriConsecutivi >= 8 && !schedeSospese) {
             schedeSospese = true;
             console.warn("[syncArchivio] Schede individuali: troppi errori consecutivi (rate-limit?) — SOSPESE per questo giro, si upserta coi dati di lista.");
+            progress("upsert", i + 1, candidatiList.length, errors,
+              "⚠ Il Portale rifiuta le schede in serie: sospese per questo giro (si salvano i dati di lista)");
           }
         }
       }
@@ -1349,7 +1369,8 @@ async function syncArchivioCompleto(opts = {}) {
     }
 
     if (i % 5 === 0) {
-      progress("upsert", i + 1, candidatiList.length, errors);
+      progress("upsert", i + 1, candidatiList.length, errors,
+        `  Schede: ${i + 1}/${candidatiList.length}${errors ? ` (errori ${errors})` : ""}`);
     }
   };
 
@@ -1363,12 +1384,15 @@ async function syncArchivioCompleto(opts = {}) {
     try {
       esitiSalvati = await salvaEsitiEsami(esitiRaccolti, autoscuolaId);
       console.log(`[syncArchivio] Esiti esami: ${esitiSalvati} salvati su ${esitiRaccolti.length} raccolti`);
+      progress("esiti", esitiSalvati, esitiRaccolti.length, 0,
+        `Esiti esami salvati: ${esitiSalvati} su ${esitiRaccolti.length}`);
     } catch (err) {
       console.warn("[syncArchivio] Errore salvataggio esiti:", err.message);
     }
   }
 
-  progress("completato", candidatiList.length, candidatiList.length, errors);
+  progress("completato", candidatiList.length, candidatiList.length, errors,
+    `✓ Motore: ${inserted} candidati inseriti/aggiornati, ${errors} errori`);
   console.log(`[syncArchivio] Completato: ${inserted} inseriti/aggiornati, ${errors} errori`);
 
   return {
