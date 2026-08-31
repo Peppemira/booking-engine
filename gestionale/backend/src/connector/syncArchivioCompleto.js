@@ -33,6 +33,12 @@ const supabase = require("../database/supabase");
 const BASE_URL = "https://www.ilportaledellautomobilista.it";
 
 const SYNC_MAX_CONCURRENCY = Number(process.env.SYNC_MAX_CONCURRENCY || 3);
+// Le SCHEDE individuali si chiedono UNA PER VOLTA. La maschera «Richiesta Esame»
+// è stateful lato server (l'init posiziona la ricerca nella sessione Struts):
+// tre init in parallelo sullo stesso JSESSIONID si sovrascrivono il bean e il
+// Portale risponde 500 a raffica — è ciò che è successo il 31/08, quando TUTTE
+// le 89 schede hanno dato 500 immediato. Il gestionale, che funziona, è seriale.
+const SYNC_SCHEDE_CONCURRENCY = Number(process.env.SYNC_SCHEDE_CONCURRENCY || 1);
 const SYNC_DETAIL_DELAY_MS = Number(process.env.SYNC_DETAIL_DELAY_MS || 200);
 
 // ---------------------------------------------------------------------------
@@ -565,6 +571,21 @@ async function eseguiRicercaVerbaliSvolti(client, { sezione, dataDa, dataA, uffi
   throw new Error("init Verbali Svolti non raggiungibile (home su entrambe le varianti)");
 }
 
+/**
+ * Indirizzo vero di una submit Struts a partire dal nome del bottone:
+ * "action:Read_paging" nella maschera .../richiestaEsame/Read_initAction.action
+ * → .../richiestaEsame/Read_paging.action. Replica UrlDellAzione del gestionale.
+ */
+function urlDellAzione(nomeAzione, initUrl) {
+  const nome = String(nomeAzione || "").replace(/^action:/i, "").trim();
+  if (!nome || !initUrl) return null;
+  try {
+    const u = new URL(initUrl);
+    const dir = u.pathname.replace(/\/[^/]*$/, "");
+    return `${u.origin}${dir}/${nome}.action`;
+  } catch { return null; }
+}
+
 /** Dettaglio di un verbale svolto: candidati esaminati con esito e celle grezze. */
 async function fetchCandidatiVerbaleSvolto(client, paginaRisultati, idVerbale, pin = null, referer = null) {
   const $ = cheerio.load(paginaRisultati || "");
@@ -815,9 +836,10 @@ async function fetchSchedaCandidato(client, {
   const initUrl = `${BASE_URL}/RichiestaPatenti/richiestaEsame/Read_initAction.action?pageStatus=SEARCH`;
   let html;
   try {
-    html = (await client.get(initUrl, {
-      headers: { Referer: `${BASE_URL}/prenotazione/menu/LoadMenu_execute.action` },
-    })).data;
+    // NESSUN Referer: questa maschera sta in /RichiestaPatenti/, un'applicazione
+    // diversa da /prenotazione/. Dichiarare il menu dell'altra area come
+    // provenienza è un pattern che il WAF nota; il gestionale non manda nulla.
+    html = (await client.get(initUrl)).data;
   } catch (err) {
     // NON si restituisce {} in silenzio: così il chiamante conta l'errore e
     // l'interruttore delle schede può scattare (prima restava a zero e si
@@ -838,14 +860,15 @@ async function fetchSchedaCandidato(client, {
   applicaCriteriSelect($, form, payload, {});
   scriviPerFrammento(payload, "richiestaFrom.idAutAg", String(idAutAg || ""));
   scriviPerFrammento(payload, "codiceUffOperativo", String(codUfficioMctc || ""));
+  // UN SOLO criterio: il Portale vuole marca OPPURE patente OPPURE codice
+  // fiscale OPPURE i dati anagrafici — "in alternativa" (spec §5.12). Mandarne
+  // due insieme è una delle cause del rifiuto.
   scriviPerFrammento(payload, "richiestaFrom.marcaOperativa", String(marcaOperativa || ""));
-  if (codiceFiscale) scriviPerFrammento(payload, "theAnagrafica.codiceFiscale", String(codiceFiscale));
   if (useEstesa) {
-    // La casella «ricerca estesa» include i candidati storici: se il form la
-    // espone come checkbox non spuntata non è nel payload — va aggiunta.
-    if (!scriviPerFrammento(payload, "indicatoreRicercaEstesa", "S")) {
-      payload.set("richiestaPerEsameView.richiestaFrom.indicatoreRicercaEstesa", "S");
-    }
+    // La casella «ricerca estesa» si spunta SOLO se la maschera la espone
+    // davvero: un nome-campo inventato non esiste nel DOM e fa saltare il
+    // binding lato server (Regola #1 — i nomi si leggono, non si indovinano).
+    scriviPerFrammento(payload, "indicatoreRicercaEstesa", "S");
   }
   rimuoviAzioni(payload);
   let azioneScheda = null;
@@ -857,7 +880,11 @@ async function fetchSchedaCandidato(client, {
   if (azioneScheda) payload.set(azioneScheda.n, azioneScheda.v);
   else payload.set("action:Read_paging", "Ricerca");
 
-  const action = risolviActionForm(form, initUrl);
+  // La ricerca va spedita all'AZIONE, non alla pagina che disegna la maschera:
+  // l'action del form è l'init (Read_initAction), e spedendo lì il Portale
+  // ri-disegna la maschera vuota invece di cercare (spec §5.12). L'indirizzo
+  // vero si ricava dal nome del bottone: action:Read_paging → Read_paging.action
+  const action = urlDellAzione(azioneScheda?.n, initUrl) || risolviActionForm(form, initUrl);
   let outHtml = (await client.post(action, serializePayloadRaw(payload), {
     headers: { "Content-Type": "application/x-www-form-urlencoded", Origin: BASE_URL, Referer: initUrl },
   })).data;
@@ -1193,9 +1220,78 @@ async function syncArchivioCompleto(opts = {}) {
     }
   }
 
+  // ── FASE 2: schede individuali ────────────────────────────────────────────
+  // Le schede portano il DATO CHE CONTA (codice fiscale vero, nascita,
+  // residenza, foto, firma). Si fanno SUBITO, sui candidati correnti, PRIMA
+  // del giro storico: quello dura ore e può cadere (collaudo 31/08: la
+  // connessione si è chiusa a metà e l'anagrafica non è mai arrivata).
+  let inserted = 0;
+  let updated  = 0;
+  let errors   = 0;
+  let skipped  = 0;
+  // Interruttore: se il Portale rifiuta le schede in serie si smette di
+  // chiederle e si upserta coi soli dati di lista.
+  let schedeErroriConsecutivi = 0;
+  let schedeSospese = false;
+  const elaborati = new Set(); // marche già passate, per non rifarle nel secondo giro
+
+  const elaboraSchede = async (lista, etichetta) => {
+    const daFare = lista.filter((c) => c.marcaOperativa && !elaborati.has(c.marcaOperativa));
+    if (!daFare.length) return;
+    progress("candidati_trovati", daFare.length, daFare.length, 0,
+      `Candidati ${etichetta}: ${daFare.length} — scarico le schede individuali…`);
+
+    const processCandidate = async (candidatoRow, i) => {
+      elaborati.add(candidatoRow.marcaOperativa);
+      try {
+        let scheda = {};
+
+        if (fetchDettaglio && candidatoRow.marcaOperativa && !schedeSospese) {
+          try {
+            scheda = await fetchSchedaCandidato(client, {
+              idAutAg,
+              codUfficioMctc,
+              marcaOperativa: candidatoRow.marcaOperativa,
+              pin: credenziali?.pin || process.env.PORTAL_PIN || null,
+            });
+            schedeErroriConsecutivi = 0;
+            await delay(SYNC_DETAIL_DELAY_MS);
+          } catch (err) {
+            console.warn(`[syncArchivio] Errore scheda ${candidatoRow.marcaOperativa}:`, err.message);
+            scheda = {};
+            schedeErroriConsecutivi++;
+            if (schedeErroriConsecutivi >= 8 && !schedeSospese) {
+              schedeSospese = true;
+              console.warn("[syncArchivio] Schede individuali: troppi errori consecutivi — SOSPESE per questo giro, si upserta coi dati di lista.");
+              progress("upsert", i + 1, daFare.length, errors,
+                `⚠ Il Portale rifiuta le schede (${err.message}): sospese per questo giro — si salvano i dati di lista`);
+            }
+          }
+        }
+
+        await upsertCandidatoCompleto(scheda, candidatoRow, autoscuolaId);
+        inserted++;
+      } catch (err) {
+        console.warn(`[syncArchivio] Errore upsert candidato:`, err.message);
+        errors++;
+      }
+
+      if (i % 5 === 0) {
+        progress("upsert", i + 1, daFare.length, errors,
+          `  Schede ${etichetta}: ${i + 1}/${daFare.length}${errors ? ` (errori ${errors})` : ""}`);
+      }
+    };
+
+    await mapConcurrent(daFare, processCandidate, SYNC_SCHEDE_CONCURRENCY);
+    progress("upsert", daFare.length, daFare.length, errors,
+      `✓ Schede ${etichetta}: ${daFare.length} elaborate${schedeSospese ? " (schede del Portale non disponibili: salvati i dati di lista)" : ""}`);
+  };
+
+  await elaboraSchede(Array.from(candidatiMap.values()), "correnti");
+
   // ── FASE 1-ter: ARCHIVIO STORICO dai VERBALI SVOLTI ───────────────────────
   // Come il gestionale (PortaleNativeService.Verbali.cs): 4 sezioni, finestre
-  // di MAX 7 GIORNI (limite del Portale) da ARCHIVIO_ANNO_INIZIO (default 2000)
+  // di MAX 7 GIORNI (limite del Portale) da ARCHIVIO_ANNO_INIZIO (default 2014)
   // a oggi. Le sezioni girano in SERIE sulla sessione della FASE 1,
   // re-login ogni 30 finestre. Ogni verbale: riga di seduta → verbali_svolti;
   // Dettaglio → candidati con esito (anagrafica + esiti_esami).
@@ -1206,7 +1302,11 @@ async function syncArchivioCompleto(opts = {}) {
   let sospeso403 = false;
   {
     const pinPortale = credenziali?.pin || process.env.PORTAL_PIN || null;
-    const annoInizio = Number(process.env.ARCHIVIO_ANNO_INIZIO || 2000);
+    // 2014: è da lì che il Portale ha i verbali (era GeCA). Col 2000 si
+    // spendevano 14 anni di finestre a vuoto — 700+ richieste inutili per
+    // sezione — e il giro cadeva prima di arrivare alle fasi che contano
+    // (collaudo 31/08: dal 01/01/2000 al 15/08/2008 tutte a zero verbali).
+    const annoInizio = Number(process.env.ARCHIVIO_ANNO_INIZIO || 2014);
     const fine = new Date();
 
     const lavoraSezione = async (sezione) => {
@@ -1334,74 +1434,20 @@ async function syncArchivioCompleto(opts = {}) {
     }
   }
 
-  // Sessione fresca per la FASE 2: il giro storico può aver consumato ore.
-  try { client = await faiLogin(); } catch { /* riusa la sessione esistente */ }
-
   const candidatiList = Array.from(candidatiMap.values());
   console.log(`[syncArchivio] Trovati ${candidatiList.length} candidati unici`);
-  progress("candidati_trovati", candidatiList.length, candidatiList.length, 0,
-    `Candidati unici raccolti: ${candidatiList.length} — scarico le schede individuali…`);
 
-  if (candidatiList.length === 0) {
+  if (candidatiList.length === 0 && !elaborati.size) {
     return { inserted: 0, updated: 0, errors: 0, skipped: 0, found: 0,
-             storicoSospeso: sospeso403, schedeSospese: false };
+             storicoSospeso: sospeso403, schedeSospese };
   }
 
-  // ── FASE 2: scheda individuale + upsert ───────────────────────────────────
-  let inserted = 0;
-  let updated  = 0;
-  let errors   = 0;
-  let skipped  = 0;
-
-  progress("upsert", 0, candidatiList.length);
-
-  // Interruttore anche qui: se il Portale rifiuta le schede in serie (403/500
-  // da rate-limit), si smette di chiederle e si upserta coi soli dati di lista
-  // — le schede arriveranno al prossimo scarico a blocco rientrato.
-  let schedeErroriConsecutivi = 0;
-  let schedeSospese = false;
-
-  const processCandidate = async (candidatoRow, i) => {
-    try {
-      let scheda = {};
-
-      if (fetchDettaglio && candidatoRow.marcaOperativa && !schedeSospese) {
-        try {
-          scheda = await fetchSchedaCandidato(client, {
-            idAutAg,
-            codUfficioMctc,
-            marcaOperativa: candidatoRow.marcaOperativa,
-            pin: credenziali?.pin || process.env.PORTAL_PIN || null,
-          });
-          schedeErroriConsecutivi = 0;
-          await delay(SYNC_DETAIL_DELAY_MS);
-        } catch (err) {
-          console.warn(`[syncArchivio] Errore scheda ${candidatoRow.marcaOperativa}:`, err.message);
-          scheda = {};
-          schedeErroriConsecutivi++;
-          if (schedeErroriConsecutivi >= 8 && !schedeSospese) {
-            schedeSospese = true;
-            console.warn("[syncArchivio] Schede individuali: troppi errori consecutivi (rate-limit?) — SOSPESE per questo giro, si upserta coi dati di lista.");
-            progress("upsert", i + 1, candidatiList.length, errors,
-              "⚠ Il Portale rifiuta le schede in serie: sospese per questo giro (si salvano i dati di lista)");
-          }
-        }
-      }
-
-      await upsertCandidatoCompleto(scheda, candidatoRow, autoscuolaId);
-      inserted++;
-    } catch (err) {
-      console.warn(`[syncArchivio] Errore upsert ${candidatoRow.cognome}:`, err.message);
-      errors++;
-    }
-
-    if (i % 5 === 0) {
-      progress("upsert", i + 1, candidatiList.length, errors,
-        `  Schede: ${i + 1}/${candidatiList.length}${errors ? ` (errori ${errors})` : ""}`);
-    }
-  };
-
-  await mapConcurrent(candidatiList, processCandidate, SYNC_MAX_CONCURRENCY);
+  // Schede dei candidati aggiunti dal giro storico (i correnti sono già fatti).
+  // Sessione fresca: il giro storico può aver consumato ore.
+  if (candidatiList.some((c) => c.marcaOperativa && !elaborati.has(c.marcaOperativa))) {
+    try { client = await faiLogin(); } catch { /* riusa la sessione esistente */ }
+  }
+  await elaboraSchede(candidatiList, "storici");
 
   // ── FASE 3: esiti d'esame per candidato (dai Dettagli dei Verbali Svolti) ──
   // Va DOPO la FASE 2: la risoluzione marca → candidato_id richiede che i
@@ -1504,5 +1550,6 @@ module.exports = {
   fetchVerbaliList,
   fetchCandidatiInVerbale,
   parseSchedaCandidatoHtml,
+  urlDellAzione,
   STORAGE_BUCKET,
 };
