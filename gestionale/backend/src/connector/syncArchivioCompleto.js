@@ -223,6 +223,44 @@ function trovaFormRicerca($) {
 }
 
 /**
+ * Il form GIUSTO è quello che CONTIENE il campo da compilare, non quello con
+ * più campi: sbagliando form si perdono i token della pagina (struts.token.*,
+ * pageStatus, gli hidden di sezione) e il Portale risponde con una maschera
+ * valida ma VUOTA — zero righe, nessun errore — oppure va in 500.
+ * Ripiego: il form più popoloso, com'era prima.
+ */
+function trovaFormColCampo($, ...frammenti) {
+  let migliore = null, campiMax = -1;
+  $("form").each((_, f) => {
+    const $f = $(f);
+    const action = String($f.attr("action") || "").toLowerCase();
+    if (action.includes("dispatcherentry") || action.includes("/sso/")) return;
+    const nomi = $f.find("input, select, textarea").map((_, el) =>
+      String($(el).attr("name") || "").toLowerCase()).get();
+    const contiene = frammenti.some((fr) =>
+      nomi.some((nm) => nm.includes(String(fr).toLowerCase())));
+    if (!contiene) return;
+    const campi = nomi.length;
+    if (campi > campiMax) { campiMax = campi; migliore = $f; }
+  });
+  return migliore || trovaFormRicerca($);
+}
+
+/** Coda a DUE segmenti di un nome-campo: diagnostica leggibile e GDPR-safe. */
+function coda2(nome) {
+  const parti = String(nome || "").split(".");
+  return parti.length <= 2 ? String(nome || "") : parti.slice(-2).join(".");
+}
+
+/** Messaggio di validazione/errore che il Portale mostra in pagina (troncato). */
+function messaggioPortale(html) {
+  const $ = cheerio.load(html || "");
+  const t = [".errorMessage", ".actionMessage", ".errorText", "span.error", ".messaggio"]
+    .map((sel) => norm($(sel).first().text())).find((x) => x && x.length > 3);
+  return t ? t.slice(0, 300) : "";
+}
+
+/**
  * Sceglie l'option giusta di ogni select del form LEGGENDO le option reali
  * (mai valori inventati): criterio esplicito per frammento di nome se la sua
  * option esiste; altrimenti selected → «tutti/tutte» → prima con value.
@@ -494,6 +532,7 @@ function parseTabellaGrande(html) {
  */
 async function eseguiRicercaVerbaliSvolti(client, { sezione, dataDa, dataA, ufficio, pin = null }) {
   const vuoto = { verbali: [], html: "", tabella: { colonne: [], righe: [] } };
+  let diagnosi = ""; // perché una finestra è tornata vuota (per il log in diretta)
   // Prima la variante /prenotazione (l'unica usata con successo dal resto del
   // sistema), poi quella nuda. Un errore HTTP sull'init (403 del WAF compreso:
   // dal 29/08 risponde 403 dove prima dava 404) NON è fatale finché resta una
@@ -514,18 +553,28 @@ async function eseguiRicercaVerbaliSvolti(client, { sezione, dataDa, dataA, uffi
     if (paginaHome(html)) continue; // endpoint non valido: prova la variante
 
     const $ = cheerio.load(html || "");
-    const form = trovaFormRicerca($);
+    // Il form è quello che CONTIENE i campi della ricerca: prendendo il più
+    // popoloso si rischia un form di contorno, senza i token della maschera.
+    const form = trovaFormColCampo($, "dataVerbaleEsameAbilitazione", "codUfficioMCTC");
     if (!form) {
       console.warn(`[syncArchivio] Verbali Svolti ${sezione.codice}: nessun form, title =`, titoloPagina(html));
       return vuoto;
     }
 
     const payload = costruisciPayloadDaForm($, form);
+    // La data «a» vive su DUE convenzioni diverse a seconda della versione della
+    // maschera (…EPFrom.dataVerbaleEsameAbilitazioneTO.… oppure …EPTo.data…):
+    // si valorizzano ENTRAMBE, così la finestra è giusta in tutti e due i casi.
+    let nUff = 0, nDa = 0, nA = 0;
     for (const key of Array.from(new Set(payload.keys()))) {
-      if (key.includes("codUfficioMCTC")) payload.set(key, ufficio || "");
-      else if (key.includes("dataVerbaleEsameAbilitazioneTO")) payload.set(key, dataA);
-      else if (key.endsWith("dataVerbaleEsameAbilitazione")) payload.set(key, dataDa);
-      else if (key.includes("codiceTipoProvaSedutaEsame")) payload.set(key, ""); // tutte le prove
+      const low = key.toLowerCase();
+      if (low.includes("codufficiomctc")) { payload.set(key, ufficio || ""); nUff++; }
+      else if (low.includes("dataverbaleesameabilitazioneto") || low.includes("epto.")) { payload.set(key, dataA); nA++; }
+      else if (low.endsWith("dataverbaleesameabilitazione")) { payload.set(key, dataDa); nDa++; }
+      else if (low.includes("codicetipoprovasedutaesame")) payload.set(key, ""); // tutte le prove
+    }
+    if (!nDa || !nA) {
+      console.warn(`[syncArchivio] Verbali ${sezione.codice}: campi data non trovati (da=${nDa}, a=${nA}, uff=${nUff}) — campi del form: ${Array.from(new Set(payload.keys())).map(coda2).slice(0, 12).join(", ")}`);
     }
     rimuoviAzioni(payload);
     payload.set(sezione.azione, "Ricerca");
@@ -539,6 +588,14 @@ async function eseguiRicercaVerbaliSvolti(client, { sezione, dataDa, dataA, uffi
 
     // Paging: segue le eventuali pagine successive (di norma 1 con finestre di 7gg)
     const verbali = parseVerbaliFromHtml(outHtml, true);
+    if (!verbali.length && !parseTabellaGrande(outHtml).righe.length) {
+      // Zero righe senza errore: il più delle volte NON è "non ci sono verbali",
+      // è la maschera ri-disegnata (token mancante o criterio non arrivato).
+      // Si dice cosa risponde il Portale, invece di contare zero in silenzio.
+      const msg = messaggioPortale(outHtml);
+      diagnosi = `pagina "${titoloPagina(outHtml)}"${msg ? `, risposta del Portale: ${msg}` : ""} (campi inviati: ${Array.from(payload.keys()).length})`;
+      console.warn(`[syncArchivio] Verbali ${sezione.codice} ${dataDa}-${dataA}: 0 righe — ${diagnosi}`);
+    }
     const tabella = parseTabellaGrande(outHtml);
     let pagHtml = outHtml;
     for (let pag = 2; pag <= 10; pag++) {
@@ -565,7 +622,7 @@ async function eseguiRicercaVerbaliSvolti(client, { sezione, dataDa, dataA, uffi
       tabella.righe.push(...tN.righe);
     }
 
-    return { verbali, html: outHtml, tabella, initUrl };
+    return { verbali, html: outHtml, tabella, initUrl, diagnosi };
   }
   if (ultimoErroreInit) throw ultimoErroreInit;
   throw new Error("init Verbali Svolti non raggiungibile (home su entrambe le varianti)");
@@ -653,6 +710,13 @@ async function leggiCursore(autoscuolaId, chiave) {
     .from("sync_cursori").select("valore")
     .eq("autoscuola_id", autoscuolaId).eq("chiave", chiave).maybeSingle();
   return data?.valore || null;
+}
+
+async function cancellaCursore(autoscuolaId, chiave) {
+  if (!autoscuolaId) return;
+  const { error } = await supabase.from("sync_cursori")
+    .delete().eq("autoscuola_id", autoscuolaId).eq("chiave", chiave);
+  if (error) console.warn(`[syncArchivio] cursore ${chiave} non cancellato:`, error.message);
 }
 
 async function scriviCursore(autoscuolaId, chiave, valore) {
@@ -850,7 +914,10 @@ async function fetchSchedaCandidato(client, {
   html = await seguiDispatcherEPin(client, html, initUrl, pin);
 
   const $ = cheerio.load(html || "");
-  const form = trovaFormRicerca($);
+  // Il form della ricerca è quello che CONTIENE il campo marca operativa: col
+  // form "più popoloso" si finiva su un altro modulo, senza i token della
+  // maschera — e il POST tornava 500.
+  const form = trovaFormColCampo($, "marcaOperativa", "theAnagrafica");
   if (!form) {
     console.warn("[syncArchivio] maschera Richiesta Esame senza form, title =", titoloPagina(html));
     throw new Error("maschera Richiesta Esame senza form (rimbalzo o rifiuto del Portale)");
@@ -858,12 +925,17 @@ async function fetchSchedaCandidato(client, {
 
   const payload = costruisciPayloadDaForm($, form);
   applicaCriteriSelect($, form, payload, {});
-  scriviPerFrammento(payload, "richiestaFrom.idAutAg", String(idAutAg || ""));
-  scriviPerFrammento(payload, "codiceUffOperativo", String(codUfficioMctc || ""));
+  const nAut = scriviPerFrammento(payload, "richiestaFrom.idAutAg", String(idAutAg || ""));
+  const nUff = scriviPerFrammento(payload, "codiceUffOperativo", String(codUfficioMctc || ""));
   // UN SOLO criterio: il Portale vuole marca OPPURE patente OPPURE codice
   // fiscale OPPURE i dati anagrafici — "in alternativa" (spec §5.12). Mandarne
   // due insieme è una delle cause del rifiuto.
-  scriviPerFrammento(payload, "richiestaFrom.marcaOperativa", String(marcaOperativa || ""));
+  const nMarca = scriviPerFrammento(payload, "richiestaFrom.marcaOperativa", String(marcaOperativa || ""));
+  if (!nMarca) {
+    // Senza il campo della marca la ricerca partirebbe SENZA criterio: meglio
+    // dire quali campi ha davvero la maschera (solo le code: nessun dato).
+    console.warn(`[syncArchivio] scheda: campo marca non trovato (aut=${nAut}, uff=${nUff}) — campi: ${Array.from(new Set(payload.keys())).map(coda2).slice(0, 15).join(", ")}`);
+  }
   if (useEstesa) {
     // La casella «ricerca estesa» si spunta SOLO se la maschera la espone
     // davvero: un nome-campo inventato non esiste nel DOM e fa saltare il
@@ -885,12 +957,30 @@ async function fetchSchedaCandidato(client, {
   // ri-disegna la maschera vuota invece di cercare (spec §5.12). L'indirizzo
   // vero si ricava dal nome del bottone: action:Read_paging → Read_paging.action
   const action = urlDellAzione(azioneScheda?.n, initUrl) || risolviActionForm(form, initUrl);
-  let outHtml = (await client.post(action, serializePayloadRaw(payload), {
-    headers: { "Content-Type": "application/x-www-form-urlencoded", Origin: BASE_URL, Referer: initUrl },
-  })).data;
+  let outHtml;
+  try {
+    outHtml = (await client.post(action, serializePayloadRaw(payload), {
+      headers: { "Content-Type": "application/x-www-form-urlencoded", Origin: BASE_URL, Referer: initUrl },
+    })).data;
+  } catch (err) {
+    // Il codice HTTP da solo non dice nulla: si riporta anche COSA ha risposto
+    // il Portale (di norma la pagina d'errore Struts col nome del parametro
+    // incriminato). Solo testo tecnico, mai dati personali.
+    const corpo = typeof err?.response?.data === "string" ? err.response.data : "";
+    const dettaglio = messaggioPortale(corpo) || norm(corpo.replace(/<[^>]+>/g, " ")).slice(0, 300);
+    console.warn(`[syncArchivio] scheda: POST ${action} → HTTP ${err?.response?.status}`
+      + ` (campi inviati: ${Array.from(payload.keys()).length})${dettaglio ? ` — risposta: ${dettaglio}` : ""}`);
+    if (dettaglio) err.message = `${err.message} — il Portale risponde: ${dettaglio.slice(0, 160)}`;
+    throw err;
+  }
   outHtml = await seguiDispatcherEPin(client, outHtml, action, pin);
 
-  return parseSchedaCandidatoHtml(outHtml);
+  const scheda = parseSchedaCandidatoHtml(outHtml);
+  if (!scheda || !scheda.codice_fiscale) {
+    const msg = messaggioPortale(outHtml);
+    console.warn(`[syncArchivio] scheda senza codice fiscale — title="${titoloPagina(outHtml)}"${msg ? `, messaggio="${msg}"` : ""}`);
+  }
+  return scheda;
 }
 
 /**
@@ -1260,6 +1350,12 @@ async function syncArchivioCompleto(opts = {}) {
             console.warn(`[syncArchivio] Errore scheda ${candidatoRow.marcaOperativa}:`, err.message);
             scheda = {};
             schedeErroriConsecutivi++;
+            if (schedeErroriConsecutivi === 1) {
+              // Il primo rifiuto si vede subito nel log del gestionale, col
+              // motivo che il Portale ha dato — non solo il numero d'errore.
+              progress("upsert", i + 1, daFare.length, errors,
+                `  ⚠ Prima scheda rifiutata: ${String(err.message).slice(0, 220)}`);
+            }
             if (schedeErroriConsecutivi >= 8 && !schedeSospese) {
               schedeSospese = true;
               console.warn("[syncArchivio] Schede individuali: troppi errori consecutivi — SOSPESE per questo giro, si upserta coi dati di lista.");
@@ -1317,6 +1413,7 @@ async function syncArchivioCompleto(opts = {}) {
       let finestreDaLogin = 0;
       let erroriConsecutivi = 0, errori403Consecutivi = 0;
       let raccolti = 0, verbaliTot = 0, finestreConDati = 0, salvatiSedute = 0, finestreFatte = 0;
+      let zeroSpiegato = false; // il primo "zero righe" si spiega una volta sola
 
       // Ripresa dal cursore: ultima finestra completata per questa sezione.
       const chiaveCursore = `verbali_svolti:${sezione.codice}`;
@@ -1344,6 +1441,12 @@ async function syncArchivioCompleto(opts = {}) {
             sezione, dataDa: fmtDataPortale(da), dataA: fmtDataPortale(a),
             ufficio: codUfficioMctc, pin: pinPortale,
           });
+          if (!ricerca.verbali.length && !ricerca.tabella.righe.length && !zeroSpiegato) {
+            zeroSpiegato = true;
+            const spia = ricerca.diagnosi || "";
+            progress("verbali_svolti", 0, 0, 0,
+              `  ⓘ ${sezione.desc}: prima settimana senza righe${spia ? ` — ${spia}` : ""}`);
+          }
           if (ricerca.tabella.righe.length) {
             salvatiSedute += await salvaVerbaliSvoltiSupabase(ricerca.tabella, sezione.codice, autoscuolaId)
               .catch((e) => { console.warn(`[syncArchivio] verbali_svolti ${sezione.codice}:`, e.message); return 0; });
@@ -1422,6 +1525,17 @@ async function syncArchivioCompleto(opts = {}) {
         await delay(400);
       }
       console.log(`[syncArchivio] Verbali Svolti ${sezione.desc}: ${verbaliTot} verbali in ${finestreConDati} finestre, ${raccolti} candidati nuovi, ${salvatiSedute} sedute salvate`);
+      // Una sezione che ha percorso lo storico e NON ha trovato NULLA non ha
+      // diritto di dichiararsi completata: il cursore si cancella, così il
+      // prossimo giro riparte dall'inizio invece di saltare tutto.
+      // (31/08: il cursore Conseguimento era arrivato a fine 2026 dopo giri a
+      // vuoto, e da lì in poi lo storico veniva saltato in silenzio.)
+      if (verbaliTot === 0 && finestreFatte > 0) {
+        await cancellaCursore(autoscuolaId, chiaveCursore).catch(() => {});
+        console.warn(`[syncArchivio] Verbali Svolti ${sezione.desc}: zero risultati su ${finestreFatte} finestre — cursore azzerato (la ricerca non ha prodotto nulla, non è una sezione vuota).`);
+        progress("verbali_svolti", 0, 0, 0,
+          `⚠ ${sezione.desc}: nessun verbale su ${finestreFatte} settimane percorse — il punto di ripresa è stato azzerato (si ricomincerà da capo, non si salta lo storico)`);
+      }
       progress("verbali_svolti", verbaliTot, verbaliTot, 0,
         `✓ Verbali Svolti — ${sezione.desc}: ${verbaliTot} verbali, ${raccolti} candidati nuovi, ${salvatiSedute} sedute salvate`);
     };
