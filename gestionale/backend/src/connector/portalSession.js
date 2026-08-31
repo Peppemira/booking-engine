@@ -400,6 +400,16 @@ let persistentPage = null;
 let persistentLastLoginAt = 0;
 let persistentLastTabType = "";  // Ultimo tipo tab usato (SQI, SGOS, etc.) per fast path
 
+// Cache stato dettaglio per fast-path della stampa: dopo readSessioneDettaglioViaBrowser
+// la pagina ha il form Select_listCandidati caricato via setContent, ma page.url() non riflette
+// questo stato (resta sull'URL della ricerca). Memorizziamo i parametri per consentire
+// alla stampa di skippare ricerca+selezione+dettaglio quando il dettaglio è già in DOM.
+let persistentDetailUsername = "";       // username dell'ultimo dettaglio caricato
+let persistentDetailSessionIndex = -1;   // sessionIndex dell'ultimo dettaglio
+let persistentDetailSearchKey = "";      // dataDa|dataA|stato dell'ultimo dettaglio
+let persistentDetailHtml = "";           // HTML del dettaglio (per re-setContent se la pagina ha perso lo stato)
+let persistentDetailLoadedAt = 0;        // timestamp creazione cache (TTL)
+
 // Mutex per serializzare accesso al browser persistente (evita conflitti tra richieste concorrenti)
 let _browserMutex = Promise.resolve();
 function acquireBrowserLock() {
@@ -451,6 +461,12 @@ async function getBrowserAndPageForSession(username, password, pin, trace) {
         }
         persistentBrowser = null;
         persistentPage = null;
+        // Invalida cache dettaglio: la pagina è morta, lo stato non è più valido
+        persistentDetailUsername = "";
+        persistentDetailSessionIndex = -1;
+        persistentDetailSearchKey = "";
+        persistentDetailHtml = "";
+        persistentDetailLoadedAt = 0;
       }
     }
 
@@ -2678,22 +2694,21 @@ class PortalSession {
 }
 
 // =============================================================================
-// LOGIN DIRETTO VIA HTTP (SECONDO TRUCCO — STESSO MECCANISMO iPatenteCloud)
+// LOGIN DIRETTO VIA HTTP (SENZA BROWSER)
 // =============================================================================
-// Invece di lanciare Puppeteer, mandiamo direttamente una GET alla action URL
-// con le credenziali in query string — esattamente come fa iPatenteCloud con
-// url_portale_login_nopin / url_portale_login_pin.
+// Via primaria: POST del form a Login_initAction.action + catena dispatcher
+// SSO/PIN — lo stesso meccanismo del gestionale IO PATENTE, che il Portale
+// accetta. La vecchia GET con credenziali in query string (stile iPatenteCloud)
+// resta come fallback: da agosto 2026 il Portale la rimbalza sulla pagina di
+// login, ma se un giorno il POST smettesse di funzionare torna utile.
 // Tempo: ~100-300ms vs 8-15 secondi con Puppeteer.
 // La sessione SSO viene stabilita dalla risposta HTTP (cookie JSESSIONID, ecc.)
 // =============================================================================
 
 /**
- * Login diretto via HTTP senza browser — ~100ms
- * Replica esatta del meccanismo di iPatenteCloud (portale.js riga 7-9).
- *
- * Se il PIN è fornito, costruisce il chain URL embedded come fa iPatenteCloud:
- *   gotoRedirect = DispatcherEntry_executeDispatch.action?loginView.pin=PIN&...
- * Se il PIN non è fornito, gotoRedirect punta direttamente alla home.
+ * Login diretto via HTTP senza browser — ~100-300ms
+ * POST del form di login + catena dispatcher SSO; il PIN viene validato
+ * quando il Portale interpone la pagina «SSO - Pin Validation».
  *
  * @param {object} options
  * @param {string} options.username
@@ -2714,56 +2729,203 @@ async function loginDirectHttp(options = {}) {
   const client = makeHttpClient(jar);
 
   // =========================================================================
-  // STEP 1: Login con credenziali — redirect semplice alla homepage
-  // Usa un redirect semplice per evitare 404 con URL triple-encoded.
+  // STEP 1: Login con credenziali — POST del form (via primaria) con
+  // fallback alla vecchia GET con credenziali in query string.
   // =========================================================================
   const homeRedirect = "https:%2F%2Fwww.ilportaledellautomobilista.it%2Fweb%2Fportale-automobilista%2Fhomepage-professionista%3Finit";
-
-  const loginUrl =
-    "https://www.ilportaledellautomobilista.it/SSO/SSOLogin/Login_initAction.action" +
-    "?loginView.gotoRedirect=" + homeRedirect +
-    "&orgname=" +
-    "&loginView.beanUtente.userName=" + encodeURIComponent(username) +
-    "&loginView.beanUtente.password=" + encodeURIComponent(password) +
-    "&action:Login_executeLogin=Accedi";
+  const loginUrl = "https://www.ilportaledellautomobilista.it/SSO/SSOLogin/Login_initAction.action";
 
   console.log("[portalSession] loginDirectHttp STEP1: invio login per utente", username);
 
-  let response;
-  try {
-    response = await client.get(loginUrl, { maxRedirects: 15 });
-  } catch (err) {
-    // Se homepage-professionista dà 404, riprova con la homepage generica
-    if (err?.response?.status === 404) {
-      console.warn("[portalSession] loginDirectHttp: homepage-professionista 404, provo redirect generico");
-      const fallbackRedirect = "https:%2F%2Fwww.ilportaledellautomobilista.it%2Fweb%2Fportale-automobilista%2Fhome%3Flogged%3Dtrue";
-      const fallbackLoginUrl =
-        "https://www.ilportaledellautomobilista.it/SSO/SSOLogin/Login_initAction.action" +
-        "?loginView.gotoRedirect=" + fallbackRedirect +
-        "&orgname=" +
-        "&loginView.beanUtente.userName=" + encodeURIComponent(username) +
-        "&loginView.beanUtente.password=" + encodeURIComponent(password) +
-        "&action:Login_executeLogin=Accedi";
-      response = await client.get(fallbackLoginUrl, { maxRedirects: 15 });
-    } else {
-      throw err;
+  // Helper: esegue una GET con retry su errori di rete transienti (ECONNRESET/ETIMEDOUT/etc).
+  // Il portale dell'Automobilista chiude occasionalmente le connessioni TLS durante il
+  // redirect chain del login. Un retry con piccolo backoff risolve nella maggior parte dei casi.
+  const TRANSIENT_NET_CODES = new Set([
+    "ECONNRESET", "ETIMEDOUT", "ECONNABORTED", "EPIPE", "ENETUNREACH",
+    "EAI_AGAIN", "ECONNREFUSED", "ERR_SOCKET_CONNECTION_TIMEOUT",
+  ]);
+  async function getWithRetry(url, cfg = {}, maxAttempts = 4) {
+    let lastErr;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        return await client.get(url, cfg);
+      } catch (err) {
+        lastErr = err;
+        const code = String(err?.code || err?.cause?.code || "");
+        const status = err?.response?.status;
+        // Non ritentare errori HTTP "veri" (gestiti dal chiamante), solo i network reset
+        if (status && status !== 502 && status !== 503 && status !== 504) throw err;
+        if (!TRANSIENT_NET_CODES.has(code) && !/ECONN|ETIMED|socket hang/i.test(String(err?.message || ""))) {
+          throw err;
+        }
+        if (attempt < maxAttempts) {
+          const delayMs = 500 * attempt + Math.floor(Math.random() * 300);
+          console.warn(`[portalSession] loginDirectHttp STEP1: ${code || "network"} al tentativo ${attempt}/${maxAttempts}, retry tra ${delayMs}ms...`);
+          await new Promise((r) => setTimeout(r, delayMs));
+        }
+      }
     }
+    throw lastErr;
   }
 
-  const finalUrl   = String(response?.request?.res?.responseUrl || response?.config?.url || "").toLowerCase();
-  const htmlLower  = String(response?.data || "").toLowerCase();
-  const htmlTitle  = (String(response?.data || "").match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1] || "";
+  // POST di un form x-www-form-urlencoded con gli stessi retry di rete di getWithRetry.
+  async function postFormWithRetry(url, params, cfg = {}, maxAttempts = 4) {
+    let lastErr;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        return await client.post(url, serializePayloadRaw(params), {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Origin: "https://www.ilportaledellautomobilista.it",
+            ...(cfg.headers || {}),
+          },
+          maxRedirects: cfg.maxRedirects ?? 15,
+        });
+      } catch (err) {
+        lastErr = err;
+        const code = String(err?.code || err?.cause?.code || "");
+        const status = err?.response?.status;
+        if (status && status !== 502 && status !== 503 && status !== 504) throw err;
+        if (!TRANSIENT_NET_CODES.has(code) && !/ECONN|ETIMED|socket hang/i.test(String(err?.message || ""))) {
+          throw err;
+        }
+        if (attempt < maxAttempts) {
+          const delayMs = 500 * attempt + Math.floor(Math.random() * 300);
+          console.warn(`[portalSession] loginDirectHttp STEP1: ${code || "network"} (POST) al tentativo ${attempt}/${maxAttempts}, retry tra ${delayMs}ms...`);
+          await new Promise((r) => setTimeout(r, delayMs));
+        }
+      }
+    }
+    throw lastErr;
+  }
 
-  console.log("[portalSession] loginDirectHttp STEP1: finalUrl =", finalUrl.slice(0, 200));
-  console.log("[portalSession] loginDirectHttp STEP1: title =", htmlTitle.replace(/\s+/g, " ").trim().slice(0, 100));
-  console.log("[portalSession] loginDirectHttp STEP1: htmlLen =", String(response?.data || "").length);
+  // Segue l'auto-submit del dispatcher SSO e l'eventuale pagina «SSO - Pin
+  // Validation» che il Portale interpone dopo il login (catena del gestionale).
+  let pinGestitoInCatena = false;
+  async function seguiCatenaSsoPin(resp, currentUrl) {
+    const cheerio = require("cheerio");
+    for (let i = 0; i < 6; i++) {
+      const html = typeof resp?.data === "string" ? resp.data : "";
+      const low = html.toLowerCase();
+      const $ = cheerio.load(html || "");
 
-  const loginFailed =
-    htmlLower.includes("credenziali errate") ||
-    htmlLower.includes("username o password errat") ||
-    (finalUrl.includes("/sso/ssologin/") && htmlLower.includes("login_initaction"));
+      if (low.includes("sso - pin validation") || low.includes("loginview.pin")) {
+        if (!pin) break; // il chiamante vedrà la pagina PIN e fallirà con messaggio chiaro
+        let form = $("form#LoginForm, form[name='LoginForm']").first();
+        if (!form.length) form = $("form").first();
+        if (!form.length) break;
+        const action = form.attr("action");
+        const resolved = action
+          ? (action.startsWith("http") ? action : "https://www.ilportaledellautomobilista.it" + action)
+          : "https://www.ilportaledellautomobilista.it/SSO/SSOLogin/DispatcherEntry_executeDispatch.action";
+        const data = new URLSearchParams();
+        form.find("input[type='hidden']").each((_, input) => {
+          const name = $(input).attr("name");
+          if (name) data.append(name, $(input).attr("value") || "");
+        });
+        data.set("loginView.pin", pin);
+        data.set("action:Pin_executePinValidation", "Conferma");
+        console.log("[portalSession] loginDirectHttp STEP1: catena SSO → POST ri-validazione PIN");
+        resp = await postFormWithRetry(resolved, data, { headers: { Referer: currentUrl } });
+        currentUrl = resolved;
+        pinGestitoInCatena = true;
+        continue;
+      }
 
-  if (loginFailed) {
+      if (low.includes("dispatcherentry_executedispatch")) {
+        let form = $("form[name='postform'], form[name='postForm']").first();
+        if (!form.length) form = $("form").first();
+        if (!form.length) break;
+        const action = form.attr("action");
+        const resolved = action
+          ? (action.startsWith("http") ? action : "https://www.ilportaledellautomobilista.it" + action)
+          : currentUrl;
+        const data = new URLSearchParams();
+        form.find("input").each((_, input) => {
+          const name = $(input).attr("name");
+          const type = String($(input).attr("type") || "").toLowerCase();
+          if (!name || type === "submit" || type === "button" || type === "image") return;
+          data.append(name, $(input).attr("value") || "");
+        });
+        console.log("[portalSession] loginDirectHttp STEP1: catena SSO → POST dispatcher");
+        resp = await postFormWithRetry(resolved, data, { headers: { Referer: currentUrl } });
+        currentUrl = resolved;
+        continue;
+      }
+
+      break;
+    }
+    return resp;
+  }
+
+  // Esito del login: falliti = ancora sulla pagina di login o messaggio d'errore.
+  function esitoLogin(resp) {
+    const finalUrl  = String(resp?.request?.res?.responseUrl || resp?.config?.url || "").toLowerCase();
+    const htmlLower = String(resp?.data || "").toLowerCase();
+    const htmlTitle = (String(resp?.data || "").match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1] || "";
+    const failed =
+      htmlLower.includes("credenziali errate") ||
+      htmlLower.includes("username o password errat") ||
+      htmlLower.includes("beanutente.password") ||
+      htmlLower.includes("login_executelogin") ||
+      (finalUrl.includes("/sso/ssologin/") && htmlLower.includes("login_initaction"));
+    return { failed, finalUrl, htmlTitle };
+  }
+
+  function logEsito(etichetta, resp, esito) {
+    console.log(`[portalSession] loginDirectHttp STEP1 (${etichetta}): finalUrl =`, esito.finalUrl.slice(0, 200));
+    console.log(`[portalSession] loginDirectHttp STEP1 (${etichetta}): title =`, esito.htmlTitle.replace(/\s+/g, " ").trim().slice(0, 100));
+    console.log(`[portalSession] loginDirectHttp STEP1 (${etichetta}): htmlLen =`, String(resp?.data || "").length);
+  }
+
+  // ── Via primaria: POST del form di login (come il gestionale) ─────────────
+  const loginForm = new URLSearchParams();
+  loginForm.append("loginView.gotoRedirect", "");
+  loginForm.append("orgname", "");
+  loginForm.append("loginView.beanUtente.userName", username);
+  loginForm.append("loginView.beanUtente.password", password);
+  loginForm.append("action:Login_executeLogin", "Accedi");
+
+  let response = await postFormWithRetry(loginUrl, loginForm, { maxRedirects: 15, headers: { Referer: loginUrl } }, 4);
+  response = await seguiCatenaSsoPin(response, loginUrl);
+  let esito = esitoLogin(response);
+  logEsito("POST", response, esito);
+
+  // ── Fallback: vecchia GET con credenziali in query string ─────────────────
+  if (esito.failed) {
+    console.warn("[portalSession] loginDirectHttp STEP1: POST rimbalzato, provo la GET legacy...");
+    const legacyLoginUrl =
+      loginUrl +
+      "?loginView.gotoRedirect=" + homeRedirect +
+      "&orgname=" +
+      "&loginView.beanUtente.userName=" + encodeURIComponent(username) +
+      "&loginView.beanUtente.password=" + encodeURIComponent(password) +
+      "&action:Login_executeLogin=Accedi";
+    try {
+      response = await getWithRetry(legacyLoginUrl, { maxRedirects: 15 }, 4);
+    } catch (err) {
+      // Se homepage-professionista dà 404, riprova con la homepage generica
+      if (err?.response?.status === 404) {
+        console.warn("[portalSession] loginDirectHttp: homepage-professionista 404, provo redirect generico");
+        const fallbackRedirect = "https:%2F%2Fwww.ilportaledellautomobilista.it%2Fweb%2Fportale-automobilista%2Fhome%3Flogged%3Dtrue";
+        const fallbackLoginUrl =
+          loginUrl +
+          "?loginView.gotoRedirect=" + fallbackRedirect +
+          "&orgname=" +
+          "&loginView.beanUtente.userName=" + encodeURIComponent(username) +
+          "&loginView.beanUtente.password=" + encodeURIComponent(password) +
+          "&action:Login_executeLogin=Accedi";
+        response = await getWithRetry(fallbackLoginUrl, { maxRedirects: 15 }, 4);
+      } else {
+        throw err;
+      }
+    }
+    response = await seguiCatenaSsoPin(response, loginUrl);
+    esito = esitoLogin(response);
+    logEsito("GET legacy", response, esito);
+  }
+
+  if (esito.failed) {
     const msg = extractPortalMessage(response?.data || "") || "Credenziali errate o sessione non avviata";
     console.error("[portalSession] loginDirectHttp FALLITO:", msg);
     throw new Error(`Login diretto fallito: ${msg}`);
@@ -2776,7 +2938,9 @@ async function loginDirectHttp(options = {}) {
   // Invece di annidare il PIN nel redirect del login, lo facciamo come step
   // separato — più robusto e compatibile col flusso del portale.
   // =========================================================================
-  if (pin) {
+  if (pin && pinGestitoInCatena) {
+    console.log("[portalSession] loginDirectHttp STEP2: PIN già validato nella catena SSO, skip");
+  } else if (pin) {
     console.log("[portalSession] loginDirectHttp STEP2: validazione PIN...");
 
     // Controlla se la risposta del login è già una pagina PIN
@@ -3024,6 +3188,26 @@ const PORTAL_TAB_CONFIG = {
   },
   VARCQC: {
     searchUrl: "/prenotazione/sessioneEsameAbilitazioneEP/Read_initActionVerbaliAnnullatiRevisioneCqc.action?pageStatus=SEARCH",
+    formSelector: 'form#RicercaSessioneEsameAbilitazioneEP, form[name="RicercaSessioneEsameAbilitazioneEP"]',
+    dateFromSelector: 'input[name*="dataVerbaleEsameAbilitazione"]:not([name*="TO"])',
+    dateToSelector: 'input[name*="dataVerbaleEsameAbilitazioneTO"]',
+    statusSelector: null,
+    submitSelector: 'input[name="action:ReadCqc_pagingCQC"]',
+    dateRange: "past7",
+  },
+  // --- Verbali Annullati Conseguimento ---
+  VANC: {
+    searchUrl: "/prenotazione/sessioneEsameAbilitazioneEP/Read_initActionVerbaliAnnullatiConseguimento.action?pageStatus=SEARCH",
+    formSelector: 'form#RicercaSessioneEsameAbilitazioneEP, form[name="RicercaSessioneEsameAbilitazioneEP"]',
+    dateFromSelector: 'input[name*="dataVerbaleEsameAbilitazione"]:not([name*="TO"])',
+    dateToSelector: 'input[name*="dataVerbaleEsameAbilitazioneTO"]',
+    statusSelector: null,
+    submitSelector: 'input[name="action:ReadConseguimento_pagingConseguimento"]',
+    dateRange: "past7",
+  },
+  // --- Verbali Annullati CQC ---
+  VANQ: {
+    searchUrl: "/prenotazione/sessioneEsameAbilitazioneEP/Read_initActionVerbaliAnnullatiCqc.action?pageStatus=SEARCH",
     formSelector: 'form#RicercaSessioneEsameAbilitazioneEP, form[name="RicercaSessioneEsameAbilitazioneEP"]',
     dateFromSelector: 'input[name*="dataVerbaleEsameAbilitazione"]:not([name*="TO"])',
     dateToSelector: 'input[name*="dataVerbaleEsameAbilitazioneTO"]',
@@ -3328,6 +3512,331 @@ async function readPortalSearchViaBrowser(tabType, options = {}) {
     if (isPersistent) persistentLastTabType = tabType;
 
     return resultHtml;
+  } finally {
+    if (!isPersistent) {
+      await browser.close();
+    }
+    releaseLock();
+  }
+}
+
+/**
+ * readPortalPageViaBrowser — Apre una URL generica del portale via Puppeteer
+ * (con login + handle PIN + dispatcher) e ritorna l'HTML della pagina.
+ *
+ * Utile per pagine che NON sono form di ricerca ma viste statiche (es:
+ * credito residuo PagoPA, rinnovo gestione, stampa elenco, ecc.).
+ *
+ * @param {string} pageUrl  URL relativa (es. "/sistema-pagamenti/creditoResiduo/Read_initAction.action")
+ * @param {object} options  { username, password, pin, trace }
+ * @returns {Promise<string>} HTML della pagina
+ */
+async function readPortalPageViaBrowser(pageUrl, options = {}) {
+  const username = options.username || process.env.PORTAL_USER || process.env.PORTAL_USERNAME;
+  const password = options.password || process.env.PORTAL_PASS || process.env.PORTAL_PASSWORD;
+  const pin = options.pin || process.env.PORTAL_PIN;
+  const trace = Array.isArray(options.trace) ? options.trace : null;
+
+  if (!username || !password) {
+    throw new Error("PORTAL_USER/PORTAL_PASS mancanti nel .env");
+  }
+  if (!pageUrl || typeof pageUrl !== "string") {
+    throw new Error("pageUrl obbligatoria (es. /sistema-pagamenti/...)");
+  }
+
+  const PORTAL_BASE = "https://www.ilportaledellautomobilista.it";
+  const fullUrl = pageUrl.startsWith("http") ? pageUrl : `${PORTAL_BASE}${pageUrl}`;
+
+  pushDiag(trace, "browser.page.start", { fullUrl });
+
+  const { browser, page, isPersistent, releaseLock } = await getBrowserAndPageForSession(username, password, pin, trace);
+
+  try {
+    // --- LOGIN (skip se browser persistente gia' loggato) ---
+    let skipLogin = false;
+    if (isPersistent && persistentLastLoginAt > 0) {
+      try {
+        const currentUrl = await page.url();
+        if (currentUrl.includes("/prenotazione") || currentUrl.includes("/portale-automobilista") || currentUrl.includes("/web/") || currentUrl.includes("/sistema-pagamenti") || currentUrl.includes("/RichiestaPatenti")) {
+          skipLogin = true;
+          pushDiag(trace, "browser.page.login.skip", { url: currentUrl });
+        }
+      } catch { skipLogin = false; }
+    }
+
+    if (!skipLogin) {
+      await page.goto(`${PORTAL_BASE}/SSO/SSOLogin/Login_initAction.action`, { waitUntil: "domcontentloaded" });
+
+      const userSel = await waitFirstSelector(page, [
+        'input[name="loginView.beanUtente.userName"]', 'input[name="username"]', 'input[type="text"]',
+      ], 8000).catch(() => null);
+      const passSel = await waitFirstSelector(page, [
+        'input[name="loginView.beanUtente.password"]', 'input[name="password"]', 'input[type="password"]',
+      ], 8000).catch(() => null);
+
+      if (userSel && passSel) {
+        await page.click(userSel, { clickCount: 3 });
+        await page.type(userSel, username, { delay: 15 });
+        await page.click(passSel, { clickCount: 3 });
+        await page.type(passSel, password, { delay: 15 });
+
+        const loginBtnSel = 'input[name="action:Login_executeLogin"], input[type="submit"], button[type="submit"]';
+        await Promise.allSettled([
+          page.waitForNavigation({ waitUntil: "domcontentloaded", timeout: 60000 }),
+          page.click(loginBtnSel),
+        ]);
+
+        pushDiag(trace, "browser.page.login.done", { url: page.url() });
+        await handlePinIfPresent(page, pin);
+        if (isPersistent) persistentLastLoginAt = Date.now();
+      }
+    }
+
+    // --- NAVIGATE ---
+    await page.goto(fullUrl, { waitUntil: "domcontentloaded" });
+
+    if (!skipLogin) await sleep(800);
+
+    // Handle dispatcher / PIN
+    for (let i = 0; i < 6; i++) {
+      const hasPin = await page.$('input[name="loginView.pin"], input[name="pin"]');
+      if (hasPin) { await handlePinIfPresent(page, pin); await sleep(200); continue; }
+
+      const postForm = await page.$('form[name="postform"]');
+      if (postForm) {
+        await Promise.allSettled([
+          page.waitForNavigation({ waitUntil: "domcontentloaded", timeout: 30000 }),
+          page.$eval('form[name="postform"]', (form) => form.submit()),
+        ]);
+        await sleep(150);
+        continue;
+      }
+
+      break;
+    }
+
+    await sleep(skipLogin ? 300 : 800);
+
+    const resultHtml = await page.content();
+    pushDiag(trace, "browser.page.done", {
+      url: page.url(),
+      htmlLength: resultHtml.length,
+      title: await page.title().catch(() => ""),
+    });
+
+    // Salva per diagnostica
+    try {
+      const dumpDir = path.resolve(__dirname, "../../diagnostica-dump");
+      if (!fs.existsSync(dumpDir)) fs.mkdirSync(dumpDir, { recursive: true });
+      const safeName = pageUrl.replace(/[^a-zA-Z0-9]/g, "_").slice(0, 80);
+      fs.writeFileSync(path.join(dumpDir, `page-${safeName}.html`), resultHtml || "", "utf8");
+    } catch (_) {}
+
+    return resultHtml;
+  } finally {
+    if (!isPersistent) {
+      await browser.close();
+    }
+    releaseLock();
+  }
+}
+
+/**
+ * submitPortalFormViaBrowser — Apre una pagina del portale, compila i campi
+ * indicati in `formData` e clicca il bottone submit identificato da `actionName`.
+ * Ritorna l'HTML della pagina risultante dopo la submit.
+ *
+ * @param {string} pageUrl  URL relativa della pagina del portale (es. "/RichiestaPatenti/...")
+ * @param {Object} formData  Mappa { fieldName: value } per i campi del form (input/select/textarea)
+ * @param {string} actionName  Name dell'input submit da cliccare (es. "action:Read..._pagingAcq...")
+ * @param {Object} options  { username, password, pin, trace }
+ * @returns {Promise<string>} HTML della pagina risultante
+ */
+async function submitPortalFormViaBrowser(pageUrl, formData = {}, actionName = "", options = {}) {
+  const username = options.username || process.env.PORTAL_USER || process.env.PORTAL_USERNAME;
+  const password = options.password || process.env.PORTAL_PASS || process.env.PORTAL_PASSWORD;
+  const pin = options.pin || process.env.PORTAL_PIN;
+  const trace = Array.isArray(options.trace) ? options.trace : null;
+
+  if (!username || !password) {
+    throw new Error("PORTAL_USER/PORTAL_PASS mancanti nel .env");
+  }
+  if (!pageUrl || typeof pageUrl !== "string") {
+    throw new Error("pageUrl obbligatoria");
+  }
+
+  const PORTAL_BASE = "https://www.ilportaledellautomobilista.it";
+  const fullUrl = pageUrl.startsWith("http") ? pageUrl : `${PORTAL_BASE}${pageUrl}`;
+
+  pushDiag(trace, "browser.formSubmit.start", { fullUrl, actionName, fields: Object.keys(formData || {}) });
+
+  const { browser, page, isPersistent, releaseLock } = await getBrowserAndPageForSession(username, password, pin, trace);
+
+  try {
+    // --- LOGIN (skip se browser persistente gia' loggato) ---
+    let skipLogin = false;
+    if (isPersistent && persistentLastLoginAt > 0) {
+      try {
+        const currentUrl = await page.url();
+        if (currentUrl.includes("/prenotazione") || currentUrl.includes("/portale-automobilista") || currentUrl.includes("/web/") || currentUrl.includes("/sistema-pagamenti") || currentUrl.includes("/RichiestaPatenti")) {
+          skipLogin = true;
+          pushDiag(trace, "browser.formSubmit.login.skip", { url: currentUrl });
+        }
+      } catch { skipLogin = false; }
+    }
+
+    if (!skipLogin) {
+      await page.goto(`${PORTAL_BASE}/SSO/SSOLogin/Login_initAction.action`, { waitUntil: "domcontentloaded" });
+
+      const userSel = await waitFirstSelector(page, [
+        'input[name="loginView.beanUtente.userName"]', 'input[name="username"]', 'input[type="text"]',
+      ], 8000).catch(() => null);
+      const passSel = await waitFirstSelector(page, [
+        'input[name="loginView.beanUtente.password"]', 'input[name="password"]', 'input[type="password"]',
+      ], 8000).catch(() => null);
+
+      if (userSel && passSel) {
+        await page.click(userSel, { clickCount: 3 });
+        await page.type(userSel, username, { delay: 15 });
+        await page.click(passSel, { clickCount: 3 });
+        await page.type(passSel, password, { delay: 15 });
+
+        const loginBtnSel = 'input[name="action:Login_executeLogin"], input[type="submit"], button[type="submit"]';
+        await Promise.allSettled([
+          page.waitForNavigation({ waitUntil: "domcontentloaded", timeout: 60000 }),
+          page.click(loginBtnSel),
+        ]);
+
+        pushDiag(trace, "browser.formSubmit.login.done", { url: page.url() });
+        await handlePinIfPresent(page, pin);
+        if (isPersistent) persistentLastLoginAt = Date.now();
+      }
+    }
+
+    // --- NAVIGATE alla pagina del form ---
+    await page.goto(fullUrl, { waitUntil: "domcontentloaded" });
+    if (!skipLogin) await sleep(800);
+
+    // Handle dispatcher / PIN sulla pagina target
+    for (let i = 0; i < 6; i++) {
+      const hasPin = await page.$('input[name="loginView.pin"], input[name="pin"]');
+      if (hasPin) { await handlePinIfPresent(page, pin); await sleep(200); continue; }
+
+      const postForm = await page.$('form[name="postform"]');
+      if (postForm) {
+        await Promise.allSettled([
+          page.waitForNavigation({ waitUntil: "domcontentloaded", timeout: 30000 }),
+          page.$eval('form[name="postform"]', (form) => form.submit()),
+        ]);
+        await sleep(150);
+        continue;
+      }
+
+      break;
+    }
+
+    await sleep(skipLogin ? 300 : 600);
+
+    // --- COMPILA I CAMPI DEL FORM ---
+    const fillResult = await page.evaluate((data) => {
+      const filled = [];
+      const skipped = [];
+      for (const [name, value] of Object.entries(data || {})) {
+        // Cerca input/select/textarea con questo name (o id come fallback)
+        const escName = (window.CSS && CSS.escape) ? CSS.escape(name) : name.replace(/(["\\])/g, "\\$1");
+        let el = document.querySelector(`[name="${escName}"]`);
+        if (!el) el = document.getElementById(name);
+        if (!el) { skipped.push({ name, reason: "not_found" }); continue; }
+
+        const tag = el.tagName.toLowerCase();
+        const type = (el.getAttribute("type") || "").toLowerCase();
+
+        try {
+          if (tag === "select") {
+            el.value = value == null ? "" : String(value);
+            el.dispatchEvent(new Event("change", { bubbles: true }));
+            filled.push({ name, type: "select", value });
+          } else if (type === "checkbox" || type === "radio") {
+            el.checked = !!value;
+            el.dispatchEvent(new Event("change", { bubbles: true }));
+            filled.push({ name, type, value: !!value });
+          } else if (tag === "textarea" || (tag === "input" && type !== "submit" && type !== "button")) {
+            el.value = value == null ? "" : String(value);
+            el.dispatchEvent(new Event("input", { bubbles: true }));
+            el.dispatchEvent(new Event("change", { bubbles: true }));
+            filled.push({ name, type: type || tag, value });
+          } else {
+            skipped.push({ name, reason: `unsupported_${tag}_${type}` });
+          }
+        } catch (err) {
+          skipped.push({ name, reason: `error: ${err.message}` });
+        }
+      }
+      return { filled, skipped };
+    }, formData || {});
+
+    pushDiag(trace, "browser.formSubmit.fill", fillResult);
+
+    // --- CLICCA IL BOTTONE SUBMIT ---
+    if (actionName) {
+      const escAction = actionName.replace(/(["\\])/g, "\\$1");
+      const selector = `input[name="${escAction}"], button[name="${escAction}"]`;
+      const btn = await page.$(selector);
+      if (!btn) {
+        throw new Error(`Bottone submit non trovato per action="${actionName}"`);
+      }
+      await Promise.allSettled([
+        page.waitForNavigation({ waitUntil: "domcontentloaded", timeout: 60000 }),
+        page.click(selector),
+      ]);
+      pushDiag(trace, "browser.formSubmit.click.done", { actionName, url: page.url() });
+    } else {
+      // Fallback: submit del primo form trovato
+      const formExists = await page.$("form");
+      if (formExists) {
+        await Promise.allSettled([
+          page.waitForNavigation({ waitUntil: "domcontentloaded", timeout: 60000 }),
+          page.$eval("form", (form) => form.submit()),
+        ]);
+        pushDiag(trace, "browser.formSubmit.formSubmit.done", { url: page.url() });
+      }
+    }
+
+    // Handle dispatcher post-submit
+    for (let i = 0; i < 4; i++) {
+      const postForm = await page.$('form[name="postform"]');
+      if (postForm) {
+        await Promise.allSettled([
+          page.waitForNavigation({ waitUntil: "domcontentloaded", timeout: 30000 }),
+          page.$eval('form[name="postform"]', (form) => form.submit()),
+        ]);
+        await sleep(150);
+        continue;
+      }
+      break;
+    }
+
+    await sleep(400);
+
+    const resultHtml = await page.content();
+    pushDiag(trace, "browser.formSubmit.done", {
+      url: page.url(),
+      htmlLength: resultHtml.length,
+      title: await page.title().catch(() => ""),
+      filledCount: fillResult.filled.length,
+      skippedCount: fillResult.skipped.length,
+    });
+
+    // Salva per diagnostica
+    try {
+      const dumpDir = path.resolve(__dirname, "../../diagnostica-dump");
+      if (!fs.existsSync(dumpDir)) fs.mkdirSync(dumpDir, { recursive: true });
+      const safeName = pageUrl.replace(/[^a-zA-Z0-9]/g, "_").slice(0, 60);
+      const safeAction = String(actionName || "submit").replace(/[^a-zA-Z0-9]/g, "_").slice(0, 40);
+      fs.writeFileSync(path.join(dumpDir, `formSubmit-${safeName}-${safeAction}.html`), resultHtml || "", "utf8");
+    } catch (_) {}
+
+    return { html: resultHtml, fillResult };
   } finally {
     if (!isPersistent) {
       await browser.close();
@@ -3815,6 +4324,24 @@ async function readSessioneDettaglioViaBrowser(options = {}) {
       const val = allCampi[nome] || Object.entries(allCampi).find(([k]) => k.toLowerCase().includes(nome.toLowerCase()))?.[1] || "";
       if (val) campiNoti[nome] = val;
     });
+
+    // ── Salva stato dettaglio per la fast-path della stampa ──
+    // Dopo setContent(detailHtml) la pagina ha il form Select_listCandidati nel DOM,
+    // ma page.url() resta sull'URL della ricerca. Memorizziamo i parametri usati per
+    // consentire a readStampaPortaleViaBrowser di skippare login+ricerca+selezione+dettaglio
+    // riutilizzando direttamente il DOM caricato.
+    if (isPersistent) {
+      persistentDetailUsername = username;
+      persistentDetailSessionIndex = idx;
+      persistentDetailSearchKey = `${fromDateValue}|${toDateValue}|${statoFilter}`;
+      persistentDetailHtml = String(detailSubmit?.html || "");
+      persistentDetailLoadedAt = Date.now();
+      pushDiag(trace, "dettaglio.cache.saved", {
+        sessionIndex: idx,
+        searchKey: persistentDetailSearchKey,
+        htmlLen: persistentDetailHtml.length,
+      });
+    }
 
     return {
       success: true,
@@ -4310,21 +4837,49 @@ async function readStampaPortaleViaBrowser(options = {}) {
 
     pushDiag(trace, "stampa.browser.start", { stampaType, sessionIndex, candidateIndex });
 
-    // ── 0. FAST PATH: se il browser persistente è già sulla pagina dettaglio, salta direttamente allo step 5 ──
+    // ── 0. FAST PATH: se il browser persistente ha caricato di recente lo stesso dettaglio, salta direttamente allo step 5 ──
+    //
+    // PROBLEMA RISOLTO: readSessioneDettaglioViaBrowser usa page.setContent() per caricare
+    // il dettaglio, ma setContent NON aggiorna page.url() (resta sull'URL della ricerca).
+    // Quindi un check basato solo su URL fallisce sempre. Usiamo invece la cache dello stato
+    // (popolata dal dettaglio) + verifica DOM, con re-setContent come fallback.
     let fastPathToStampa = false;
-    if (isPersistent && persistentLastLoginAt > 0) {
+    if (isPersistent && persistentLastLoginAt > 0 && persistentDetailLoadedAt > 0) {
       try {
-        const currentUrl = await page.url();
-        // Se siamo già su Select_listCandidati (pagina dettaglio), possiamo stampare subito
-        if (currentUrl.includes("Select_listCandidati") || currentUrl.includes("listCandidati")) {
+        const cacheAgeMs = Date.now() - persistentDetailLoadedAt;
+        const cacheMaxAgeMs = 15 * 60 * 1000; // 15 min, leggermente meno del TTL del browser (20 min)
+        const currentSearchKey = `${fromDateValue}|${toDateValue}|${statoFilter}`;
+        const matchesUser = persistentDetailUsername === username;
+        const matchesSession = persistentDetailSessionIndex === sessionIndex && persistentDetailSearchKey === currentSearchKey;
+        const cacheValid = matchesUser && matchesSession && cacheAgeMs < cacheMaxAgeMs;
+
+        if (cacheValid) {
+          // Caso A: il DOM ha ancora il form Select_listCandidati (page state intatto dal dettaglio)
           const hasDetailForm = await page.$('form#Select_listCandidati, form[name="Select_listCandidati"]');
           if (hasDetailForm) {
             fastPathToStampa = true;
-            pushDiag(trace, "stampa.fastpath", { url: currentUrl });
-            console.log(`[stampa] FAST PATH: browser già su dettaglio, salto a step 5`);
+            pushDiag(trace, "stampa.fastpath.dom", { sessionIndex, ageMs: cacheAgeMs });
+            console.log(`[stampa] FAST PATH (DOM intatto): dettaglio già caricato, salto a step 5 (age=${cacheAgeMs}ms)`);
+          } else if (persistentDetailHtml) {
+            // Caso B: il DOM è stato sovrascritto (es. da altre chiamate Puppeteer in mezzo),
+            // ma abbiamo l'HTML in cache. Re-setContent lo ripristina.
+            await page.setContent(persistentDetailHtml, { waitUntil: "domcontentloaded" });
+            const hasFormAfter = await page.$('form#Select_listCandidati, form[name="Select_listCandidati"]');
+            if (hasFormAfter) {
+              fastPathToStampa = true;
+              pushDiag(trace, "stampa.fastpath.restored", { sessionIndex, ageMs: cacheAgeMs, htmlLen: persistentDetailHtml.length });
+              console.log(`[stampa] FAST PATH (HTML ripristinato): cache hit, salto a step 5 (age=${cacheAgeMs}ms)`);
+            } else {
+              pushDiag(trace, "stampa.fastpath.restoreFailed", { sessionIndex });
+              console.log(`[stampa] Restore HTML fallito: form non trovato dopo setContent`);
+            }
           }
+        } else {
+          pushDiag(trace, "stampa.fastpath.miss", { matchesUser, matchesSession, ageMs: cacheAgeMs });
         }
-      } catch { /* ignore */ }
+      } catch (err) {
+        pushDiag(trace, "stampa.fastpath.error", { error: String(err?.message || err) });
+      }
     }
 
     // ── 1. LOGIN (skip se sessione persistente attiva) ──
@@ -4511,14 +5066,27 @@ async function readStampaPortaleViaBrowser(options = {}) {
 
     pushDiag(trace, "stampa.detail.done", { url: page.url() });
 
-    // Salva dettaglio per diagnostica
+    // Salva dettaglio per diagnostica + popola cache per chiamate stampa successive
+    let slowPathDetailHtml = "";
     try {
+      slowPathDetailHtml = await page.content();
       const fsDiag2 = require("fs");
       const pathDiag2 = require("path");
       const dumpDir2 = pathDiag2.resolve(__dirname, "../../diagnostica-dump");
       if (!fsDiag2.existsSync(dumpDir2)) fsDiag2.mkdirSync(dumpDir2, { recursive: true });
-      fsDiag2.writeFileSync(pathDiag2.join(dumpDir2, "stampa-detail-page.html"), await page.content(), "utf8");
+      fsDiag2.writeFileSync(pathDiag2.join(dumpDir2, "stampa-detail-page.html"), slowPathDetailHtml, "utf8");
     } catch (_e) {}
+
+    // Popola cache dettaglio: una stampa successiva per la stessa sessione potrà fast-path
+    // (es. utente clicca STAMPA, poi STAMPA CANDIDATI sulla stessa sessione)
+    if (isPersistent && slowPathDetailHtml) {
+      persistentDetailUsername = username;
+      persistentDetailSessionIndex = sessionIndex;
+      persistentDetailSearchKey = `${fromDateValue}|${toDateValue}|${statoFilter}`;
+      persistentDetailHtml = slowPathDetailHtml;
+      persistentDetailLoadedAt = Date.now();
+      pushDiag(trace, "stampa.cache.populated", { sessionIndex, htmlLen: slowPathDetailHtml.length });
+    }
     } // fine if (!fastPathToStampa)
 
     // ── 5. STAMPA via fetch() nel contesto della pagina dettaglio ──
@@ -4652,6 +5220,8 @@ module.exports.invalidatePortalSession = invalidatePortalSession;
 module.exports.diagnosePortalLogin = diagnosePortalLogin;
 module.exports.readSessioniQuizInterneViaBrowser = readSessioniQuizInterneViaBrowser;
 module.exports.readPortalSearchViaBrowser = readPortalSearchViaBrowser;
+module.exports.readPortalPageViaBrowser = readPortalPageViaBrowser;
+module.exports.submitPortalFormViaBrowser = submitPortalFormViaBrowser;
 module.exports.PORTAL_TAB_CONFIG = PORTAL_TAB_CONFIG;
 module.exports.runManualSessionFlowViaBrowser = runManualSessionFlowViaBrowser;
 module.exports.readSituazioneCandidatiDettaglioViaBrowser = readSituazioneCandidatiDettaglioViaBrowser;

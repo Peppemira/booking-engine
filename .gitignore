@@ -1,6 +1,10 @@
 node_modules/
 .env
 .env.*
+# Eccezioni: file di esempio sono template senza secret e DEVONO essere in git
+!.env.example
+!.env.railway.example
+!.env.*.example
 dist/
 data/
 *.log
@@ -15,3 +19,18 @@ vault/
 diagnostica-dump/
 *.pdf
 Thumbs.db
+
+# backend scratch/debug output directories
+gestionale/backend/_*/
+gestionale/backend/logs/
+
+# Script di debug temporanei (sviluppo P1 portal sync — utili in locale, non in repo)
+gestionale/backend/scripts/test_*.js
+gestionale/backend/scripts/dump_page_fields.js
+gestionale/backend/scripts/analyze_substituted_patente.js
+verify-catalog.js
+
+# Claude Code local state
+.claude/settings.local.json
+.claude/worktrees/
+

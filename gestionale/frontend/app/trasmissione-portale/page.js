@@ -56,6 +56,7 @@ const STATO_BADGE = {
   pronto:                { label: "Pronto",           color: "#0ea5e9", bg: "#e0f2fe" },
   pronto_trasmissione:   { label: "Pronto",           color: "#0ea5e9", bg: "#e0f2fe" },
   da_trasmettere:        { label: "Da trasmettere",   color: "#f59e0b", bg: "#fef3c7" },
+  da_creare:             { label: "Da creare",        color: "#64748b", bg: "#f1f5f9" },
   in_trasmissione:       { label: "In trasmissione…", color: "#8b5cf6", bg: "#f3e8ff" },
   trasmesso_portale:     { label: "Trasmesso ✓",      color: "#16a34a", bg: "#dcfce7" },
   trasmesso:             { label: "Trasmesso SDC ✓",  color: "#16a34a", bg: "#dcfce7" },
@@ -63,6 +64,53 @@ const STATO_BADGE = {
   approvato:             { label: "Approvato ✓",      color: "#16a34a", bg: "#dcfce7" },
   respinto:              { label: "Respinto ✗",       color: "#dc2626", bg: "#fee2e2" },
 };
+
+// ─── Mappe sigla → label (replica frmOmoni/Trasmiss.cs) ────────────────────────
+// Solo sigle trasmissibili al Portale Automobilista (sottoinsieme delle 22 GeCA)
+const SIGLA_LABELS = {
+  IN:   "Iscrizione per esame",
+  PR:   "Privatista",
+  RE:   "Ripetizione esame",
+  CV:   "Rinnovo / Conferma Validità",
+  CM:   "Certificato Medico (TT2112)",
+  "D|": "Duplicato per smarrimento",
+  "Y|": "Duplicato per furto",
+  "L|": "Duplicato per deterioramento",
+  "S|": "Duplicato per distruzione",
+  "R|": "Duplicato per variazione residenza",
+  "M|": "Conversione patente estera",
+  "E|": "Conversione patente militare",
+  PC:   "Conseguimento CQC",
+  CC:   "Rinnovo CQC",
+  GA:   "Guida Accompagnata (Prima Fase)",
+};
+
+const OPERAZIONE_LABEL = {
+  conseguimento:  "🎓 Conseguimento Patente",
+  rinnovo:        "🔄 Rinnovo Patente",
+  rinnovo_medico: "⚕️ Rinnovo con Cert. Medico",
+  altro:          "📋 Duplicato / Conversione",
+  cqc:            "🚛 Conseguimento CQC",
+  rinn_cqc:       "🔁 Rinnovo CQC",
+  prima_fase:     "🅰 Prima Fase (Foglio Rosa)",
+};
+
+// Mappa operazione candidato → tipo endpoint originale (per riuso eseguiTrasmissione)
+// rinn_cqc → rinnovo_cqc, altri uguali
+const OPERAZIONE_TO_TIPO_ENDPOINT = {
+  conseguimento:  "conseguimento",
+  rinnovo:        "rinnovo",
+  rinnovo_medico: "rinnovo_medico",
+  altro:          "altro",
+  cqc:            "cqc",
+  rinn_cqc:       "rinnovo_cqc",
+  prima_fase:     "prima_fase",
+};
+
+function siglaLabel(sigla) {
+  if (!sigla) return "–";
+  return SIGLA_LABELS[sigla] || sigla;
+}
 
 // ─── StatoBadge ────────────────────────────────────────────────────────────────
 
@@ -393,16 +441,30 @@ export default function TrasmissionePortale() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Tab mode: "pratiche" (vista originale pratica-centric) | "candidati" (replica GeCA Trasmiss.cs)
+  const [tabMode, setTabMode] = useState("candidati");
+
   // Filtri
   const [filtroTipo, setFiltroTipo] = useState("");
   const [filtroTesto, setFiltroTesto] = useState("");
+  const [filtroSigla, setFiltroSigla] = useState(""); // solo tab candidati
+  const [includiTrasmessi, setIncludiTrasmessi] = useState(false);
 
-  // Selezione
+  // Selezione (tab pratiche)
   const [selected, setSelected] = useState(new Set());
+
+  // Candidati pronti (tab candidati)
+  const [candidati, setCandidati] = useState([]);
+  const [loadingCandidati, setLoadingCandidati] = useState(false);
+  const [gruppiSigla, setGruppiSigla] = useState({});
+  const [gruppiOperazione, setGruppiOperazione] = useState({});
+  const [invioCandidatoInCorso, setInvioCandidatoInCorso] = useState({});
+  const [selectedCandidati, setSelectedCandidati] = useState(new Set());
 
   // Modale credenziali
   const [showCredModal, setShowCredModal] = useState(false);
-  const [pendingAction, setPendingAction] = useState(null); // { tipo, praticaIds }
+  // pendingAction può avere mode="pratica" (originale) o mode="candidato" (nuovo)
+  const [pendingAction, setPendingAction] = useState(null);
 
   // Modale CIA
   const [showCiaModal, setShowCiaModal] = useState(false);
@@ -450,9 +512,41 @@ export default function TrasmissionePortale() {
     }
   }, []);
 
+  // ── Carica candidati pronti (tab candidato-centric) ────────────────────────
+  const caricaCandidatiPronti = useCallback(async () => {
+    setLoadingCandidati(true);
+    setError("");
+    try {
+      const qs = new URLSearchParams();
+      if (filtroSigla) qs.set("sigla", filtroSigla);
+      if (filtroTipo)  qs.set("tipo",  filtroTipo);
+      if (includiTrasmessi) qs.set("includi_trasmessi", "true");
+      const url = `${apiBase()}/api/trasmiss/candidati-pronti${qs.toString() ? "?" + qs.toString() : ""}`;
+      const res = await fetch(url, { headers: authHeaders() });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (data && data.success) {
+        setCandidati(Array.isArray(data.candidati) ? data.candidati : []);
+        setGruppiSigla(data.gruppi || {});
+        setGruppiOperazione(data.gruppi_operazione || {});
+      } else {
+        setCandidati([]);
+        setError(data?.error || "Errore caricamento candidati pronti");
+      }
+    } catch (e) {
+      setError(e.message || "Errore caricamento candidati pronti");
+    } finally {
+      setLoadingCandidati(false);
+    }
+  }, [filtroSigla, filtroTipo, includiTrasmessi]);
+
   useEffect(() => {
-    if (user) caricaPratiche();
-  }, [user, caricaPratiche]);
+    if (user && tabMode === "pratiche") caricaPratiche();
+  }, [user, tabMode, caricaPratiche]);
+
+  useEffect(() => {
+    if (user && tabMode === "candidati") caricaCandidatiPronti();
+  }, [user, tabMode, caricaCandidatiPronti]);
 
   // ── Filtro pratiche ─────────────────────────────────────────────────────────
 
@@ -463,6 +557,18 @@ export default function TrasmissionePortale() {
       const nome = `${p.candidates?.cognome || ""} ${p.candidates?.nome || ""}`.toLowerCase();
       const cf   = (p.candidates?.codice_fiscale || "").toLowerCase();
       const cat  = (p.categoria_patente || "").toLowerCase();
+      if (!nome.includes(q) && !cf.includes(q) && !cat.includes(q)) return false;
+    }
+    return true;
+  });
+
+  // ── Filtro candidati (tab candidato-centric) ────────────────────────────────
+  const candidatiFiltrati = candidati.filter((c) => {
+    if (filtroTesto) {
+      const q = filtroTesto.toLowerCase();
+      const nome = `${c.cognome || ""} ${c.nome || ""}`.toLowerCase();
+      const cf   = (c.codice_fiscale || "").toLowerCase();
+      const cat  = (c.categoria_richiesta || c.categoria_patente || "").toLowerCase();
       if (!nome.includes(q) && !cf.includes(q) && !cat.includes(q)) return false;
     }
     return true;
@@ -484,11 +590,45 @@ export default function TrasmissionePortale() {
         : new Set(praticheFiltrate.map((p) => p.id))
     );
 
+  const toggleSelectCandidato = (id) =>
+    setSelectedCandidati((prev) => {
+      const n = new Set(prev);
+      n.has(id) ? n.delete(id) : n.add(id);
+      return n;
+    });
+
+  const toggleAllCandidati = () =>
+    setSelectedCandidati((prev) =>
+      prev.size === candidatiFiltrati.length
+        ? new Set()
+        : new Set(candidatiFiltrati.map((c) => c.id))
+    );
+
   // ── Avvia trasmissione ──────────────────────────────────────────────────────
 
   function avviaTrasmissione(praticaId, tipo) {
-    setPendingAction({ tipo, praticaIds: [praticaId] });
+    setPendingAction({ mode: "pratica", tipo, praticaIds: [praticaId] });
     if (tipo === "rinnovo_medico") {
+      setCiaExtra(null);
+      setShowCiaModal(true);
+    } else {
+      setShowCredModal(true);
+    }
+  }
+
+  // Avvia trasmissione candidato-centric (replica Trasmiss.cs invio_Click)
+  function avviaTrasmissioneCandidato(candidato) {
+    const operazione = candidato.operazione;
+    const tipoEndpoint = OPERAZIONE_TO_TIPO_ENDPOINT[operazione] || operazione;
+    setPendingAction({
+      mode: "candidato",
+      tipo: tipoEndpoint,
+      operazione,
+      sigla: candidato.tipo_iscrizione_sigla,
+      candidatoIds: [candidato.id],
+    });
+    // Il flusso CIA è richiesto anche per rinnovo_medico candidato-centric
+    if (operazione === "rinnovo_medico") {
       setCiaExtra(null);
       setShowCiaModal(true);
     } else {
@@ -505,6 +645,11 @@ export default function TrasmissionePortale() {
   async function eseguiTrasmissione(credenziali) {
     setShowCredModal(false);
     if (!pendingAction) return;
+
+    // Dispatch branch: candidato-centric vs pratica-centric
+    if (pendingAction.mode === "candidato") {
+      return eseguiTrasmissioneCandidato(credenziali);
+    }
 
     const { tipo, praticaIds } = pendingAction;
     setPendingAction(null);
@@ -598,6 +743,138 @@ export default function TrasmissionePortale() {
     setProgressBusy(false);
   }
 
+  // ── Esegui trasmissione candidato-centric (replica GeCA Trasmiss.cs invio_Click) ──
+  async function eseguiTrasmissioneCandidato(credenziali) {
+    if (!pendingAction || pendingAction.mode !== "candidato") return;
+
+    const { candidatoIds, operazione, sigla } = pendingAction;
+    setPendingAction(null);
+
+    setProgressMessages([
+      `▶ Avvio trasmissione ${operazione} (sigla ${sigla}) per ${candidatoIds.length} candidato/i`,
+    ]);
+    setProgressBusy(true);
+
+    for (const candidatoId of candidatoIds) {
+      setInvioCandidatoInCorso((p) => ({ ...p, [candidatoId]: true }));
+      try {
+        const base = apiBase();
+        const url = `${base}/api/trasmiss/trasmetti-candidato`;
+        const tok = typeof window !== "undefined" ? localStorage.getItem("autoscuola_token") : null;
+        const fetchHeaders = {
+          "Content-Type": "application/json",
+          ...(tok ? { Authorization: `Bearer ${tok}` } : {}),
+        };
+
+        setProgressMessages((m) => [
+          ...m,
+          `→ Invio candidato ${candidatoId}…`,
+        ]);
+
+        const res = await fetch(url, {
+          method: "POST",
+          headers: fetchHeaders,
+          body: JSON.stringify({
+            candidato_id: candidatoId,
+            sigla,
+            credenziali,
+            ...(ciaExtra ? { extra: ciaExtra } : {}),
+          }),
+        });
+
+        let data = null;
+        try {
+          data = await res.json();
+        } catch (_) {
+          data = { success: false, error: `HTTP ${res.status}` };
+        }
+
+        if (!data) data = { success: false, error: "Nessuna risposta dal server" };
+
+        // Mostra risultato in modale
+        const candidatoObj = candidati.find((c) => c.id === candidatoId);
+        setRisultatoPratica({
+          candidates: candidatoObj,
+          tipo_trasmissione: operazione,
+          tipo_pratica: operazione,
+        });
+        setRisultato(data);
+
+        // Aggiorna lista candidati con lo stato trasmesso
+        setCandidati((prev) =>
+          prev.map((c) =>
+            c.id === candidatoId
+              ? {
+                  ...c,
+                  trasmesso: data.success ? true : c.trasmesso,
+                  stato_pratica: data.success ? "trasmesso_portale" : c.stato_pratica,
+                  marca_operativa: data.marcaOperativa || c.marca_operativa,
+                  id_richiesta_portale: data.idRichiesta || c.id_richiesta_portale,
+                  pratica_id: data.pratica_id || c.pratica_id,
+                  ultimo_errore_portale: data.success ? null : (data.error || c.ultimo_errore_portale),
+                }
+              : c
+          )
+        );
+
+        if (data.log && Array.isArray(data.log)) {
+          setProgressMessages((m) => [...m, ...data.log.slice(-20)]);
+        }
+        setProgressMessages((m) => [
+          ...m,
+          data.success
+            ? `✓ Trasmissione OK (marca ${data.marcaOperativa || "–"})`
+            : `✗ Errore: ${data.error || "sconosciuto"}`,
+        ]);
+      } catch (e) {
+        setRisultato({ success: false, error: e.message });
+        setProgressMessages((m) => [...m, `✗ Eccezione: ${e.message}`]);
+      } finally {
+        setInvioCandidatoInCorso((p) => ({ ...p, [candidatoId]: false }));
+      }
+    }
+    setProgressBusy(false);
+    setCiaExtra(null);
+  }
+
+  // Trasmissione massiva candidati selezionati
+  function avviaTrasmissioneMassivaCandidati() {
+    if (selectedCandidati.size === 0) {
+      alert("Nessun candidato selezionato");
+      return;
+    }
+    // Raggruppa per operazione — serve un giro separato per ognuna
+    const candidatiSelezionati = candidatiFiltrati.filter((c) => selectedCandidati.has(c.id));
+    const operazioniUniche = [...new Set(candidatiSelezionati.map((c) => c.operazione))];
+
+    if (operazioniUniche.length > 1) {
+      const ok = confirm(
+        `I ${candidatiSelezionati.length} candidati selezionati hanno operazioni diverse (${operazioniUniche.join(", ")}).\n\n` +
+        "Vuoi procedere comunque? Verranno trasmessi uno ad uno."
+      );
+      if (!ok) return;
+    }
+
+    // Usa l'operazione del primo candidato per CIA (rinnovo_medico)
+    const firstOp = candidatiSelezionati[0].operazione;
+    const firstSigla = candidatiSelezionati[0].tipo_iscrizione_sigla;
+
+    setPendingAction({
+      mode: "candidato",
+      tipo: OPERAZIONE_TO_TIPO_ENDPOINT[firstOp] || firstOp,
+      operazione: firstOp,
+      sigla: firstSigla,
+      candidatoIds: candidatiSelezionati.map((c) => c.id),
+    });
+
+    if (firstOp === "rinnovo_medico") {
+      setCiaExtra(null);
+      setShowCiaModal(true);
+    } else {
+      setShowCredModal(true);
+    }
+  }
+
   // ── Verifica rinnovabilità ──────────────────────────────────────────────────
 
   async function verificaRinnovabilita(praticaId) {
@@ -637,7 +914,7 @@ export default function TrasmissionePortale() {
             </p>
           </div>
           <button
-            onClick={caricaPratiche}
+            onClick={() => tabMode === "pratiche" ? caricaPratiche() : caricaCandidatiPronti()}
             style={{
               padding: "8px 18px", background: "#f3f4f6",
               border: "1px solid #d1d5db", borderRadius: 8,
@@ -645,6 +922,69 @@ export default function TrasmissionePortale() {
             }}
           >
             🔄 Aggiorna
+          </button>
+        </div>
+
+        {/* Tab switcher: Pratiche / Candidati */}
+        <div style={{
+          display: "flex", gap: 0, marginBottom: 18,
+          borderBottom: "2px solid #e5e7eb",
+        }}>
+          <button
+            onClick={() => setTabMode("candidati")}
+            style={{
+              padding: "10px 22px",
+              background: tabMode === "candidati" ? "#fff" : "transparent",
+              border: "none",
+              borderBottom: tabMode === "candidati" ? "3px solid #1d4ed8" : "3px solid transparent",
+              marginBottom: -2,
+              color: tabMode === "candidati" ? "#1d4ed8" : "#6b7280",
+              fontSize: 14, fontWeight: 700, cursor: "pointer",
+              transition: "all .15s",
+            }}
+          >
+            👤 Candidati Pronti
+            {candidati.length > 0 && (
+              <span style={{
+                marginLeft: 8,
+                background: tabMode === "candidati" ? "#dbeafe" : "#f3f4f6",
+                color: tabMode === "candidati" ? "#1d4ed8" : "#6b7280",
+                borderRadius: 99,
+                padding: "1px 8px",
+                fontSize: 12,
+                fontWeight: 700,
+              }}>
+                {candidati.length}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={() => setTabMode("pratiche")}
+            style={{
+              padding: "10px 22px",
+              background: tabMode === "pratiche" ? "#fff" : "transparent",
+              border: "none",
+              borderBottom: tabMode === "pratiche" ? "3px solid #1d4ed8" : "3px solid transparent",
+              marginBottom: -2,
+              color: tabMode === "pratiche" ? "#1d4ed8" : "#6b7280",
+              fontSize: 14, fontWeight: 700, cursor: "pointer",
+              transition: "all .15s",
+            }}
+          >
+            📄 Pratiche (vista legacy)
+            {pratiche.length > 0 && (
+              <span style={{
+                marginLeft: 8,
+                background: tabMode === "pratiche" ? "#dbeafe" : "#f3f4f6",
+                color: tabMode === "pratiche" ? "#1d4ed8" : "#6b7280",
+                borderRadius: 99,
+                padding: "1px 8px",
+                fontSize: 12,
+                fontWeight: 700,
+              }}>
+                {pratiche.length}
+              </span>
+            )}
           </button>
         </div>
 
@@ -702,20 +1042,107 @@ export default function TrasmissionePortale() {
               <option key={o.value} value={o.value}>{o.label}</option>
             ))}
           </select>
-        </div>
-
-        {/* Conta pratiche */}
-        <div style={{ fontSize: 13, color: "#6b7280", marginBottom: 12 }}>
-          {loading ? "Caricamento…" : `${praticheFiltrate.length} pratiche`}
-          {selected.size > 0 && (
-            <span style={{ marginLeft: 10, color: "#1d4ed8", fontWeight: 600 }}>
-              {selected.size} selezionate
-            </span>
+          {tabMode === "candidati" && (
+            <>
+              <select
+                value={filtroSigla}
+                onChange={(e) => setFiltroSigla(e.target.value)}
+                style={{
+                  padding: "9px 12px", minWidth: 220,
+                  border: "1px solid #d1d5db", borderRadius: 8,
+                  fontSize: 14, background: "#fff", outline: "none",
+                }}
+                title="Filtra per sigla tipo iscrizione"
+              >
+                <option value="">Tutte le sigle</option>
+                {Object.entries(SIGLA_LABELS).map(([k, v]) => (
+                  <option key={k} value={k}>
+                    {k} — {v}
+                  </option>
+                ))}
+              </select>
+              <label style={{
+                display: "inline-flex", alignItems: "center", gap: 6,
+                padding: "9px 12px", fontSize: 13, fontWeight: 600,
+                color: "#374151", cursor: "pointer",
+                background: "#f9fafb", border: "1px solid #d1d5db", borderRadius: 8,
+              }}>
+                <input
+                  type="checkbox"
+                  checked={includiTrasmessi}
+                  onChange={(e) => setIncludiTrasmessi(e.target.checked)}
+                  style={{ cursor: "pointer" }}
+                />
+                Includi trasmessi
+              </label>
+            </>
           )}
         </div>
 
-        {/* Tabella pratiche */}
-        {loading ? (
+        {/* Conta pratiche/candidati */}
+        <div style={{ fontSize: 13, color: "#6b7280", marginBottom: 12, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          {tabMode === "pratiche" ? (
+            <>
+              <span>{loading ? "Caricamento…" : `${praticheFiltrate.length} pratiche`}</span>
+              {selected.size > 0 && (
+                <span style={{ color: "#1d4ed8", fontWeight: 600 }}>
+                  {selected.size} selezionate
+                </span>
+              )}
+            </>
+          ) : (
+            <>
+              <span>{loadingCandidati ? "Caricamento…" : `${candidatiFiltrati.length} candidati`}</span>
+              {selectedCandidati.size > 0 && (
+                <span style={{ color: "#1d4ed8", fontWeight: 600 }}>
+                  {selectedCandidati.size} selezionati
+                </span>
+              )}
+              {Object.keys(gruppiOperazione).length > 0 && (
+                <span style={{ display: "inline-flex", gap: 8, flexWrap: "wrap" }}>
+                  {Object.entries(gruppiOperazione).map(([op, n]) => (
+                    <span
+                      key={op}
+                      style={{
+                        padding: "2px 10px",
+                        background: "#eef2ff",
+                        color: "#4338ca",
+                        borderRadius: 99,
+                        fontSize: 11,
+                        fontWeight: 600,
+                      }}
+                    >
+                      {OPERAZIONE_LABEL[op] || op}: {n}
+                    </span>
+                  ))}
+                </span>
+              )}
+              {selectedCandidati.size > 0 && (
+                <button
+                  onClick={avviaTrasmissioneMassivaCandidati}
+                  style={{
+                    marginLeft: "auto",
+                    padding: "6px 14px",
+                    background: "#1d4ed8",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: 7,
+                    fontSize: 12,
+                    fontWeight: 700,
+                    cursor: "pointer",
+                  }}
+                >
+                  📤 Trasmetti selezionati ({selectedCandidati.size})
+                </button>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {/* TAB PRATICHE — vista legacy pratica-centric                          */}
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {tabMode === "pratiche" && (loading ? (
           <div style={{ textAlign: "center", padding: 40, color: "#6b7280", fontSize: 14 }}>
             Caricamento pratiche…
           </div>
@@ -895,7 +1322,183 @@ export default function TrasmissionePortale() {
               );
             })}
           </div>
-        )}
+        ))}
+
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {/* TAB CANDIDATI — vista candidato-centric (replica GeCA Trasmiss.cs)   */}
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {tabMode === "candidati" && (loadingCandidati ? (
+          <div style={{ textAlign: "center", padding: 40, color: "#6b7280", fontSize: 14 }}>
+            Caricamento candidati pronti…
+          </div>
+        ) : candidatiFiltrati.length === 0 ? (
+          <div style={{
+            textAlign: "center", padding: 48,
+            border: "2px dashed #e5e7eb", borderRadius: 12,
+            color: "#9ca3af",
+          }}>
+            <div style={{ fontSize: 36, marginBottom: 8 }}>👤</div>
+            <div style={{ fontSize: 15, fontWeight: 600 }}>Nessun candidato pronto per la trasmissione</div>
+            <div style={{ fontSize: 13, marginTop: 4 }}>
+              I candidati iscritti con sigla trasmissibile appariranno qui.<br/>
+              Sigle trasmissibili: IN, PR, RE, CV, CM, D|, Y|, L|, S|, R|, M|, E|, PC, CC, GA
+            </div>
+          </div>
+        ) : (
+          <div style={{ border: "1px solid #e5e7eb", borderRadius: 10, overflow: "hidden" }}>
+            {/* Header tabella candidati */}
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "36px 1.4fr 120px 180px 100px 130px 170px",
+              background: "#f9fafb",
+              padding: "10px 14px",
+              borderBottom: "1px solid #e5e7eb",
+              fontSize: 11, fontWeight: 700, color: "#6b7280",
+              gap: 8,
+              letterSpacing: ".3px",
+            }}>
+              <div>
+                <input
+                  type="checkbox"
+                  checked={selectedCandidati.size === candidatiFiltrati.length && candidatiFiltrati.length > 0}
+                  onChange={toggleAllCandidati}
+                  style={{ cursor: "pointer" }}
+                />
+              </div>
+              <div>CANDIDATO</div>
+              <div>SIGLA</div>
+              <div>OPERAZIONE</div>
+              <div>CATEGORIA</div>
+              <div>STATO</div>
+              <div>AZIONI</div>
+            </div>
+
+            {/* Righe candidati */}
+            {candidatiFiltrati.map((c) => {
+              const isInCorso = invioCandidatoInCorso[c.id];
+              const isSelected = selectedCandidati.has(c.id);
+
+              return (
+                <div
+                  key={c.id}
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "36px 1.4fr 120px 180px 100px 130px 170px",
+                    padding: "12px 14px",
+                    borderBottom: "1px solid #f3f4f6",
+                    alignItems: "center",
+                    gap: 8,
+                    background: isSelected ? "#eff6ff" : (c.trasmesso ? "#f0fdf4" : "transparent"),
+                    transition: "background .12s",
+                  }}
+                >
+                  {/* Checkbox */}
+                  <div>
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => toggleSelectCandidato(c.id)}
+                      disabled={c.trasmesso}
+                      style={{ cursor: c.trasmesso ? "not-allowed" : "pointer" }}
+                    />
+                  </div>
+
+                  {/* Candidato */}
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: 14 }}>
+                      {c.cognome} {c.nome}
+                    </div>
+                    <div style={{ fontSize: 12, color: "#6b7280" }}>
+                      {c.codice_fiscale}
+                      {c.telefono && (
+                        <span style={{ marginLeft: 8 }}>
+                          📞 {c.telefono}
+                        </span>
+                      )}
+                    </div>
+                    {c.data_iscrizione && (
+                      <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>
+                        Iscr. {formatDateIT(c.data_iscrizione)}
+                      </div>
+                    )}
+                    {c.ultimo_errore_portale && !c.trasmesso && (
+                      <div style={{
+                        fontSize: 11, color: "#dc2626",
+                        marginTop: 3, fontWeight: 600,
+                      }}>
+                        ⚠ {c.ultimo_errore_portale}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Sigla */}
+                  <div>
+                    <span
+                      title={siglaLabel(c.tipo_iscrizione_sigla)}
+                      style={{
+                        display: "inline-block",
+                        padding: "2px 9px",
+                        borderRadius: 6,
+                        fontSize: 12,
+                        fontWeight: 700,
+                        color: "#4338ca",
+                        background: "#eef2ff",
+                        fontFamily: "monospace",
+                      }}
+                    >
+                      {c.tipo_iscrizione_sigla || "–"}
+                    </span>
+                  </div>
+
+                  {/* Operazione */}
+                  <div style={{ fontSize: 12, fontWeight: 600, color: "#374151" }}>
+                    {OPERAZIONE_LABEL[c.operazione] || c.operazione_label || c.operazione || "–"}
+                  </div>
+
+                  {/* Categoria */}
+                  <div style={{ fontSize: 14, fontWeight: 600 }}>
+                    {c.categoria_richiesta || c.categoria_patente || "–"}
+                  </div>
+
+                  {/* Stato */}
+                  <div>
+                    <StatoBadge stato={c.stato_pratica} />
+                    {c.marca_operativa && (
+                      <div style={{ fontSize: 10, color: "#6b7280", marginTop: 2, fontFamily: "monospace" }}>
+                        {c.marca_operativa}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Azioni */}
+                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                    {c.trasmesso ? (
+                      <span style={{ fontSize: 12, color: "#16a34a", fontWeight: 600 }}>
+                        ✓ Trasmesso
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => avviaTrasmissioneCandidato(c)}
+                        disabled={isInCorso}
+                        style={{
+                          padding: "5px 12px",
+                          background: isInCorso ? "#e5e7eb" : "#1d4ed8",
+                          color: isInCorso ? "#9ca3af" : "#fff",
+                          border: "none", borderRadius: 6,
+                          fontSize: 12, fontWeight: 600,
+                          cursor: isInCorso ? "not-allowed" : "pointer",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {isInCorso ? "⏳ Invio…" : "📤 Trasmetti"}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ))}
 
         {/* Legenda stati */}
         <div style={{
@@ -907,11 +1510,23 @@ export default function TrasmissionePortale() {
             ℹ️ Note operative
           </div>
           <ul style={{ margin: 0, paddingLeft: 20, color: "#6b7280", lineHeight: 1.8 }}>
-            <li>La trasmissione apre un browser Puppeteer in background e compila il form sul Portale dell&apos;Automobilista.</li>
-            <li>I campi anagrafici vengono compilati automaticamente dai dati del candidato su Supabase.</li>
-            <li>Per i comuni/province è necessario che i codici ISTAT siano presenti nell&apos;anagrafica del candidato.</li>
-            <li>I rinnovi richiedono che la patente sia rinnovabile (verifica preventiva consigliata).</li>
-            <li>Dopo la trasmissione, la marca operativa e l&apos;ID richiesta vengono salvati automaticamente.</li>
+            {tabMode === "candidati" ? (
+              <>
+                <li><strong>Vista Candidati</strong> — replica il flusso GeCA Trasmiss.cs: si parte dall&apos;iscrizione candidato, la pratica viene creata al volo sul Portale.</li>
+                <li>La sigla <code>tipo_iscrizione</code> determina automaticamente l&apos;operazione (conseguimento/rinnovo/duplicato/CQC/...).</li>
+                <li>Sigle non trasmissibili (PN, RP, CQ, CK, CA, EG, AD, PI, PP) sono filtrate automaticamente.</li>
+                <li>Puoi selezionare più candidati e usare &quot;Trasmetti selezionati&quot; per invio massivo (GeCA btnMASSIVO).</li>
+                <li>Il certificato medico (CM → rinnovo_medico) richiede i dati CIA TT2112 prima della trasmissione.</li>
+              </>
+            ) : (
+              <>
+                <li>La trasmissione apre un browser Puppeteer in background e compila il form sul Portale dell&apos;Automobilista.</li>
+                <li>I campi anagrafici vengono compilati automaticamente dai dati del candidato su Supabase.</li>
+                <li>Per i comuni/province è necessario che i codici ISTAT siano presenti nell&apos;anagrafica del candidato.</li>
+                <li>I rinnovi richiedono che la patente sia rinnovabile (verifica preventiva consigliata).</li>
+                <li>Dopo la trasmissione, la marca operativa e l&apos;ID richiesta vengono salvati automaticamente.</li>
+              </>
+            )}
           </ul>
         </div>
       </div>

@@ -239,6 +239,28 @@ function toDate(val) {
  * Usa codice_fiscale come chiave di conflict; fallback su patente_numero.
  * Mappa tutti i campi del portale alle colonne DB corrispondenti.
  */
+/**
+ * Segnaposto per il codice fiscale quando il Portale non l'ha ancora dato
+ * (scheda individuale non letta). DEVE essere DETERMINISTICO: prima si usava
+ * `PORTAL-${Date.now()}-${random}`, che cambiava ad OGNI giro — e siccome la
+ * dedup avviene sul codice fiscale, ogni scarico reinseriva tutti da capo
+ * (29/08/2026: 88 persone diventate 264 righe in tre giri). Derivandolo
+ * dall'identificativo stabile del Portale, un riscarico AGGIORNA la stessa riga.
+ */
+function segnapostoCf({ marca_operativa, patente, cognome, nome }) {
+  const pulisci = (v) => String(v || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  const marca = pulisci(marca_operativa);
+  // Formato TEMP_<marca>: è quello che il gestionale sa già sciogliere da solo
+  // (SupabaseReadService.RecuperaCodiciFiscaliAsync) sostituendolo col codice
+  // fiscale vero appena la scheda individuale diventa leggibile.
+  if (marca) return `TEMP_${marca}`;
+  const patenteP = pulisci(patente);
+  if (patenteP) return `TEMP_PAT${patenteP}`;
+  // Senza NESSUN elemento identificativo non si inventa nulla di stabile:
+  // meglio una riga in errore che un duplicato silenzioso ad ogni giro.
+  return null;
+}
+
 async function upsertCandidateToDB(candidate, autoscuolaId) {
   const cf = String(candidate.codice_fiscale || "").trim();
   const patente = String(candidate.patente_numero || candidate.numeroPatente || "").trim();
@@ -320,7 +342,7 @@ async function upsertCandidateToDB(candidate, autoscuolaId) {
   const payload = {
     nome,
     cognome,
-    codice_fiscale: cf || `PORTAL-${patente || Date.now()}-${Math.floor(Math.random() * 10000)}`,
+    codice_fiscale: cf || segnapostoCf({ marca_operativa, patente, cognome, nome }),
     categoria_patente,
     patente_numero: patente || null,
     tentativi_quiz,
@@ -374,10 +396,39 @@ async function upsertCandidateToDB(candidate, autoscuolaId) {
 
   if (autoscuolaId) payload.autoscuola_id = autoscuolaId;
 
+  const RITORNO = "id,nome,cognome,codice_fiscale,patente_numero,categoria_patente,raw_portale,marca_operativa,data_iscrizione";
+
+  // IDENTITÀ: la marca operativa è l'identificativo STABILE del Portale, il
+  // codice fiscale può ancora mancare (scheda non letta). Si cerca prima per
+  // marca — dentro il proprio tenant — e si AGGIORNA la riga trovata: è ciò
+  // che impedisce a un secondo scarico di ricreare la stessa persona.
+  // .limit(1) e non .maybeSingle(): con duplicati già in tabella maybeSingle
+  // fallisce e si ricadrebbe in INSERT, aggiungendo un ennesimo doppione.
+  if (payload.marca_operativa) {
+    let q = supabase.from("candidates").select("id")
+      .eq("marca_operativa", payload.marca_operativa);
+    q = autoscuolaId ? q.eq("autoscuola_id", autoscuolaId) : q.is("autoscuola_id", null);
+    const { data: esistenti } = await q.order("created_at", { ascending: true }).limit(1);
+    const gia = esistenti && esistenti[0];
+    if (gia) {
+      // Il segnaposto non sovrascrive MAI un codice fiscale vero già acquisito.
+      const aggiorna = { ...payload };
+      if (!cf) delete aggiorna.codice_fiscale;
+      const { data: row, error } = await supabase.from("candidates")
+        .update(aggiorna).eq("id", gia.id).select(RITORNO).single();
+      if (error) throw new Error(`Aggiornamento fallito per marca ${payload.marca_operativa}: ${error.message}`);
+      return row;
+    }
+  }
+
+  // Senza marca (o prima volta) si resta sulla chiave del codice fiscale.
+  if (!payload.codice_fiscale) {
+    throw new Error("Candidato senza codice fiscale né marca operativa: non identificabile, riga non scritta.");
+  }
   const { data: row, error } = await supabase
     .from("candidates")
     .upsert([payload], { onConflict: "codice_fiscale" })
-    .select("id,nome,cognome,codice_fiscale,patente_numero,categoria_patente,raw_portale,marca_operativa,data_iscrizione")
+    .select(RITORNO)
     .single();
 
   if (error) throw new Error(`Upsert fallito per ${payload.cognome} ${payload.nome}: ${error.message}`);
@@ -588,4 +639,5 @@ module.exports = {
   importMassivo,
   importCandidate,
   importByPatente,
+  upsertCandidateToDB,
 };

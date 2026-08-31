@@ -10,7 +10,10 @@ import {
   logoutSession,
 } from "../../lib/authClient";
 import ModernAppShell from "../ModernAppShell";
-import ModalNuovaIscrizione from "./ModalNuovaIscrizione";
+import WizardNuovaIscrizione from "./WizardNuovaIscrizione";
+import DettaglioDynamicWrapper from "./DettaglioDynamicWrapper";
+import SchedaRiepilogativaModal from "./SchedaRiepilogativaModal";
+import ModalOmonimi from "./ModalOmonimi";
 import {
   buildEmptyEditor,
   extractExtendedEditor,
@@ -49,53 +52,6 @@ const TIPO_ISCRIZIONE_FILTER_OPTIONS = [
 
 const PATENTE_FILTER_OPTIONS = ["TUTTE", ...PATENTE_RICHIESTA_OPTIONS];
 
-/** GeCA: nuovaiscr – gruppi tipo iscrizione per wizard step 1 */
-const WIZARD_TIPO_GROUPS = [
-  {
-    label: "Conseguimento per Esame",
-    color: "bg-indigo-600 hover:bg-indigo-500",
-    items: [
-      { label: "Interno", value: "INTERNO", desc: "Allievo interno autoscuola" },
-      { label: "Privatista", value: "PRIVATISTA", desc: "Candidato privatista esterno" },
-      { label: "Revisione", value: "REVISIONE", desc: "Revisione patente" },
-      { label: "Rilascio per Esame (generico)", value: "Rilascio per Esami: Interno - Privatista - Revisione", desc: "Interno / privatista / revisione" },
-    ],
-  },
-  {
-    label: "Rinnovo e Duplicato",
-    color: "bg-violet-600 hover:bg-violet-500",
-    items: [
-      { label: "Rinnovo patente", value: "Conferma di Validità (Rinnovo Patente)", desc: "Conferma validità / rinnovo" },
-      { label: "Duplicato patente", value: "Duplicato per: Smarrim. - Riclassif. - Deterioram. - Altro", desc: "Rilascio per duplicato / smarrimento" },
-      { label: "Conversione patente", value: "Conversione Patente: Militare - Estera", desc: "Conversione da patente militare / estera" },
-    ],
-  },
-  {
-    label: "CQC e Corsi",
-    color: "bg-amber-600 hover:bg-amber-500",
-    items: [
-      { label: "Patente CQC", value: "Patente CQC: Utenti Italiani", desc: "Richiesta patente C.Q.C." },
-      { label: "CQC Card", value: "CQC CARD: Utenti Stranieri", desc: "CQC Card per utenti stranieri" },
-      { label: "Corso CQC", value: "Corso C.Q.C.", desc: "Corso C.Q.C." },
-      { label: "Recupero Punti", value: "Recupero Punti", desc: "Corso recupero punti patente" },
-      { label: "Corso ADR", value: "Corso A.D.R.", desc: "Corso trasporto merci pericolose A.D.R." },
-    ],
-  },
-  {
-    label: "Altre Iscrizioni",
-    color: "bg-emerald-600 hover:bg-emerald-500",
-    items: [
-      { label: "Guida Accompagnata", value: "Guida Accompagnata", desc: "Autorizzazione guida accompagnata" },
-      { label: "Certificato Medico", value: "Certificato Medico (per non iscritti)", desc: "Richiesta certificato medico" },
-      { label: "Patente Nautica", value: "Patente Nautica", desc: "Patente nautica" },
-      { label: "Eserc. Guida", value: "Esercitazione Guida", desc: "Esercitazione guida" },
-      { label: "Archivio Dati", value: "Archivio Dati", desc: "Archivio dati" },
-      { label: "Permesso Intern.", value: "Permesso Intern.le di Guida", desc: "Permesso internazionale di guida" },
-      { label: "Permesso Provv.", value: "Permesso Provv. di Guida", desc: "Permesso provvisorio di guida" },
-    ],
-  },
-];
-
 export default function AnagraficaIscrizioniPage() {
   return (
     <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-slate-100"><p className="text-slate-600">Caricamento...</p></div>}>
@@ -116,6 +72,8 @@ function AnagraficaIscrizioniInner() {
   const [editor, setEditor] = useState(() => buildEmptyEditor("B"));
   const [editorBaseRawPortale, setEditorBaseRawPortale] = useState({});
   const [wizardStep, setWizardStep] = useState(0); // 0=chiuso, 1=scelta tipo, 2=form
+  const [showSchedaRiepilogativa, setShowSchedaRiepilogativa] = useState(false);
+  const [showOmonimiSearch, setShowOmonimiSearch] = useState(false); // ModalOmonimi standalone (ricerca da toolbar)
 
   const tipoFromUrl = searchParams.get("tipo_iscrizione");
   const initialTipo =
@@ -283,63 +241,6 @@ function AnagraficaIscrizioniInner() {
     setEditorBaseRawPortale({});
     setSelectedId(null);
     setWizardStep(1);
-  }
-
-  function onWizardSelectTipo(tipo) {
-    setEditor((prev) => ({ ...prev, stato_richiesta: tipo }));
-    setWizardStep(2);
-  }
-
-  async function onWizardSalva() {
-    const payload = mapCandidateForSave(editor, editorBaseRawPortale);
-    if (!payload.nome || !payload.cognome) {
-      setStatus("Nome e cognome obbligatori");
-      return;
-    }
-
-    // GeCA: frmOmoni – controlla omonimi prima di salvare
-    try {
-      const omRes = await fetch(`${API_BASE}/api/candidati-api/omonimi`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", ...authHeaders() },
-        body: JSON.stringify({
-          cognome: editor.cognome,
-          nome: editor.nome,
-          data_nascita: editor.data_nascita || null,
-        }),
-      });
-      if (omRes.ok) {
-        const omData = await omRes.json();
-        if (omData.count > 0) {
-          const nomi = omData.omonimi
-            .slice(0, 3)
-            .map((o) => `${o.cognome} ${o.nome} (${o.codice_fiscale || "–"})`)
-            .join("\n");
-          const conferma = window.confirm(
-            `Attenzione: trovato ${omData.count} candidato/i con lo stesso nome:\n\n${nomi}\n\nVuoi procedere ugualmente con la nuova iscrizione?`
-          );
-          if (!conferma) return;
-        }
-      }
-    } catch (_) {
-      // se il controllo omonimi fallisce, procediamo comunque
-    }
-
-    setStatus("Salvataggio...");
-    try {
-      const res = await fetch(`${API_BASE}/api/candidati-api`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", ...authHeaders() },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error || "Errore creazione");
-      setStatus("Iscrizione creata");
-      setWizardStep(0);
-      await loadCandidates(filters.archivio);
-    } catch (e) {
-      setStatus(`Errore: ${e.message}`);
-    }
   }
 
   // --- Modifica esistente ---
@@ -588,6 +489,23 @@ function AnagraficaIscrizioniInner() {
             </button>
             <button
               type="button"
+              onClick={() => setShowSchedaRiepilogativa(true)}
+              disabled={!selectedRow}
+              className="rounded border border-violet-300 bg-violet-50 px-2 py-1 text-xs font-semibold text-violet-700 hover:bg-violet-100 disabled:opacity-50"
+              title="Scheda riepilogativa (GeCA: frmRiepilogo) - Stampa PDF"
+            >
+              📄 Scheda
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowOmonimiSearch(true)}
+              className="rounded border border-sky-300 bg-sky-50 px-2 py-1 text-xs font-semibold text-sky-700 hover:bg-sky-100"
+              title="Ricerca omonimi avanzata (GeCA: frmOmoni)"
+            >
+              🔎 Ricerca Omonimi
+            </button>
+            <button
+              type="button"
               onClick={() =>
                 setFilters((prev) => ({
                   ...prev,
@@ -645,6 +563,14 @@ function AnagraficaIscrizioniInner() {
                   className="rounded bg-emerald-600 px-2 py-0.5 text-xs font-semibold text-white hover:bg-emerald-500"
                 >
                   Modifica
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowSchedaRiepilogativa(true)}
+                  className="rounded bg-violet-600 px-2 py-0.5 text-xs font-semibold text-white hover:bg-violet-500"
+                  title="Scheda riepilogativa + stampa PDF"
+                >
+                  📄 Scheda
                 </button>
                 <button
                   type="button"
@@ -769,779 +695,92 @@ function AnagraficaIscrizioniInner() {
           </div>
         </div>
 
-        {/* Pannello modifica iscrizione esistente (GeCA: iscrEsame / iscrdup / etc.) */}
+        {/* Pannello modifica iscrizione esistente — routing dinamico per sigla
+            (GeCA: anagrafe.cs btmedit_Click / eleIscritti_CellDoubleClick) */}
         {editMode === "edit" && (
-          <DettaglioPanel
+          <DettaglioDynamicWrapper
+            row={selectedRow}
             editor={editor}
             setEditor={setEditor}
-            etaAnni={etaAnni}
-            onSalva={onSalvaDettaglio}
-            onAnnulla={onAnnullaDettaglio}
-            PATENTE_RICHIESTA_OPTIONS={PATENTE_RICHIESTA_OPTIONS}
-            TIPO_DOCUMENTO_OPTIONS={TIPO_DOCUMENTO_OPTIONS}
-            TIPO_ISCRIZIONE_OPTIONS={TIPO_ISCRIZIONE_OPTIONS}
-          />
-        )}
-
-        {/* Wizard Step 1 – Scelta tipo iscrizione (GeCA: nuovaiscr) */}
-        {wizardStep === 1 && (
-          <WizardStep1
-            onSelect={onWizardSelectTipo}
-            onAnnulla={() => setWizardStep(0)}
-          />
-        )}
-
-        {/* Wizard Step 2 – Modal nuova iscrizione */}
-        {wizardStep === 2 && (
-          <ModalNuovaIscrizione
-            tipo={editor.stato_richiesta}
-            onClose={() => setWizardStep(0)}
-            onSalva={(result) => {
-              setWizardStep(0);
-              loadCandidates(filters.archivio);
+            editorBaseRawPortale={editorBaseRawPortale}
+            candidatoId={selectedId}
+            onClose={onAnnullaDettaglio}
+            onSaved={async () => {
+              setEditMode("none");
+              setStatus("Modifiche salvate");
+              await loadCandidates(filters.archivio);
+            }}
+            fallbackComponent={DettaglioPanel}
+            fallbackProps={{
+              etaAnni,
+              PATENTE_RICHIESTA_OPTIONS,
+              TIPO_DOCUMENTO_OPTIONS,
+              TIPO_ISCRIZIONE_OPTIONS,
             }}
           />
         )}
+
+        {/* Wizard Nuova Iscrizione — replica GeCA nuovaiscr.cs (step 1 + step 2) */}
+        {wizardStep > 0 && (
+          <WizardNuovaIscrizione
+            open={true}
+            initialSigla={null}
+            initialEditor={editor}
+            onClose={() => setWizardStep(0)}
+            onSaved={(saved) => {
+              setWizardStep(0);
+              loadCandidates(filters.archivio);
+            }}
+            onSelectExistingOmonimo={(candidato) => {
+              // L'utente durante il wizard ha scelto un candidato omonimo esistente:
+              // apri il candidato in modifica (replica GeCA frmOmoni btmconf_Click)
+              if (!candidato?.id) return;
+              setSelectedId(candidato.id);
+              setEditor({
+                ...buildEmptyEditor(candidato.categoria_patente || "B"),
+                ...extractExtendedEditor(candidato),
+              });
+              setEditorBaseRawPortale(candidato.raw_portale || {});
+              setEditMode("edit");
+              setStatus(
+                `Candidato esistente selezionato: ${candidato.cognome} ${candidato.nome}`
+              );
+            }}
+          />
+        )}
+
+        {/* Scheda Riepilogativa — replica GeCA frmRiepilogo.cs (3 tab + stampa PDF) */}
+        {showSchedaRiepilogativa && selectedRow && (
+          <SchedaRiepilogativaModal
+            row={selectedRow}
+            open={true}
+            onClose={() => setShowSchedaRiepilogativa(false)}
+          />
+        )}
+
+        {/* ModalOmonimi standalone — replica GeCA frmOmoni.cs (ricerca da toolbar) */}
+        <ModalOmonimi
+          open={showOmonimiSearch}
+          onClose={() => setShowOmonimiSearch(false)}
+          title="Ricerca Omonimi"
+          onSelectCandidate={(candidato) => {
+            // Selezione candidato: chiude modale e apre in modifica
+            if (!candidato?.id) return;
+            setShowOmonimiSearch(false);
+            setSelectedId(candidato.id);
+            setEditor({
+              ...buildEmptyEditor(candidato.categoria_patente || "B"),
+              ...extractExtendedEditor(candidato),
+            });
+            setEditorBaseRawPortale(candidato.raw_portale || {});
+            setEditMode("edit");
+            setStatus(
+              `Aperto in modifica: ${candidato.cognome} ${candidato.nome}`
+            );
+          }}
+        />
       </div>
     </ModernAppShell>
-  );
-}
-
-// =============================================================================
-// GeCA: nuovaiscr – Step 1 scelta tipo iscrizione
-// =============================================================================
-function WizardStep1({ onSelect, onAnnulla }) {
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
-      onClick={(e) => e.target === e.currentTarget && onAnnulla()}
-    >
-      <div
-        className="w-full max-w-2xl rounded-lg border border-violet-200 bg-white shadow-xl overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
-        style={{ maxHeight: "92vh" }}
-      >
-        <div className="flex items-center justify-between border-b border-violet-700 bg-violet-800 px-4 py-2">
-          <div>
-            <h2 className="text-base font-bold text-white">Registra Nuova Iscrizione</h2>
-            <p className="text-xs text-white/70">Seleziona il tipo di iscrizione</p>
-          </div>
-          <button
-            type="button"
-            onClick={onAnnulla}
-            className="rounded p-1 text-white/80 hover:bg-violet-700 hover:text-white"
-            aria-label="Chiudi"
-          >
-            ✕
-          </button>
-        </div>
-
-        <div className="overflow-y-auto p-4 space-y-4" style={{ maxHeight: "calc(92vh - 56px)" }}>
-          {WIZARD_TIPO_GROUPS.map((group) => (
-            <div key={group.label}>
-              <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-slate-500">
-                {group.label}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {group.items.map((item) => (
-                  <button
-                    key={item.value}
-                    type="button"
-                    onClick={() => onSelect(item.value)}
-                    className={`rounded px-3 py-2 text-xs font-semibold text-white shadow-sm transition ${group.color}`}
-                    title={item.desc}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
-
-          <div className="border-t border-slate-200 pt-3">
-            <button
-              type="button"
-              onClick={onAnnulla}
-              className="rounded bg-violet-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-violet-700"
-            >
-              Annulla
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// =============================================================================
-// GeCA: nuovaiscr Step 2 – form anagrafica completo (equivalente iscrEsame/iscrdup/iscrCorso)
-// =============================================================================
-function NuovaIscrizioneModal({
-  editor,
-  setEditor,
-  etaAnni,
-  onSalva,
-  onAnnulla,
-  onBack,
-  PATENTE_RICHIESTA_OPTIONS,
-  TIPO_DOCUMENTO_OPTIONS,
-  TIPO_ISCRIZIONE_OPTIONS,
-}) {
-  const set = (key, value) => setEditor((p) => ({ ...p, [key]: value }));
-  const [showScansioneModal, setShowScansioneModal] = useState(false);
-  const fotoInputRef = useRef(null);
-  const firmaInputRef = useRef(null);
-
-  const handleFileFoto = (e) => {
-    const file = e.target.files?.[0];
-    if (!file || !file.type.startsWith("image/")) return;
-    const reader = new FileReader();
-    reader.onload = () => set("foto_data_url", reader.result || "");
-    reader.readAsDataURL(file);
-    e.target.value = "";
-  };
-  const handleFileFirma = (e) => {
-    const file = e.target.files?.[0];
-    if (!file || !file.type.startsWith("image/")) return;
-    const reader = new FileReader();
-    reader.onload = () => set("firma_data_url", reader.result || "");
-    reader.readAsDataURL(file);
-    e.target.value = "";
-  };
-
-  const lab = "block text-[9px] font-bold text-slate-600 leading-tight";
-  const inp = "w-full min-w-0 rounded border border-slate-300 bg-white px-1 py-0.5 text-[11px] text-slate-900";
-  const inpNarrow = "w-12 rounded border border-slate-300 bg-white px-0.5 py-0.5 text-[11px] text-slate-900 text-center";
-
-  const fld = (label, children, className = "") => (
-    <div className={`flex flex-col gap-0.5 ${className}`}>
-      <label className={lab}>{label}</label>
-      {children}
-    </div>
-  );
-
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-2 bg-black/60"
-      onClick={(e) => e.target === e.currentTarget && onAnnulla()}
-    >
-      <div
-        className="w-full max-w-6xl rounded-lg border border-violet-200 bg-white shadow-xl flex flex-col overflow-hidden"
-        style={{ maxHeight: "96vh", minHeight: "520px" }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-2 border-b border-violet-700 bg-violet-800 shrink-0">
-          <div>
-            <h2 className="text-base font-bold text-white">Registra nuova iscrizione</h2>
-            {editor.stato_richiesta && (
-              <p className="text-xs text-amber-200">Tipo: {editor.stato_richiesta}</p>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={onBack}
-              className="rounded px-2 py-1 text-xs font-semibold text-white/80 hover:bg-violet-700 hover:text-white"
-            >
-              ← Tipo
-            </button>
-            <button
-              type="button"
-              onClick={onAnnulla}
-              className="rounded p-1 text-white/80 hover:bg-violet-700 hover:text-white"
-              aria-label="Chiudi"
-            >
-              ✕
-            </button>
-          </div>
-        </div>
-
-        {/* Body */}
-        <div className="flex flex-1 min-h-0 p-3 overflow-hidden bg-slate-50">
-          {/* Form principale */}
-          <div className="flex-1 min-w-0 overflow-y-auto space-y-2 pr-1">
-            {/* Autoscuola e Iscrizione + Protocollo */}
-            <div className="grid grid-cols-2 gap-x-3">
-              <div>
-                <p className="text-[9px] font-bold uppercase text-violet-800 mb-0.5">
-                  Autoscuola e Iscrizione
-                </p>
-                <div className="grid grid-cols-3 gap-x-1 gap-y-1">
-                  {fld(
-                    "DATA",
-                    <input
-                      className={inp}
-                      type="date"
-                      value={editor.data_iscrizione || ""}
-                      onChange={(e) => set("data_iscrizione", e.target.value)}
-                    />
-                  )}
-                  {fld(
-                    "AUTOSC.",
-                    <input
-                      className={inp}
-                      value={editor.codice_autoscuola || ""}
-                      onChange={(e) => set("codice_autoscuola", e.target.value)}
-                    />
-                  )}
-                  {fld(
-                    "CAT.",
-                    <select
-                      className={inp}
-                      value={editor.categoria_patente || "B"}
-                      onChange={(e) => set("categoria_patente", e.target.value)}
-                    >
-                      {PATENTE_RICHIESTA_OPTIONS.map((o) => (
-                        <option key={o} value={o}>
-                          {o}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                </div>
-                {fld(
-                  "TIPO ISCRIZIONE",
-                  <select
-                    className={inp}
-                    value={editor.stato_richiesta || ""}
-                    onChange={(e) => set("stato_richiesta", e.target.value)}
-                  >
-                    <option value="">SELEZIONA *</option>
-                    {TIPO_ISCRIZIONE_OPTIONS.filter(Boolean).map((o) => (
-                      <option key={o} value={o}>
-                        {o}
-                      </option>
-                    ))}
-                  </select>,
-                  "mt-1"
-                )}
-              </div>
-              <div>
-                <p className="text-[9px] font-bold uppercase text-amber-600 mb-0.5">
-                  Protocollo e Registro
-                </p>
-                <div className="grid grid-cols-4 gap-x-1 gap-y-1">
-                  {fld(
-                    "PROTOCOLLO",
-                    <input
-                      className={inp}
-                      value={editor.numero_registro || ""}
-                      onChange={(e) => set("numero_registro", e.target.value)}
-                      placeholder="N. prot."
-                    />
-                  )}
-                  {fld(
-                    "DATA REGIS.",
-                    <input
-                      className={inp}
-                      type="date"
-                      value={editor.data_registro || ""}
-                      onChange={(e) => set("data_registro", e.target.value)}
-                    />
-                  )}
-                  {fld(
-                    "COD. CAND.",
-                    <input
-                      className={inp}
-                      maxLength={6}
-                      value={editor.patente_numero || ""}
-                      onChange={(e) => set("patente_numero", e.target.value.slice(0, 6))}
-                    />
-                  )}
-                  {fld(
-                    "STATO RIC.",
-                    <input
-                      className={inp}
-                      value={editor.stato_richiesta_testo || ""}
-                      onChange={(e) => set("stato_richiesta_testo", e.target.value)}
-                    />
-                  )}
-                </div>
-                <div className="mt-1 grid grid-cols-2 gap-x-1">
-                  {fld(
-                    "EMISS. FOGLIO ROSA",
-                    <input
-                      className={inp}
-                      type="date"
-                      value={editor.ppg_data_emissione || ""}
-                      onChange={(e) => set("ppg_data_emissione", e.target.value)}
-                    />
-                  )}
-                  {fld(
-                    "SCAD. FOGLIO ROSA",
-                    <input
-                      className={inp}
-                      type="date"
-                      value={editor.ppg_data_scadenza || ""}
-                      onChange={(e) => set("ppg_data_scadenza", e.target.value)}
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Dati Anagrafici */}
-            <div>
-              <p className="text-[9px] font-bold uppercase text-violet-800 mb-0.5">
-                Dati Anagrafici
-              </p>
-              <div className="space-y-1">
-                <div className="grid grid-cols-5 gap-x-1">
-                  {fld(
-                    "COGNOME",
-                    <input
-                      className={inp}
-                      maxLength={35}
-                      value={editor.cognome || ""}
-                      onChange={(e) => set("cognome", e.target.value)}
-                    />
-                  )}
-                  {fld(
-                    "NOME",
-                    <input
-                      className={inp}
-                      maxLength={35}
-                      value={editor.nome || ""}
-                      onChange={(e) => set("nome", e.target.value)}
-                    />
-                  )}
-                  {fld(
-                    "SESSO",
-                    <select
-                      className={inpNarrow}
-                      value={editor.sesso || "M"}
-                      onChange={(e) => set("sesso", e.target.value)}
-                    >
-                      <option value="M">M</option>
-                      <option value="F">F</option>
-                    </select>
-                  )}
-                  {fld(
-                    "DATA NASC.",
-                    <input
-                      className={inp}
-                      type="date"
-                      value={editor.data_nascita || ""}
-                      onChange={(e) => set("data_nascita", e.target.value)}
-                    />
-                  )}
-                  {fld(
-                    "ETÀ",
-                    <input
-                      className={`${inpNarrow} bg-slate-100`}
-                      value={etaAnni}
-                      readOnly
-                    />
-                  )}
-                </div>
-                <div className="grid grid-cols-6 gap-x-1">
-                  {fld(
-                    "LUOGO NASCITA",
-                    <input
-                      className={inp}
-                      value={editor.comune_nascita || ""}
-                      onChange={(e) => set("comune_nascita", e.target.value)}
-                    />
-                  )}
-                  {fld(
-                    "PROV.",
-                    <input
-                      className={inpNarrow}
-                      maxLength={2}
-                      value={editor.prov_nascita || ""}
-                      onChange={(e) =>
-                        set("prov_nascita", e.target.value.toUpperCase().slice(0, 2))
-                      }
-                    />
-                  )}
-                  {fld(
-                    "CODICE FISCALE",
-                    <input
-                      className={`${inp} uppercase`}
-                      maxLength={16}
-                      value={editor.codice_fiscale || ""}
-                      onChange={(e) =>
-                        set("codice_fiscale", e.target.value.toUpperCase().slice(0, 16))
-                      }
-                    />
-                  )}
-                  {fld(
-                    "CITTADINANZA",
-                    <input
-                      className={inp}
-                      value={editor.cittadinanza || "ITALIANA"}
-                      onChange={(e) => set("cittadinanza", e.target.value)}
-                    />
-                  )}
-                  {fld(
-                    "COMUNE RESIDENZA",
-                    <input
-                      className={inp}
-                      value={editor.comune_residenza || ""}
-                      onChange={(e) => set("comune_residenza", e.target.value)}
-                    />
-                  )}
-                  {fld(
-                    "PROV.",
-                    <input
-                      className={inpNarrow}
-                      maxLength={2}
-                      value={editor.prov_residenza || ""}
-                      onChange={(e) =>
-                        set("prov_residenza", e.target.value.toUpperCase().slice(0, 2))
-                      }
-                    />
-                  )}
-                </div>
-                <div className="grid grid-cols-6 gap-x-1">
-                  {fld(
-                    "CAP",
-                    <input
-                      className="w-16 rounded border border-slate-300 bg-white px-1 py-0.5 text-[11px] text-slate-900"
-                      value={editor.cap_residenza || ""}
-                      onChange={(e) => set("cap_residenza", e.target.value)}
-                    />
-                  )}
-                  {fld(
-                    "INDIRIZZO",
-                    <input
-                      className={inp}
-                      value={editor.indirizzo_residenza || ""}
-                      onChange={(e) => set("indirizzo_residenza", e.target.value)}
-                    />
-                  )}
-                  {fld(
-                    "N. CIV.",
-                    <input
-                      className={inpNarrow}
-                      value={editor.numero_civico || ""}
-                      onChange={(e) => set("numero_civico", e.target.value)}
-                    />
-                  )}
-                  {fld(
-                    "TELEFONO",
-                    <input
-                      className={inp}
-                      value={editor.telefono_1 || ""}
-                      onChange={(e) => set("telefono_1", e.target.value)}
-                    />
-                  )}
-                  {fld(
-                    "EMAIL",
-                    <input
-                      className={inp}
-                      type="email"
-                      value={editor.email_contatto || ""}
-                      onChange={(e) => set("email_contatto", e.target.value)}
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Documento e Patente */}
-            <div className="grid grid-cols-2 gap-x-3">
-              <div>
-                <p className="text-[9px] font-bold uppercase text-violet-800 mb-0.5">
-                  Documento di Riconoscimento
-                </p>
-                <div className="grid grid-cols-3 gap-x-1">
-                  {fld(
-                    "TIPO",
-                    <select
-                      className={inp}
-                      value={editor.tipo_documento || ""}
-                      onChange={(e) => set("tipo_documento", e.target.value)}
-                    >
-                      <option value="">SELEZIONARE –</option>
-                      {TIPO_DOCUMENTO_OPTIONS.map((d) => (
-                        <option key={d} value={d}>
-                          {d}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                  {fld(
-                    "NUMERO",
-                    <input
-                      className={inp}
-                      value={editor.numero_documento || ""}
-                      onChange={(e) => set("numero_documento", e.target.value)}
-                    />
-                  )}
-                  {fld(
-                    "RILASCIATO IL",
-                    <input
-                      className={inp}
-                      type="date"
-                      value={editor.rilasciato_il_documento || ""}
-                      onChange={(e) => set("rilasciato_il_documento", e.target.value)}
-                    />
-                  )}
-                  {fld(
-                    "SCADE IL",
-                    <input
-                      className={inp}
-                      type="date"
-                      value={editor.scade_il_documento || ""}
-                      onChange={(e) => set("scade_il_documento", e.target.value)}
-                    />
-                  )}
-                  {fld(
-                    "ENTE RILASCIO",
-                    <input
-                      className={inp}
-                      value={editor.ente_rilascio_documento || ""}
-                      onChange={(e) => set("ente_rilascio_documento", e.target.value)}
-                      placeholder="Comune / Questura..."
-                    />,
-                    "col-span-2"
-                  )}
-                </div>
-              </div>
-              <div>
-                <p className="text-[9px] font-bold uppercase text-violet-800 mb-0.5">
-                  Patente Posseduta
-                </p>
-                <div className="grid grid-cols-2 gap-x-1">
-                  {fld(
-                    "NUMERO PATENTE",
-                    <input
-                      className={inp}
-                      value={editor.numero_patente_posseduta || ""}
-                      onChange={(e) => set("numero_patente_posseduta", e.target.value)}
-                    />
-                  )}
-                  {fld(
-                    "RILASCIATA IL",
-                    <input
-                      className={inp}
-                      type="date"
-                      value={editor.rilasciata_il_patente || ""}
-                      onChange={(e) => set("rilasciata_il_patente", e.target.value)}
-                    />
-                  )}
-                  {fld(
-                    "SCADE IL",
-                    <input
-                      className={inp}
-                      type="date"
-                      value={editor.scade_il_patente || ""}
-                      onChange={(e) => set("scade_il_patente", e.target.value)}
-                    />
-                  )}
-                  {fld(
-                    "ENTE RILASCIO",
-                    <input
-                      className={inp}
-                      value={editor.ente_rilascio_patente || ""}
-                      onChange={(e) => set("ente_rilascio_patente", e.target.value)}
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Note e campi extra */}
-            <div className="grid grid-cols-3 gap-x-1">
-              {fld(
-                "TELEFONO 2",
-                <input
-                  className={inp}
-                  value={editor.telefono_2 || ""}
-                  onChange={(e) => set("telefono_2", e.target.value)}
-                />
-              )}
-              {fld(
-                "N. FOGLIO ROSA",
-                <input
-                  className={inp}
-                  value={editor.ppg_numero || ""}
-                  onChange={(e) => set("ppg_numero", e.target.value)}
-                />
-              )}
-              {fld(
-                "DIACRITICI",
-                <input
-                  className={inp}
-                  value={editor.diacritici || ""}
-                  onChange={(e) => set("diacritici", e.target.value)}
-                  placeholder="es. è,à"
-                  title="Accenti nel nome/cognome"
-                />
-              )}
-              {fld(
-                "UBICAZIONE 1",
-                <input
-                  className={inp}
-                  value={editor.ubicazione_uno || ""}
-                  onChange={(e) => set("ubicazione_uno", e.target.value)}
-                />
-              )}
-              {fld(
-                "UBICAZIONE 2",
-                <input
-                  className={inp}
-                  value={editor.ubicazione_due || ""}
-                  onChange={(e) => set("ubicazione_due", e.target.value)}
-                />
-              )}
-            </div>
-            <div className="grid grid-cols-2 gap-x-1">
-              {fld(
-                "NOTE",
-                <input
-                  className={inp}
-                  value={editor.note || ""}
-                  onChange={(e) => set("note", e.target.value)}
-                  placeholder="Note"
-                />
-              )}
-              {fld(
-                "PRESENZE A2/A",
-                <input
-                  className={inp}
-                  value={editor.presenze_a2_a || ""}
-                  onChange={(e) => set("presenze_a2_a", e.target.value)}
-                />
-              )}
-            </div>
-          </div>
-
-          {/* Sidebar foto / firma */}
-          <div className="w-44 shrink-0 flex flex-col gap-1 pl-2 border-l border-violet-200">
-            <p className="text-[10px] font-bold uppercase text-violet-800 mb-0.5">Foto e Firma</p>
-            <div className="flex flex-col gap-0.5">
-              <button
-                type="button"
-                onClick={() => setShowScansioneModal(true)}
-                className="w-full rounded bg-violet-600 px-1.5 py-1 text-[9px] font-semibold text-white hover:bg-violet-700"
-              >
-                Scanner
-              </button>
-            </div>
-            <input
-              ref={fotoInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleFileFoto}
-            />
-            <input
-              ref={firmaInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleFileFirma}
-            />
-            {/* Foto */}
-            <div className="flex flex-col gap-0.5">
-              <span className="text-[9px] italic text-violet-700 text-center">
-                Doppio click acquisizione
-              </span>
-              <div className="flex items-start gap-0.5">
-                <div
-                  className="rounded border-2 border-slate-300 bg-white flex items-center justify-center cursor-pointer hover:border-violet-400 shrink-0 overflow-hidden"
-                  style={{ width: 80, height: 96 }}
-                  onClick={() => setShowScansioneModal(true)}
-                  onDoubleClick={() => setShowScansioneModal(true)}
-                >
-                  {editor.foto_data_url &&
-                  String(editor.foto_data_url).startsWith("data:image/") ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img
-                      src={editor.foto_data_url}
-                      alt="Foto"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-[9px] text-slate-500 px-1 text-center">Foto</span>
-                  )}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => set("foto_data_url", "")}
-                  className="shrink-0 rounded border border-slate-300 bg-slate-100 p-0.5 hover:bg-slate-200"
-                  aria-label="Elimina foto"
-                >
-                  <span className="text-red-400 text-[10px]">✕</span>
-                </button>
-              </div>
-            </div>
-            {/* Firma */}
-            <div className="flex flex-col gap-0.5">
-              <span className="text-[9px] italic text-violet-700 text-center">
-                Doppio click acquisizione
-              </span>
-              <div className="flex items-center gap-0.5">
-                <div
-                  className="rounded border border-slate-300 bg-white flex items-center justify-center cursor-pointer hover:border-violet-400 shrink-0 overflow-hidden"
-                  style={{ width: 83, height: 17 }}
-                  onClick={() => setShowScansioneModal(true)}
-                  onDoubleClick={() => setShowScansioneModal(true)}
-                >
-                  {editor.firma_data_url &&
-                  String(editor.firma_data_url).startsWith("data:image/") ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img
-                      src={editor.firma_data_url}
-                      alt="Firma"
-                      className="max-w-full max-h-full object-contain"
-                    />
-                  ) : (
-                    <span className="text-[9px] text-slate-500">Firma</span>
-                  )}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => set("firma_data_url", "")}
-                  className="shrink-0 rounded border border-slate-300 bg-slate-100 p-0.5 hover:bg-slate-200"
-                  aria-label="Elimina firma"
-                >
-                  <span className="text-red-400 text-[10px]">✕</span>
-                </button>
-              </div>
-            </div>
-            <div className="flex-1 min-h-2" />
-            <button
-              type="button"
-              onClick={onSalva}
-              className="w-full rounded bg-emerald-500 py-1.5 text-[10px] font-bold text-white hover:bg-emerald-600"
-            >
-              CONFERMA
-            </button>
-            <button
-              type="button"
-              onClick={onBack}
-              className="w-full rounded border border-violet-300 bg-violet-100 py-1.5 text-[10px] font-semibold text-violet-800 hover:bg-violet-200"
-            >
-              ← Indietro
-            </button>
-            <button
-              type="button"
-              onClick={onAnnulla}
-              className="w-full rounded bg-violet-600 py-1.5 text-[10px] font-bold text-white hover:bg-violet-700"
-            >
-              ANNULLA
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {showScansioneModal && (
-        <ScansioneFotoFirmaModal
-          initialFoto={editor.foto_data_url}
-          initialFirma={editor.firma_data_url}
-          onConferma={(fotoUrl, firmaUrl) => {
-            set("foto_data_url", fotoUrl || "");
-            set("firma_data_url", firmaUrl || "");
-            setShowScansioneModal(false);
-          }}
-          onAnnulla={() => setShowScansioneModal(false)}
-        />
-      )}
-    </div>
   );
 }
 

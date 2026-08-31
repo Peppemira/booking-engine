@@ -621,7 +621,7 @@ function LookupMarcaPanel({ apiBase }) {
     if (!marca.trim()) return;
     setBusy(true); setResult(null); setError("");
     try {
-      const res  = await fetch(`${apiBase}/api/portale/cerca-per-marca`, {
+      const res  = await fetch(`${apiBase}/api/portal/cerca-per-marca`, {
         method: "POST",
         headers: { "Content-Type": "application/json", ...authHeaders() },
         body: JSON.stringify({ marca_operativa: marca.trim().toUpperCase() }),

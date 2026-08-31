@@ -19,6 +19,10 @@ const CANDIDATE_FIELDS = [
   "stato",
   "storico",
   "stato_iscrizione",
+  // Tipo iscrizione (sigla GeCA + label) — serve per dispatcher trasmissione
+  "tipo_iscrizione_sigla",
+  "tipo_iscrizione",
+  "tipo_iscrizione_label",
   // Anagrafica base
   "sesso",
   "data_nascita",
@@ -126,23 +130,45 @@ class AnagraficaCandidatiService {
     const limit  = req?.query?.limit  ? Math.min(parseInt(req.query.limit,  10) || 500, 2000) : null;
     const offset = req?.query?.offset ? Math.max(parseInt(req.query.offset, 10) || 0,   0)    : 0;
 
-    let q = supabase.from("candidates").select("*", { count: "exact" });
-    q = withTenantFilter(q, req);
+    // Helper per costruire la query base riusabile (serve per la paginazione manuale)
+    const buildBase = () => {
+      let qq = supabase.from("candidates").select("*", { count: "exact" });
+      qq = withTenantFilter(qq, req);
+      const archivio2 = String(req?.query?.archivio || "").toUpperCase();
+      if (archivio2 === "ATTUALE") {
+        qq = qq.or("storico.is.null,storico.eq.false");
+      } else if (archivio2 === "STORICO") {
+        qq = qq.eq("storico", true);
+      }
+      return qq.order("created_at", { ascending: false });
+    };
 
-    const archivio = String(req?.query?.archivio || "").toUpperCase();
-    if (archivio === "ATTUALE") {
-      q = q.or("storico.is.null,storico.eq.false");
-    } else if (archivio === "STORICO") {
-      q = q.eq("storico", true);
-    }
-    // ENTRAMBI: nessun filtro aggiuntivo
+    let data, error, count;
 
-    q = q.order("created_at", { ascending: false });
     if (limit !== null) {
-      q = q.range(offset, offset + limit - 1);
+      // Paginazione esplicita: un solo fetch sulla range richiesta
+      const q = buildBase().range(offset, offset + limit - 1);
+      ({ data, error, count } = await q);
+    } else {
+      // Nessun limit: loop interno per aggirare il limite default 1000 di PostgREST
+      const PAGE = 1000;
+      data = [];
+      let start = 0;
+      while (true) {
+        const { data: chunk, error: e, count: c } = await buildBase().range(start, start + PAGE - 1);
+        if (e) { error = e; break; }
+        if (!chunk || chunk.length === 0) {
+          if (count === undefined) count = c;
+          break;
+        }
+        data.push(...chunk);
+        if (count === undefined) count = c;
+        if (chunk.length < PAGE) break;
+        start += PAGE;
+        // safety cap
+        if (start > 50000) break;
+      }
     }
-
-    const { data, error, count } = await q;
 
     // Fallback: se storico non esiste in schema, filtra in memoria
     if (error && /column.*storico|storico.*does not exist/i.test(String(error.message))) {
@@ -150,8 +176,9 @@ class AnagraficaCandidatiService {
       q2 = withTenantFilter(q2, req);
       const { data: d2, error: e2 } = await q2.order("created_at", { ascending: false });
       let rows = d2 || [];
-      if (archivio === "ATTUALE") rows = rows.filter((r) => !r.storico);
-      else if (archivio === "STORICO") rows = rows.filter((r) => !!r.storico);
+      const archivioFb = String(req?.query?.archivio || "").toUpperCase();
+      if (archivioFb === "ATTUALE") rows = rows.filter((r) => !r.storico);
+      else if (archivioFb === "STORICO") rows = rows.filter((r) => !!r.storico);
       if (limit !== null) rows = rows.slice(offset, offset + limit);
       return { data: rows.map((row) => candidatoFromRow(row) || createCandidato(row)), error: e2 || null, total: rows.length };
     }
@@ -165,16 +192,58 @@ class AnagraficaCandidatiService {
 
   /**
    * Ricerca omonimi (GeCA: frmOmoni) – candidati con stessi cognome/nome/data nascita.
+   *
+   * Parametri:
+   *   - cognome: stringa (prefix match automatico, aggiunge % in coda se mancante)
+   *   - nome: stringa (prefix match automatico)
+   *   - dataNascita: YYYY-MM-DD (opzionale — filtro esatto)
+   *   - exact: boolean (default false). Se true, ilike senza wildcard (comportamento precedente)
+   *
+   * Ritorna campi estesi usati dalla modale omonimi:
+   *   id, cognome, nome, codice_fiscale, data_nascita, telefono,
+   *   categoria_patente, categoria_richiesta, codice_autoscuola,
+   *   data_iscrizione, stato_iscrizione, raw_portale, created_at
    */
-  async searchOmonimi({ cognome, nome, dataNascita }, req) {
+  async searchOmonimi({ cognome, nome, dataNascita, exact = false }, req) {
     if (!cognome && !nome) return { data: [], error: null };
 
-    let q = supabase.from("candidates").select("id,cognome,nome,codice_fiscale,data_nascita,categoria_patente,raw_portale,created_at");
-    q = withTenantFilter(q, req);
-    if (cognome) q = q.ilike("cognome", cognome.trim());
-    if (nome) q = q.ilike("nome", nome.trim());
+    // Helper: costruisce pattern ilike. Se exact=false aggiunge % in coda (prefix match).
+    const wrapPattern = (v) => {
+      const t = String(v || "").trim();
+      if (!t) return null;
+      if (exact) return t;
+      return t.includes("%") ? t : `${t}%`;
+    };
 
-    const { data, error } = await q.order("cognome");
+    const SELECT_FULL =
+      "id,cognome,nome,codice_fiscale,data_nascita,telefono," +
+      "categoria_patente,categoria_richiesta,codice_autoscuola," +
+      "data_iscrizione,stato_iscrizione,raw_portale,created_at";
+    const SELECT_MIN =
+      "id,cognome,nome,codice_fiscale,data_nascita,categoria_patente,raw_portale,created_at";
+
+    const runQuery = async (selectCols) => {
+      let q = supabase.from("candidates").select(selectCols);
+      q = withTenantFilter(q, req);
+      if (cognome) {
+        const p = wrapPattern(cognome);
+        if (p) q = q.ilike("cognome", p);
+      }
+      if (nome) {
+        const p = wrapPattern(nome);
+        if (p) q = q.ilike("nome", p);
+      }
+      return await q.order("cognome").limit(500);
+    };
+
+    let { data, error } = await runQuery(SELECT_FULL);
+
+    // Fallback: se una delle colonne estese non esiste in schema, riprova con select minimo
+    if (error && /column.*does not exist|Could not find/i.test(String(error.message))) {
+      const retry = await runQuery(SELECT_MIN);
+      data = retry.data;
+      error = retry.error;
+    }
     if (error) return { data: [], error };
 
     let rows = data || [];

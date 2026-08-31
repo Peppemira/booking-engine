@@ -97,6 +97,7 @@ describe("API Integration Tests (server live)", () => {
     "/api/prenotazioni",
     "/api/pagamenti",
     "/api/visite-mediche",
+    "/api/visite-mediche/scadenze-medico",
     "/api/preventivi",
     "/api/veicoli",
     "/api/committenti",
@@ -115,4 +116,19 @@ describe("API Integration Tests (server live)", () => {
       );
     });
   }
+
+  // ── scadenze-medico smoke (senza token → 401 o 500 per uuid null;
+  //    serve a non fare regredire la presenza della route e l'accettazione
+  //    del query param `giorni` in caso di refactor futuri) ──
+  it("GET /api/visite-mediche/scadenze-medico?giorni=90 accetta il query param", async (t) => {
+    if (!guard(t)) return;
+    const res = await apiRequest("GET", "/api/visite-mediche/scadenze-medico?giorni=90");
+    // 401 (auth richiesta) o 500 (tenant non risolto) — entrambi indicano
+    // che la route esiste ed e' stata montata. 404 invece significherebbe
+    // che la route non e' registrata (regressione).
+    assert.ok(
+      [401, 500].includes(res.status),
+      `Unexpected status ${res.status} for /api/visite-mediche/scadenze-medico`
+    );
+  });
 });
