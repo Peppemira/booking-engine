@@ -33,6 +33,8 @@ h1 { font-family: var(--display); font-weight: 700; font-size: clamp(22px, 3vw, 
 .topbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 8px 20px; }
 .stats { font-family: var(--display); font-size: 13px; color: var(--muted); display: flex; gap: 14px; flex-wrap: wrap; }
 .stats b { color: var(--ink); font-weight: 700; }
+.stats #ver { opacity: .6; }
+.keyrow .field { flex-wrap: wrap; }
 .panel { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; min-width: 0; }
 details.settings summary { cursor: pointer; font-family: var(--display); font-weight: 600; font-size: 14px; list-style: none; display: flex; align-items: center; gap: 8px; }
 details.settings summary::-webkit-details-marker { display: none; }
@@ -120,7 +122,7 @@ kbd { font-family: var(--display); font-size: 11px; border: 1px solid var(--line
       <h1>Esame orale · Tutor vocale</h1>
       <p class="lead">La commissaria ti fa la domanda, ascolta la tua risposta dal microfono e ti corregge a voce. Poi la prossima. Tutto senza toccare nulla.</p>
     </div>
-    <div class="stats"><span><b id="stDone">0</b> risposte</span><span>media <b id="stAvg">–</b></span><span><b id="stRedo">0</b> da ripassare</span></div>
+    <div class="stats"><span><b id="stDone">0</b> risposte</span><span>media <b id="stAvg">–</b></span><span><b id="stRedo">0</b> da ripassare</span><span id="ver" title="versione della pagina">v3</span></div>
   </div>
 
   <div class="warn" id="noSR" hidden>Questo browser non ha il riconoscimento vocale. Usa <b>Google Chrome</b> (PC o Android) oppure <b>Safari</b> su iPhone.</div>
@@ -130,7 +132,8 @@ kbd { font-family: var(--display); font-size: 11px; border: 1px solid var(--line
     <div class="grid">
       <div class="keyrow">
         <label for="apikey">Chiave API Anthropic (per la correzione intelligente)</label>
-        <div class="field"><input type="password" id="apikey" placeholder="sk-ant-…" autocomplete="off"><button type="button" id="btnShowKey">Mostra</button></div>
+        <div class="field"><input type="password" id="apikey" placeholder="sk-ant-…" autocomplete="off"><button type="button" id="btnShowKey">Mostra</button><button type="button" id="btnTestKey">Prova la chiave</button></div>
+        <p class="note" id="keyTest" hidden></p>
         <p class="note">La chiave resta <b>solo in questo browser</b> (memoria locale) e serve a inviare la tua risposta a Claude per la correzione. Senza chiave la commissaria fa una correzione semplificata: controlla se hai citato i punti e i numeri della risposta modello.</p>
       </div>
       <label>Modello per la correzione
@@ -155,6 +158,7 @@ kbd { font-family: var(--display); font-size: 11px; border: 1px solid var(--line
       <label class="check"><input type="checkbox" id="continuous" checked><span>Dopo la correzione, se non fai domande per 7 secondi, passa da sola alla domanda successiva</span></label>
       <label class="check"><input type="checkbox" id="onlyRedo"><span>Solo le domande da ripassare (voto sotto il 6)</span></label>
       <p class="note" id="voicenote"></p>
+      <p class="note" id="diag"></p>
     </div>
   </details>
 
@@ -214,6 +218,13 @@ const $ = id => document.getElementById(id);
 const synth = window.speechSynthesis || null;
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
 if (!SR) $("noSR").hidden = false;
+const VERSION = "3";
+const diag = { restarts: 0, events: 0, lastError: "", lastRestart: "" };
+function renderDiag() {
+  const ua = navigator.userAgent; const dev = /android/i.test(ua) ? "Android" : /iphone|ipad/i.test(ua) ? "iPhone/iPad" : /windows/i.test(ua) ? "Windows" : "altro";
+  $("diag").textContent = "Diagnostica: versione " + VERSION + " · " + dev + " · riconoscimento vocale " + (SR ? "disponibile" : "assente") + " · eventi " + diag.events + " · riavvii " + diag.restarts + (diag.lastError ? " · ultimo errore: " + diag.lastError : "");
+}
+renderDiag();
 
 // ---------- persistent settings and log
 const store = {
@@ -330,17 +341,18 @@ function spawnRecognizer() {
       if (tr === prev) continue; prev = tr;
       if (res.isFinal) fin += tr + " "; else inter += tr + " ";
     }
-    sessionFinal = fin; interimText = inter; renderTranscript();
+    sessionFinal = fin; interimText = inter; renderTranscript(); diag.events++;
     const all = fullText(), fin_all = joined();
     if (listenMode === "answer" && /\b(ho finito|fine risposta)\b\.?\s*$/i.test(all)) { finalize(); return; }
     if (listenMode === "answer" && CMD_RE.test(fin_all)) { finalize(); return; }
     resetSilence();
   };
   r.onerror = e => {
+    diag.lastError = e.error || "sconosciuto"; renderDiag();
     if (e.error === "not-allowed" || e.error === "service-not-allowed") { listening = false; setState("idle", "Microfono negato: consenti l'uso del microfono per questo sito (icona del lucchetto nella barra dell'indirizzo) e ricarica."); $("noSR").hidden = false; $("noSR").textContent = "Il browser ha negato il microfono. Tocca l'icona del lucchetto accanto all'indirizzo, consenti il microfono e ricarica la pagina."; stopExam(); }
   };
   r.onend = () => {
-    if (listening && rec === r) { committed = joined(); sessionFinal = ""; interimText = ""; try { r.start(); } catch (e) {} }
+    if (listening && rec === r) { committed = joined(); sessionFinal = ""; interimText = ""; diag.restarts++; renderDiag(); try { r.start(); } catch (e) { diag.lastError = "riavvio fallito: " + (e.message || e); renderDiag(); } }
   };
   try { r.start(); listening = true; } catch (e) { listening = false; }
 }
@@ -594,6 +606,17 @@ $("btnAsk").addEventListener("click", () => {
 });
 $("btnAskSend").addEventListener("click", () => { const q = $("askText").value.trim(); if (!q || !current) return; $("askText").value = ""; const back = phase === "answer" ? "answer" : "followup"; silence(); askTeacher(q, back); });
 $("askText").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); $("btnAskSend").click(); } });
+$("btnTestKey").addEventListener("click", async () => {
+  const key = $("apikey").value.trim(); const out = $("keyTest"); out.hidden = false; store.set("anthropic_key", key);
+  if (!key) { out.textContent = "Nessuna chiave inserita."; return; }
+  out.textContent = "Provo la chiave con il modello " + $("model").value + "…";
+  try {
+    const r = await fetch("https://api.anthropic.com/v1/messages", { method: "POST", headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" }, body: JSON.stringify({ model: $("model").value, max_tokens: 20, messages: [{ role: "user", content: "Rispondi solo con la parola: pronta" }] }) });
+    const j = await r.json().catch(() => null);
+    if (r.ok) out.textContent = "Chiave OK: Claude risponde «" + ((j && j.content || []).map(c => c.text || "").join("").trim() || "…") + "». La correzione e l'insegnante useranno Claude.";
+    else out.textContent = "Errore " + r.status + ": " + ((j && j.error && j.error.message) || "risposta non valida") + " — " + apiError(r.status, j);
+  } catch (e) { out.textContent = "Impossibile raggiungere api.anthropic.com da questo browser: " + (e.message || e) + ". Controlla connessione, VPN o blocchi di rete."; }
+});
 $("btnReadV").addEventListener("click", async () => { if (lastVerdict) { const was = listening; await speak(lastVerdict); if (running && was) listenFollowup(); } });
 $("btnReadModel").addEventListener("click", async () => { if (current) { const was = listening; await speak(current.a); if (running && was) listenFollowup(); } });
 $("btnReset").addEventListener("click", () => { log = {}; store.set("tutor_log", log); asked.clear(); renderLog(); });
