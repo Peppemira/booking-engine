@@ -122,7 +122,7 @@ kbd { font-family: var(--display); font-size: 11px; border: 1px solid var(--line
       <h1>Esame orale · Tutor vocale</h1>
       <p class="lead">La commissaria ti fa la domanda, ascolta la tua risposta dal microfono e ti corregge a voce. Poi la prossima. Tutto senza toccare nulla.</p>
     </div>
-    <div class="stats"><span><b id="stDone">0</b> risposte</span><span>media <b id="stAvg">–</b></span><span><b id="stRedo">0</b> da ripassare</span><span id="ver" title="versione della pagina">v6</span></div>
+    <div class="stats"><span><b id="stDone">0</b> risposte</span><span>media <b id="stAvg">–</b></span><span><b id="stRedo">0</b> da ripassare</span><span id="ver" title="versione della pagina">v7</span></div>
   </div>
 
   <div class="warn" id="ttsWarn" hidden></div>
@@ -156,7 +156,7 @@ kbd { font-family: var(--display); font-size: 11px; border: 1px solid var(--line
       <label>Velocità della voce <span id="rateVal" style="text-transform:none;font-weight:500">1,0</span>
         <input type="range" id="rate" min="0.7" max="1.3" step="0.05" value="1"></label>
       <label>Silenzio che chiude la risposta: <span id="silVal" style="text-transform:none;font-weight:500">3</span> s
-        <input type="range" id="silence" min="2" max="8" step="0.5" value="3"></label>
+        <input type="range" id="silence" min="2" max="12" step="0.5" value="3"></label>
       <label class="check"><input type="checkbox" id="continuous" checked><span>Dopo la correzione, se non fai domande per 7 secondi, passa da sola alla domanda successiva</span></label>
       <label class="check"><input type="checkbox" id="onlyRedo"><span>Solo le domande da ripassare (voto sotto il 6)</span></label>
       <p class="note" id="voicenote"></p>
@@ -221,7 +221,7 @@ const $ = id => document.getElementById(id);
 const synth = window.speechSynthesis || null;
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
 if (!SR) $("noSR").hidden = false;
-const VERSION = "6";
+const VERSION = "7";
 const IS_ANDROID = /android/i.test(navigator.userAgent);
 const diag = { restarts: 0, events: 0, lastError: "", lastRestart: "", log: [] };
 function logEvent(line) { diag.log.push(line); if (diag.log.length > 14) diag.log.shift(); const el = $("evlog"); if (el) el.textContent = diag.log.join("\n"); }
@@ -241,7 +241,7 @@ let log = store.get("tutor_log", {});
 $("apikey").value = store.get("anthropic_key", "");
 $("model").value = store.get("model", "claude-haiku-5-5");
 $("rate").value = store.get("rate", 1); $("rateVal").textContent = fmt($("rate").value);
-$("silence").value = store.get("silence", 3); $("silVal").textContent = fmt($("silence").value);
+$("silence").value = store.get("silence", IS_ANDROID ? 5 : 3); $("silVal").textContent = fmt($("silence").value);
 $("continuous").checked = store.get("continuous", true);
 $("filterPart").value = store.get("filterPart", "all");
 function fmt(v) { return parseFloat(v).toFixed(1).replace(".", ","); }
@@ -329,12 +329,12 @@ function silence() { speakToken++; if (synth) { try { synth.cancel(); } catch (e
 // transcript is rebuilt from the event each time instead of being accumulated; text recognised
 // before an automatic restart of the recogniser is kept in `committed`.
 const LISTEN_LABEL = {
-  answer: "Ti ascolto: rispondi come all'orale (o chiedi aiuto all'insegnante)",
+  answer: "Ti ascolto: rispondi con calma. Per chiudere fai una pausa lunga oppure dì «ho finito»",
   followup: "Hai domande? Parla pure, oppure dì «prossima»",
   question: "Ti ascolto: fai la tua domanda all'insegnante",
 };
 const CMD_RE = /^\s*(non lo so|non la so|non me lo ricordo|prossima|avanti|ripeti la domanda|ripeta la domanda|basta così|basta cosi)\s*\.?\s*$/i;
-let rec = null, listening = false, listenMode = null, committed = "", sessionFinal = "", interimText = "", silenceTimer = null, nudgeTimer = null, giveupTimer = null, onFinal = null;
+let rec = null, listening = false, listenMode = null, committed = "", sessionFinal = "", interimText = "", silenceTimer = null, nudgeTimer = null, giveupTimer = null, onFinal = null, sessionHadSpeech = false, restartAfterSpeech = false;
 function joined() { return (committed + " " + sessionFinal).replace(/\s+/g, " ").trim(); }
 function fullText() { return (joined() + " " + interimText).replace(/\s+/g, " ").trim(); }
 function renderTranscript() {
@@ -346,7 +346,7 @@ function renderTranscript() {
 function startListening(mode, cb) {
   if (!SR) return;
   stopListening();
-  listenMode = mode; onFinal = cb; committed = ""; sessionFinal = ""; interimText = ""; renderTranscript();
+  listenMode = mode; onFinal = cb; committed = ""; sessionFinal = ""; interimText = ""; sessionHadSpeech = false; restartAfterSpeech = false; renderTranscript();
   setState("listening", LISTEN_LABEL[mode] || "Ti ascolto");
   spawnRecognizer();
   clearTimeout(nudgeTimer); clearTimeout(giveupTimer);
@@ -363,6 +363,7 @@ function spawnRecognizer() {
   const r = new SR(); rec = r; r.lang = "it-IT"; r.continuous = !IS_ANDROID; r.interimResults = true; r.maxAlternatives = 1;
   r.onresult = e => {
     try { logEvent("ris idx=" + e.resultIndex + " n=" + e.results.length + " " + Array.from(e.results).map(x => (x.isFinal ? "F«" : "i«") + ((x[0] && x[0].transcript) || "").trim().slice(-28) + "»").join(" ")); } catch (err) {}
+    sessionHadSpeech = true;
     let fin = "", inter = "", prev = null;
     for (let i = 0; i < e.results.length; i++) {
       const res = e.results[i]; const tr = ((res[0] && res[0].transcript) || "").trim(); if (!tr) continue;
@@ -379,8 +380,10 @@ function spawnRecognizer() {
     diag.lastError = e.error || "sconosciuto"; renderDiag(); logEvent("errore " + diag.lastError);
     if (e.error === "not-allowed" || e.error === "service-not-allowed") { listening = false; setState("idle", "Microfono negato: consenti l'uso del microfono per questo sito (icona del lucchetto nella barra dell'indirizzo) e ricarica."); $("noSR").hidden = false; $("noSR").textContent = "Il browser ha negato il microfono. Tocca l'icona del lucchetto accanto all'indirizzo, consenti il microfono e ricarica la pagina."; stopExam(); }
   };
+  r.onstart = () => { logEvent("sessione avviata"); if (restartAfterSpeech) { restartAfterSpeech = false; resetSilence(); } };
   r.onend = () => {
     logEvent("fine sessione" + (listening && rec === r ? " → riavvio" : ""));
+    restartAfterSpeech = sessionHadSpeech; sessionHadSpeech = false;
     if (listening && rec === r) { committed = joined(); sessionFinal = ""; interimText = ""; diag.restarts++; renderDiag(); try { r.start(); } catch (e) { diag.lastError = "riavvio fallito: " + (e.message || e); renderDiag(); } }
   };
   try { r.start(); listening = true; } catch (e) { listening = false; }
@@ -437,8 +440,8 @@ async function nextQuestion() {
   await speak(q.q);
   listenAnswer();
 }
-function listenAnswer() { phase = "answer"; if (running) startListening("answer", handleAnswer); }
-function listenFollowup() { phase = "followup"; if (running) startListening("followup", handleFollowup); }
+function listenAnswer() { phase = "answer"; if (running) setTimeout(() => { if (running && phase === "answer") startListening("answer", handleAnswer); }, 450); }
+function listenFollowup() { phase = "followup"; if (running) setTimeout(() => { if (running && phase === "followup") startListening("followup", handleFollowup); }, 450); }
 const ASK_RE = /^(aiut|mi aiut|un aiuto|non (ho )?capi|spiegam|mi spieg|come (posso|si|dovrei|devo)|semplific|suggerim|maestra|professoressa|insegnante|ho una domanda|posso (chiedere|fare una domanda)|vorrei (chiedere|sapere|capire)|mi dica|cosa (vuol dire|significa)|che cos'?è|cos'?è)/i;
 async function handleAnswer(text) {
   if (!running || !current) return;
