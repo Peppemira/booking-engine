@@ -122,7 +122,7 @@ kbd { font-family: var(--display); font-size: 11px; border: 1px solid var(--line
       <h1>Esame orale · Tutor vocale</h1>
       <p class="lead">La commissaria ti fa la domanda, ascolta la tua risposta dal microfono e ti corregge a voce. Poi la prossima. Tutto senza toccare nulla.</p>
     </div>
-    <div class="stats"><span><b id="stDone">0</b> risposte</span><span>media <b id="stAvg">–</b></span><span><b id="stRedo">0</b> da ripassare</span><span id="ver" title="versione della pagina">v5</span></div>
+    <div class="stats"><span><b id="stDone">0</b> risposte</span><span>media <b id="stAvg">–</b></span><span><b id="stRedo">0</b> da ripassare</span><span id="ver" title="versione della pagina">v6</span></div>
   </div>
 
   <div class="warn" id="ttsWarn" hidden></div>
@@ -161,6 +161,7 @@ kbd { font-family: var(--display); font-size: 11px; border: 1px solid var(--line
       <label class="check"><input type="checkbox" id="onlyRedo"><span>Solo le domande da ripassare (voto sotto il 6)</span></label>
       <p class="note" id="voicenote"></p>
       <p class="note" id="diag"></p>
+      <details class="note" style="grid-column:1/-1"><summary>Dettagli tecnici del riconoscimento (per l'assistenza)</summary><pre id="evlog" style="white-space:pre-wrap;font-size:11px;margin:4px 0 0"></pre></details>
     </div>
   </details>
 
@@ -220,8 +221,10 @@ const $ = id => document.getElementById(id);
 const synth = window.speechSynthesis || null;
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
 if (!SR) $("noSR").hidden = false;
-const VERSION = "5";
-const diag = { restarts: 0, events: 0, lastError: "", lastRestart: "" };
+const VERSION = "6";
+const IS_ANDROID = /android/i.test(navigator.userAgent);
+const diag = { restarts: 0, events: 0, lastError: "", lastRestart: "", log: [] };
+function logEvent(line) { diag.log.push(line); if (diag.log.length > 14) diag.log.shift(); const el = $("evlog"); if (el) el.textContent = diag.log.join("\n"); }
 const tts = { start: 0, end: 0, error: 0, timeout: 0, voice: "" };
 function renderDiag() {
   const ua = navigator.userAgent; const dev = /android/i.test(ua) ? "Android" : /iphone|ipad/i.test(ua) ? "iPhone/iPad" : /windows/i.test(ua) ? "Windows" : "altro";
@@ -357,8 +360,9 @@ function startListening(mode, cb) {
   }
 }
 function spawnRecognizer() {
-  const r = new SR(); rec = r; r.lang = "it-IT"; r.continuous = true; r.interimResults = true; r.maxAlternatives = 1;
+  const r = new SR(); rec = r; r.lang = "it-IT"; r.continuous = !IS_ANDROID; r.interimResults = true; r.maxAlternatives = 1;
   r.onresult = e => {
+    try { logEvent("ris idx=" + e.resultIndex + " n=" + e.results.length + " " + Array.from(e.results).map(x => (x.isFinal ? "F«" : "i«") + ((x[0] && x[0].transcript) || "").trim().slice(-28) + "»").join(" ")); } catch (err) {}
     let fin = "", inter = "", prev = null;
     for (let i = 0; i < e.results.length; i++) {
       const res = e.results[i]; const tr = ((res[0] && res[0].transcript) || "").trim(); if (!tr) continue;
@@ -372,10 +376,11 @@ function spawnRecognizer() {
     resetSilence();
   };
   r.onerror = e => {
-    diag.lastError = e.error || "sconosciuto"; renderDiag();
+    diag.lastError = e.error || "sconosciuto"; renderDiag(); logEvent("errore " + diag.lastError);
     if (e.error === "not-allowed" || e.error === "service-not-allowed") { listening = false; setState("idle", "Microfono negato: consenti l'uso del microfono per questo sito (icona del lucchetto nella barra dell'indirizzo) e ricarica."); $("noSR").hidden = false; $("noSR").textContent = "Il browser ha negato il microfono. Tocca l'icona del lucchetto accanto all'indirizzo, consenti il microfono e ricarica la pagina."; stopExam(); }
   };
   r.onend = () => {
+    logEvent("fine sessione" + (listening && rec === r ? " → riavvio" : ""));
     if (listening && rec === r) { committed = joined(); sessionFinal = ""; interimText = ""; diag.restarts++; renderDiag(); try { r.start(); } catch (e) { diag.lastError = "riavvio fallito: " + (e.message || e); renderDiag(); } }
   };
   try { r.start(); listening = true; } catch (e) { listening = false; }
