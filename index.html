@@ -122,7 +122,7 @@ kbd { font-family: var(--display); font-size: 11px; border: 1px solid var(--line
       <h1>Esame orale · Tutor vocale</h1>
       <p class="lead">La commissaria ti fa la domanda, ascolta la tua risposta dal microfono e ti corregge a voce. Poi la prossima. Tutto senza toccare nulla.</p>
     </div>
-    <div class="stats"><span><b id="stDone">0</b> risposte</span><span>media <b id="stAvg">–</b></span><span><b id="stRedo">0</b> da ripassare</span><span id="ver" title="versione della pagina">v4</span></div>
+    <div class="stats"><span><b id="stDone">0</b> risposte</span><span>media <b id="stAvg">–</b></span><span><b id="stRedo">0</b> da ripassare</span><span id="ver" title="versione della pagina">v5</span></div>
   </div>
 
   <div class="warn" id="ttsWarn" hidden></div>
@@ -220,7 +220,7 @@ const $ = id => document.getElementById(id);
 const synth = window.speechSynthesis || null;
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
 if (!SR) $("noSR").hidden = false;
-const VERSION = "4";
+const VERSION = "5";
 const diag = { restarts: 0, events: 0, lastError: "", lastRestart: "" };
 const tts = { start: 0, end: 0, error: 0, timeout: 0, voice: "" };
 function renderDiag() {
@@ -533,16 +533,7 @@ async function teacherReply(key, question) {
     "RICHIESTA DEL CANDIDATO (trascritta dal parlato): " + question,
     "Rispondi direttamente al candidato, solo con il testo da leggere ad alta voce.",
   ].filter(Boolean).join("\n\n");
-  const r = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
-    body: JSON.stringify({ model: $("model").value, max_tokens: 500, system: TEACHER_SYSTEM, messages: [{ role: "user", content: ctx }] }),
-  }).catch(() => { throw new Error("Non riesco a raggiungere l'API di Anthropic: controlla la connessione."); });
-  if (!r.ok) throw new Error(apiError(r.status, await r.json().catch(() => null)));
-  const j = await r.json();
-  const text = (j.content || []).map(c => c.text || "").join("").trim();
-  if (!text) throw new Error("Risposta vuota dal modello.");
-  return text;
+  return await callClaude(key, TEACHER_SYSTEM, ctx, 4000);
 }
 function apiError(status, j) {
   let msg = "Errore dell'API (" + status + ")";
@@ -551,6 +542,33 @@ function apiError(status, j) {
   if (status === 404) msg = "Modello non disponibile per questa chiave (404): scegli l'altro modello nelle impostazioni.";
   if (status === 429) msg = "Troppe richieste o credito esaurito (429): riprova tra poco.";
   return msg;
+}
+
+// Shared call to the Messages API. Claude 5.5 models think before answering by default and the
+// thinking tokens count toward max_tokens, so the limit is generous and the effort is kept low;
+// text is selected by block type.
+async function callClaude(key, system, content, maxTokens) {
+  const body = { model: $("model").value, max_tokens: maxTokens, system, messages: [{ role: "user", content }], output_config: { effort: "low" } };
+  let r = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+    body: JSON.stringify(body),
+  }).catch(() => { throw new Error("Non riesco a raggiungere l'API di Anthropic: controlla la connessione."); });
+  let j = await r.json().catch(() => null);
+  if (r.status === 400 && j && j.error && /output_config|effort/i.test(j.error.message || "")) {
+    delete body.output_config;
+    r = await fetch("https://api.anthropic.com/v1/messages", { method: "POST", headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" }, body: JSON.stringify(body) }).catch(() => { throw new Error("Non riesco a raggiungere l'API di Anthropic: controlla la connessione."); });
+    j = await r.json().catch(() => null);
+  }
+  if (!r.ok) throw new Error(apiError(r.status, j));
+  const blocks = (j && j.content) || [];
+  const text = blocks.filter(c => c && c.type === "text").map(c => c.text || "").join("").trim();
+  if (!text) {
+    if (j && j.stop_reason === "refusal") throw new Error("Il modello ha rifiutato la richiesta.");
+    if (j && j.stop_reason === "max_tokens") throw new Error("Risposta interrotta per limite di lunghezza: riprova.");
+    throw new Error("Risposta senza testo dal modello (" + (j && j.stop_reason || "motivo sconosciuto") + ").");
+  }
+  return text;
 }
 
 // ---------- evaluation by Claude (Anthropic API, called from this browser with your key)
@@ -565,16 +583,9 @@ function buildPrompt(q, answer) {
   ].join("\n");
 }
 async function askClaude(key, q, answer) {
-  const r = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
-    body: JSON.stringify({ model: $("model").value, max_tokens: 700,
-      system: "Sei una commissaria dell'esame orale di abilitazione per mediatore marittimo presso la Camera di Commercio di Messina, nel ruolo di " + PART_LABEL[q.part] + ". Rispondi solo con JSON valido.",
-      messages: [{ role: "user", content: buildPrompt(q, answer) }] }),
-  }).catch(() => { throw new Error("Non riesco a raggiungere l'API di Anthropic: controlla la connessione."); });
-  if (!r.ok) throw new Error(apiError(r.status, await r.json().catch(() => null)) + " Uso la correzione semplificata.");
-  const j = await r.json();
-  const text = (j.content || []).map(c => c.text || "").join("");
+  let text;
+  try { text = await callClaude(key, "Sei una commissaria dell'esame orale di abilitazione per mediatore marittimo presso la Camera di Commercio di Messina, nel ruolo di " + PART_LABEL[q.part] + ". Rispondi solo con JSON valido.", buildPrompt(q, answer), 4000); }
+  catch (e) { throw new Error((e.message || String(e)) + " Uso la correzione semplificata."); }
   const m = text.match(/\{[\s\S]*\}/);
   if (!m) throw new Error("Risposta non leggibile dal modello. Uso la correzione semplificata.");
   return JSON.parse(m[0]);
@@ -635,12 +646,8 @@ $("btnTestKey").addEventListener("click", async () => {
   const key = $("apikey").value.trim(); const out = $("keyTest"); out.hidden = false; store.set("anthropic_key", key);
   if (!key) { out.textContent = "Nessuna chiave inserita."; return; }
   out.textContent = "Provo la chiave con il modello " + $("model").value + "…";
-  try {
-    const r = await fetch("https://api.anthropic.com/v1/messages", { method: "POST", headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" }, body: JSON.stringify({ model: $("model").value, max_tokens: 20, messages: [{ role: "user", content: "Rispondi solo con la parola: pronta" }] }) });
-    const j = await r.json().catch(() => null);
-    if (r.ok) out.textContent = "Chiave OK: Claude risponde «" + ((j && j.content || []).map(c => c.text || "").join("").trim() || "…") + "». La correzione e l'insegnante useranno Claude.";
-    else out.textContent = "Errore " + r.status + ": " + ((j && j.error && j.error.message) || "risposta non valida") + " — " + apiError(r.status, j);
-  } catch (e) { out.textContent = "Impossibile raggiungere api.anthropic.com da questo browser: " + (e.message || e) + ". Controlla connessione, VPN o blocchi di rete."; }
+  try { const t = await callClaude(key, "Rispondi in italiano con una sola parola.", "Di' solo: pronta", 2000); out.textContent = "Chiave OK: Claude risponde «" + t.slice(0, 40) + "». La correzione e l'insegnante useranno Claude."; }
+  catch (e) { out.textContent = "Errore: " + (e.message || e); }
 });
 $("btnReadV").addEventListener("click", async () => { if (lastVerdict) { const was = listening; await speak(lastVerdict); if (running && was) listenFollowup(); } });
 $("btnReadModel").addEventListener("click", async () => { if (current) { const was = listening; await speak(current.a); if (running && was) listenFollowup(); } });
