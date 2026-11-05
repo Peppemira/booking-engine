@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Esame orale · Tutor vocale</title>
+<meta name="description" content="Tutor vocale per l'esame di abilitazione a mediatore marittimo: la commissaria fa le domande, ascolta e corregge.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+:root {
+  --bg: #f5f7f6; --paper: #ffffff; --ink: #17222c; --muted: #5d6973; --line: #d3dad8; --soft: #e9eeec;
+  --accent: #17222c; --accent-ink: #f5f7f6;
+  --ok: #2e7d4f; --oks: #d8ecdf; --redo: #c2561a; --redos: #f8e1d3; --live: #c2561a;
+  --cap: #1f5fa8; --caps: #d7e4f4; --med: #a6791a; --meds: #f4e8c9; --dir: #0e7c86; --dirs: #d2ecee;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", Roboto, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #111920; --paper: #1a242d; --ink: #e6ebee; --muted: #9aa7b1; --line: #2d3a44; --soft: #222f39;
+    --accent: #e6ebee; --accent-ink: #111920; --ok: #7fc89b; --oks: #1c3a2a; --redo: #f0956a; --redos: #4a2817; --live: #f0956a;
+    --cap: #7fb0ea; --caps: #1d3350; --med: #e2bc5f; --meds: #45361a; --dir: #6ccbd3; --dirs: #163b40; color-scheme: dark; }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.45;
+  padding: max(14px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 48px max(16px, env(safe-area-inset-left)); font-variant-numeric: tabular-nums; }
+.wrap { max-width: 820px; margin: 0 auto; display: grid; gap: 14px; }
+h1 { font-family: var(--display); font-weight: 700; font-size: clamp(22px, 3vw, 28px); letter-spacing: -.01em; margin: 0; }
+.lead { margin: 2px 0 0; color: var(--muted); max-width: 60ch; font-size: 15px; }
+.topbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 8px 20px; }
+.stats { font-family: var(--display); font-size: 13px; color: var(--muted); display: flex; gap: 14px; flex-wrap: wrap; }
+.stats b { color: var(--ink); font-weight: 700; }
+.panel { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; min-width: 0; }
+details.settings summary { cursor: pointer; font-family: var(--display); font-weight: 600; font-size: 14px; list-style: none; display: flex; align-items: center; gap: 8px; }
+details.settings summary::-webkit-details-marker { display: none; }
+details.settings summary::before { content: "▸"; color: var(--muted); } details.settings[open] summary::before { content: "▾"; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px 14px; align-items: end; margin-top: 12px; }
+.grid label { display: grid; gap: 4px; font-family: var(--display); font-size: 11.5px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+select, input[type=range], input[type=password], input[type=text] { width: 100%; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 9px; min-width: 0; }
+input[type=range] { padding: 0; border: 0; background: transparent; accent-color: var(--ink); }
+.check { display: flex !important; align-items: center; gap: 8px; text-transform: none !important; letter-spacing: 0 !important; font-size: 14px !important; font-family: var(--body) !important; font-weight: 500 !important; color: var(--ink) !important; padding: 6px 0; }
+.check input { width: 18px; height: 18px; accent-color: var(--ink); margin: 0; flex: none; }
+.note { grid-column: 1 / -1; font-size: 13px; color: var(--muted); margin: 0; }
+.note b { color: var(--ink); }
+.keyrow { grid-column: 1 / -1; display: grid; gap: 4px; }
+.keyrow .field { display: flex; gap: 8px; }
+.keyrow input { flex: 1; }
+
+.card { padding: 20px 20px 18px; border-top: 5px solid var(--pc, var(--accent)); display: grid; gap: 12px; }
+.card.cap { --pc: var(--cap); --pcs: var(--caps); } .card.med { --pc: var(--med); --pcs: var(--meds); } .card.dir { --pc: var(--dir); --pcs: var(--dirs); }
+.tag { display: inline-flex; align-items: center; gap: 8px; font-family: var(--display); font-size: 12px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--pc, var(--muted)); }
+.tag .num { background: var(--pcs, var(--soft)); color: var(--pc, var(--ink)); border-radius: 4px; padding: 2px 7px; }
+.qtext { font-family: var(--display); font-weight: 600; font-size: clamp(21px, 2.8vw, 26px); line-height: 1.25; margin: 6px 0 0; text-wrap: balance; }
+.state { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-size: 14px; font-weight: 600; min-height: 28px; }
+.state .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--line); flex: none; }
+.state.speaking .dot { background: var(--pc, var(--ink)); animation: pulse .9s infinite alternate; }
+.state.listening .dot { background: var(--live); animation: pulse .6s infinite alternate; }
+.state.thinking .dot { background: var(--muted); animation: pulse 1.2s infinite alternate; }
+@keyframes pulse { from { opacity: .3; transform: scale(.8); } to { opacity: 1; transform: scale(1.15); } }
+@media (prefers-reduced-motion: reduce) { .state .dot { animation: none !important; } }
+.transcript { min-height: 64px; border: 1px dashed var(--line); border-radius: 8px; padding: 10px 12px; font-size: 17px; line-height: 1.5; color: var(--ink); background: var(--bg); }
+.transcript .interim { color: var(--muted); }
+.transcript:empty::before { content: "Qui compare quello che dici."; color: var(--muted); font-size: 14px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; }
+button { font: inherit; font-family: var(--display); font-weight: 600; font-size: 15px; border-radius: 9px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); padding: 11px 15px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+button:hover { background: var(--soft); }
+button:focus-visible { outline: 2px solid var(--pc, var(--ink)); outline-offset: 2px; }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+button.primary:hover { opacity: .9; }
+button.big { font-size: 17px; padding: 14px 22px; }
+button[disabled] { opacity: .45; cursor: default; }
+button svg { width: 17px; height: 17px; fill: currentColor; flex: none; }
+.cmds { font-size: 13.5px; color: var(--muted); margin: 0; }
+.cmds b { color: var(--ink); font-weight: 600; }
+
+.verdict { border-top: 1px dashed var(--line); padding-top: 12px; display: grid; gap: 10px; }
+.verdict h3 { font-family: var(--display); font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.grade { font-family: var(--display); font-weight: 700; font-size: 21px; border-radius: 6px; padding: 2px 10px; background: var(--soft); color: var(--ink); }
+.grade.ok { background: var(--oks); color: var(--ok); } .grade.redo { background: var(--redos); color: var(--redo); }
+.comment { font-size: 17px; line-height: 1.5; margin: 0; }
+.lists { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px 16px; font-size: 14.5px; }
+.lists h4 { margin: 0 0 4px; font-family: var(--display); font-size: 12px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+.lists ul { margin: 0; padding-left: 18px; } .lists li { margin: 2px 0; }
+details.full summary { cursor: pointer; font-family: var(--display); font-weight: 600; font-size: 14px; color: var(--pc, var(--ink)); }
+.fulltext { font-size: 14.5px; line-height: 1.5; margin-top: 8px; }
+.fulltext p { margin: 0 0 8px; } .fulltext ul, .fulltext ol { margin: 0 0 8px; padding-left: 20px; }
+.fulltext table { border-collapse: collapse; width: 100%; font-size: 13px; margin: 6px 0 10px; display: block; overflow-x: auto; }
+.fulltext th, .fulltext td { border: 1px solid var(--line); padding: 5px 7px; text-align: left; vertical-align: top; }
+.fulltext th { background: var(--soft); }
+.err { color: var(--redo); font-size: 14.5px; margin: 0; }
+.warn { background: var(--redos); color: var(--redo); border-radius: 8px; padding: 10px 12px; font-size: 14.5px; }
+
+.log h2 { font-family: var(--display); font-size: 15px; font-weight: 700; margin: 0 0 8px; }
+.log table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.log th, .log td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.log th { font-family: var(--display); font-size: 11.5px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.log td.v { font-family: var(--display); font-weight: 700; white-space: nowrap; }
+.log .empty { color: var(--muted); font-size: 14px; margin: 0; }
+.log .tw { overflow-x: auto; }
+kbd { font-family: var(--display); font-size: 11px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div>
+      <h1>Esame orale · Tutor vocale</h1>
+      <p class="lead">La commissaria ti fa la domanda, ascolta la tua risposta dal microfono e ti corregge a voce. Poi la prossima. Tutto senza toccare nulla.</p>
+    </div>
+    <div class="stats"><span><b id="stDone">0</b> risposte</span><span>media <b id="stAvg">–</b></span><span><b id="stRedo">0</b> da ripassare</span></div>
+  </div>
+
+  <div class="warn" id="noSR" hidden>Questo browser non ha il riconoscimento vocale. Usa <b>Google Chrome</b> (PC o Android) oppure <b>Safari</b> su iPhone.</div>
+
+  <details class="settings panel" id="settings">
+    <summary>Impostazioni: voce, correzione, commissario</summary>
+    <div class="grid">
+      <div class="keyrow">
+        <label for="apikey">Chiave API Anthropic (per la correzione intelligente)</label>
+        <div class="field"><input type="password" id="apikey" placeholder="sk-ant-…" autocomplete="off"><button type="button" id="btnShowKey">Mostra</button></div>
+        <p class="note">La chiave resta <b>solo in questo browser</b> (memoria locale) e serve a inviare la tua risposta a Claude per la correzione. Senza chiave la commissaria fa una correzione semplificata: controlla se hai citato i punti e i numeri della risposta modello.</p>
+      </div>
+      <label>Modello per la correzione
+        <select id="model">
+          <option value="claude-haiku-5-5">Veloce (Haiku)</option>
+          <option value="claude-sonnet-5-5">Più accurato (Sonnet)</option>
+        </select>
+      </label>
+      <label>Commissario
+        <select id="filterPart">
+          <option value="all">Tutti e tre</option>
+          <option value="1">Capitaneria di porto</option>
+          <option value="2">Componenti mediatori</option>
+          <option value="3">Diritto della navigazione</option>
+        </select>
+      </label>
+      <label>Voce della commissaria <select id="voice"></select></label>
+      <label>Velocità della voce <span id="rateVal" style="text-transform:none;font-weight:500">1,0</span>
+        <input type="range" id="rate" min="0.7" max="1.3" step="0.05" value="1"></label>
+      <label>Silenzio che chiude la risposta: <span id="silVal" style="text-transform:none;font-weight:500">3</span> s
+        <input type="range" id="silence" min="2" max="8" step="0.5" value="3"></label>
+      <label class="check"><input type="checkbox" id="continuous" checked><span>Dopo la correzione passa da sola alla domanda successiva</span></label>
+      <label class="check"><input type="checkbox" id="onlyRedo"><span>Solo le domande da ripassare (voto sotto il 6)</span></label>
+      <p class="note" id="voicenote"></p>
+    </div>
+  </details>
+
+  <section class="panel card" id="card" aria-live="polite">
+    <div>
+      <div class="tag"><span class="num" id="qnum">–</span><span id="qpart">Pronta quando vuoi</span></div>
+      <p class="qtext" id="qtext">Buongiorno. Quando è pronto, cominciamo l'esame.</p>
+    </div>
+    <div class="state" id="state"><span class="dot"></span><span id="stateText">In attesa</span></div>
+    <div class="transcript" id="transcript"></div>
+    <div class="row">
+      <button class="primary big" id="btnStart"><svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11z"/></svg><span id="btnStartLabel">Inizia l'esame</span></button>
+      <button id="btnRepeat" disabled>Ripeti la domanda</button>
+      <button id="btnDone" disabled>Ho finito</button>
+      <button id="btnDunno" disabled>Non lo so</button>
+      <button id="btnNext" disabled>Prossima</button>
+      <button id="btnStop" disabled>Ferma l'esame</button>
+    </div>
+    <p class="cmds">Comandi a voce, a fine frase: <b>«ho finito»</b> chiude la risposta subito · <b>«ripeti la domanda»</b> · <b>«non lo so»</b> · <b>«prossima»</b> · <b>«basta così»</b> ferma l'esame.</p>
+
+    <div class="verdict" id="verdict" hidden>
+      <h3>Correzione <span class="grade" id="grade">–</span><span id="evalMode" style="font-weight:500;text-transform:none;letter-spacing:0"></span></h3>
+      <p class="comment" id="comment"></p>
+      <p class="err" id="verr" hidden></p>
+      <div class="lists" id="lists"></div>
+      <div class="row">
+        <button id="btnReadV">Riascolta la correzione</button>
+        <button id="btnReadModel">Leggi la risposta giusta</button>
+      </div>
+      <details class="full"><summary>Risposta modello</summary><div class="fulltext" id="afull"></div></details>
+    </div>
+  </section>
+
+  <section class="panel log">
+    <h2>Registro dell'esame</h2>
+    <p class="empty" id="logEmpty">Ancora nessuna risposta. I voti restano salvati su questo dispositivo.</p>
+    <div class="tw"><table id="logTable" hidden><thead><tr><th>Voto</th><th>Domanda</th><th>Cosa mancava</th></tr></thead><tbody id="logBody"></tbody></table></div>
+    <div class="row" style="margin-top:10px"><button id="btnReset">Azzera il registro</button></div>
+  </section>
+</div>
+
+<script>
+window.TUTOR_DATA = [{"id": "1-1", "part": 1, "n": 1, "title": "Registri di iscrizione delle unità navali", "q": "Mi parli dei registri di iscrizione delle unità navali.", "a": "Ogni nave italiana è iscritta in un registro pubblico tenuto dall'autorità marittima, articolo 146. Le navi maggiori, cioè alturiere, sono iscritte nelle matricole della Capitaneria e ricevono l'atto di nazionalità; le navi minori e i galleggianti nei registri delle navi minori e dei galleggianti, tenuti anche dagli uffici circondariali e locali, e ricevono la licenza. Esistono poi il registro delle navi in costruzione, il registro internazionale e, per il diporto, l'archivio telematico centrale."}, {"id": "1-2", "part": 1, "n": 2, "title": "Contratto di locazione e contratto di noleggio", "q": "Mi spieghi il contratto di locazione e il contratto di noleggio.", "a": "Locazione, articolo 376: una parte fa godere all'altra la nave per un tempo determinato contro un canone; il conduttore la arma e diventa armatore. Noleggio, articolo 384: l'armatore, contro un nolo, si obbliga a compiere con una nave determinata viaggi prestabiliti, noleggio a viaggio, oppure i viaggi ordinati dal noleggiatore entro un periodo, noleggio a tempo; equipaggio e gestione nautica restano al noleggiante. Entrambi si prescrivono in un anno."}, {"id": "1-3", "part": 1, "n": 3, "title": "Forma del contratto in generale e forma della locazione", "q": "Quali sono le differenze tra la forma del contratto in generale e la forma della locazione di nave?", "a": "Nel diritto civile vige la libertà di forma. Il codice della navigazione richiede per la locazione la prova scritta, articolo 377: forma ad probationem, non a pena di nullità. Non serve per navi minori e galleggianti fino a 10 tonnellate a motore o 25 negli altri casi. Se manca lo scritto, la locazione risulta dalla dichiarazione di armatore. Per le unità da diporto invece il contratto è scritto a pena di nullità."}, {"id": "1-4", "part": 1, "n": 4, "title": "Forma del contratto e forma del noleggio", "q": "Mi parli della forma del contratto e della forma richiesta per il noleggio.", "a": "Anche il noleggio va provato per iscritto, articolo 385, con la stessa eccezione per le navi minori fino a 10 o 25 tonnellate. La scrittura deve indicare cinque elementi: individuazione, nazionalità e portata della nave; nomi di noleggiante e noleggiatore; nome del comandante; ammontare del nolo; durata del contratto o viaggi da compiere. Nella prassi è il charter party sui formulari BIMCO."}, {"id": "1-5", "part": 1, "n": 5, "title": "Obblighi del locatore e del noleggiatore", "q": "Quali sono gli obblighi del locatore e quali quelli del noleggiatore?", "a": "Il locatore, articoli 379 e 380, consegna la nave in stato di navigabilità con pertinenze e documenti, garantisce il godimento e risponde dei vizi occulti, salvo prova che non erano accertabili con la normale diligenza. Il noleggiatore, articolo 387, paga il nolo, nel noleggio a tempo in rate mensili anticipate; sopporta combustibile, acqua, lubrificanti e spese portuali; ordina solo viaggi leciti e sicuri; e paga il doppio se l'ultimo viaggio sfora la scadenza per suo fatto."}, {"id": "1-6", "part": 1, "n": 6, "title": "Documenti di bordo, giornali di bordo, ruolino", "q": "Mi parli dei documenti di bordo, dei giornali di bordo e del ruolino.", "a": "Articolo 169: le carte di bordo sono l'atto di nazionalità e il ruolo di equipaggio per le navi maggiori, la licenza per le minori. Poi il giornale nautico, articoli 173 e 174, diviso in inventario di bordo, giornale generale e di contabilità, giornale di navigazione e giornale di carico; le navi a motore tengono anche il giornale di macchina e quello radio. Il ruolino è il documento semplificato delle navi minori per annotare imbarchi e sbarchi."}, {"id": "1-7", "part": 1, "n": 7, "title": "Responsabile della tenuta dei documenti di bordo", "q": "Chi è il responsabile della tenuta dei documenti di bordo?", "a": "È il comandante: la legge gli affida tenuta, conservazione ed esibizione dei libri di bordo. Può delegare la compilazione all'ufficiale di guardia, al primo ufficiale o al direttore di macchina, ma vigila e firma. Le annotazioni sono giornaliere, senza spazi bianchi né abrasioni; gli eventi straordinari si denunciano con la relazione entro 24 ore dall'arrivo, articolo 182."}, {"id": "1-8", "part": 1, "n": 8, "title": "La figura dell'armatore", "q": "Mi descriva la figura dell'armatore.", "a": "L'armatore è chi assume l'esercizio della nave, articolo 265: la arma, la impiega e ne sopporta rischi e profitti, sia o non sia proprietario. Fa la dichiarazione di armatore all'ufficio di iscrizione; senza dichiarazione si presume armatore il proprietario, articolo 272. Risponde dei fatti dell'equipaggio e delle obbligazioni del comandante, articolo 274, e può limitare il debito, articolo 275, sotto le 300 tonnellate; sopra si applica la convenzione LLMC."}, {"id": "1-9", "part": 1, "n": 9, "title": "Privilegio, ipoteca e iscrizione dell'ipoteca", "q": "Mi parli del privilegio, dell'ipoteca e dell'iscrizione dell'ipoteca.", "a": "I privilegi, articoli 548 e 552, sono prelazioni di legge su nave e nolo, senza pubblicità, che seguono la nave e vengono prima dell'ipoteca: spese di giustizia, crediti dell'equipaggio, salvataggio e avaria comune, danni da urto, contratti del comandante per il viaggio. L'ipoteca, articolo 565, è costituita dal proprietario con atto scritto e nasce con la pubblicità, articolo 567: trascrizione nella matricola e annotazione sull'atto di nazionalità. Prende grado dalla trascrizione, articolo 574."}, {"id": "1-10", "part": 1, "n": 10, "title": "Contratto di trasporto e contratto di locazione", "q": "Che differenza c'è tra contratto di trasporto e contratto di locazione?", "a": "Nel trasporto, articolo 1678 del codice civile e 419 del codice della navigazione, il vettore si obbliga a un risultato: portare la merce a destino con la propria nave, rispondendo di perdite e avarie, articolo 422; forma scritta, articolo 420; polizza di carico; prescrizione sei mesi, articolo 438. Nella locazione, articolo 376, si cede il godimento della nave e il conduttore diventa armatore. Il noleggio sta in mezzo."}, {"id": "1-11", "part": 1, "n": 11, "title": "Demolizione e dismissione della nave", "q": "Mi parli della demolizione e della dismissione della nave.", "a": "La dismissione di bandiera, articolo 156, è la dichiarazione del proprietario che vuole vendere la nave all'estero o iscriverla in un registro straniero; la cancellazione richiede che siano soddisfatti i creditori ipotecari e che si restituisca l'atto di nazionalità. La nave è cancellata, articolo 163, per perdita, demolizione, perdita della nazionalità o iscrizione all'estero. La demolizione segue il regolamento europeo 1257 del 2013 e la Convenzione di Hong Kong, in vigore dal 2025."}, {"id": "1-12", "part": 1, "n": 12, "title": "Iscrizione nei registri; perdita effettiva e perdita presunta", "q": "Mi parli dell'iscrizione nei registri e della perdita della nave: perdita effettiva e perdita presunta.", "a": "L'iscrizione si chiede all'ufficio marittimo con titolo di proprietà e certificato di stazza. La perdita effettiva è accertata: naufragio, incendio, affondamento, e risulta dalla relazione di eventi straordinari e dai verbali. La perdita presunta, articolo 162, scatta senza notizie da 4 mesi per le navi a motore e 8 negli altri casi. Effetti: cancellazione dal registro, risoluzione dell'arruolamento, abbandono agli assicuratori, decorrenza delle prescrizioni, morte presunta dei marittimi."}, {"id": "1-13", "part": 1, "n": 13, "title": "Definizione del contratto di noleggio ed elementi del contratto", "q": "Mi dia la definizione del contratto di noleggio e gli elementi del contratto.", "a": "Articolo 384: contratto con cui l'armatore noleggiante, contro il nolo, si obbliga a compiere con una nave determinata uno o più viaggi prestabiliti oppure, nel periodo convenuto, i viaggi ordinati dal noleggiatore. Elementi: noleggiante che è armatore e noleggiatore; nave determinata; viaggi o periodo; nolo; comandante del noleggiante che esegue le istruzioni commerciali; forma scritta ad probationem con contenuto minimo; prescrizione di un anno."}, {"id": "1-14", "part": 1, "n": 14, "title": "Definizione di nave", "q": "Mi dia la definizione di nave.", "a": "Articolo 136: nave è qualsiasi costruzione destinata al trasporto per acqua, anche a scopo di rimorchio, pesca, diporto o altro. Maggiori sono le navi alturiere, minori le costiere, quelle del servizio dei porti e della navigazione interna. I galleggianti non sono destinati al trasporto. La nave è un bene mobile registrato, individuata da nome o numero, ufficio di iscrizione, stazza e bandiera."}, {"id": "1-15", "part": 1, "n": 15, "title": "Uffici marittimi", "q": "Mi parli degli uffici marittimi.", "a": "Articoli 16 e 17: il litorale è diviso in zone, compartimenti e circondari. A capo: la Direzione marittima per la zona, la Capitaneria di porto per il compartimento, l'Ufficio circondariale marittimo per il circondario, poi uffici locali e delegazioni di spiaggia. Al vertice il Comando generale delle Capitanerie, sotto il Ministero delle infrastrutture; all'estero i consoli. Funzioni: iscrizione, documenti, polizia, sicurezza, demanio, soccorso."}, {"id": "2-1", "part": 2, "n": 1, "title": "Figura del mediatore, norme del settore e principi dell'attività (legge 478)", "q": "Mi parli della figura del mediatore, delle norme che regolano il settore e dei principi dell'attività secondo la legge 478.", "a": "Il mediatore, articolo 1754 del codice civile, mette in relazione le parti senza vincoli con esse. Il mediatore marittimo, articolo 1 della legge 478 del 1968, media nei contratti di costruzione, compravendita, locazione, noleggio di navi e trasporto marittimo di cose. Regolamento: D.P.R. 66 del 1973; il decreto legislativo 59 del 2010 ha soppresso il ruolo ordinario. Principi: imparzialità, provvigione da entrambe le parti, informazione, incompatibilità con impieghi retribuiti, segreto, libri conservati 10 anni, cauzione."}, {"id": "2-2", "part": 2, "n": 2, "title": "Differenze fra mediatore iscritto al ruolo ordinario e al ruolo speciale", "q": "Quali sono le differenze tra il mediatore iscritto nella sezione ordinaria e quello iscritto nella sezione speciale del ruolo?", "a": "Sezione ordinaria: mediazione privata. Sezione speciale: mediatori abilitati ai pubblici uffici, articolo 6, cioè a presiedere le pubbliche gare; richiede cittadinanza italiana o europea, esame con due prove scritte e orale a sette decimi, commissione con un rappresentante dell'armamento, cauzione doppia: 516 euro contro 258. Dal 2010 il ruolo ordinario è soppresso: SCIA e iscrizione nel Registro delle imprese o nel REA; la sezione speciale sopravvive."}, {"id": "2-3", "part": 2, "n": 3, "title": "Assicurazioni", "q": "Mi parli delle assicurazioni marittime.", "a": "L'assicurazione marittima, articoli 514 e seguenti, copre i rischi della navigazione. Corpo e macchine per la nave; merci con le Institute Cargo Clauses; P&I, mutua tra armatori, per la responsabilità verso terzi; poi nolo, guerra, loss of hire. Obbligatorie: responsabilità per crediti marittimi da 300 tonnellate, decreto 111 del 2012; CLC per gli idrocarburi; Bunker; Nairobi per i relitti; Atene per i passeggeri. Istituti tipici: abbandono agli assicuratori e surrogazione."}, {"id": "2-4", "part": 2, "n": 4, "title": "Accordi tra armatori", "q": "Mi parli degli accordi tra armatori.", "a": "Conferences di linea, vietate nell'Unione europea dal 2008; consorzi e vessel sharing, con esenzione scaduta nel 2024; alleanze globali del container come Gemini, Ocean e Premier; pool per cisterne e rinfuse con un pool manager; contratti di gestione SHIPMAN; P&I club; associazioni di categoria come Confitarma e Assarmatori. Il limite è il diritto della concorrenza, articolo 101 del Trattato."}, {"id": "2-5", "part": 2, "n": 5, "title": "Avaria e tipi di avaria", "q": "Cos'è l'avaria e quali tipi di avaria conosce?", "a": "L'avaria è ogni danno o spesa straordinaria della spedizione. Avaria particolare: colpisce un solo interesse per caso fortuito o colpa e resta a carico di chi la subisce. Avaria comune, articolo 469: sacrificio volontario e ragionevole deciso dal comandante per la salvezza comune, ripartito fra nave, carico e nolo. Nella pratica valgono le Regole di York e Anversa."}, {"id": "2-6", "part": 2, "n": 6, "title": "Quando un comandante dichiara un'avaria", "q": "Quando un comandante dichiara un'avaria?", "a": "Quando, davanti a un pericolo reale, decide un sacrificio o una spesa straordinaria per la salvezza comune: getto, incaglio volontario, estinzione di un incendio, porto di rifugio. Procedura: annotazione nel giornale nautico; relazione di eventi straordinari entro 24 ore, articolo 182; avviso ad armatore, assicuratori e ricevitori; chirografo d'avaria e garanzie; nomina del liquidatore che redige il regolamento. Prescrizione un anno."}, {"id": "2-7", "part": 2, "n": 7, "title": "Avaria generale", "q": "Mi parli dell'avaria generale.", "a": "È l'avaria comune: sacrificio o spesa straordinaria, volontaria e ragionevole, per la salvezza comune dei beni della spedizione, Regola A di York e Anversa e articolo 469. Elementi: pericolo reale, atto volontario del comandante, straordinarietà, ragionevolezza, risultato utile. Liquidazione: massa attiva e massa contribuente, nave, carico e nolo, ciascuno pro quota."}, {"id": "2-8", "part": 2, "n": 8, "title": "Organismi internazionali che regolano il settore", "q": "Quali sono gli organismi internazionali che regolano il settore?", "a": "L'IMO a Londra per sicurezza e ambiente; l'ILO per il lavoro marittimo; l'UNCTAD per il commercio; l'UNCITRAL per il diritto uniforme; il CMI che prepara le convenzioni; il BIMCO per i formulari; la IACS delle società di classifica; l'International Group dei P&I; l'ICS degli armatori; EMSA e Paris MoU in Europa; il Baltic Exchange per i noli."}, {"id": "2-9", "part": 2, "n": 9, "title": "Convenzioni internazionali", "q": "Mi parli delle convenzioni internazionali.", "a": "Sicurezza: SOLAS, COLREG, Load Lines, STCW, SAR. Ambiente: MARPOL, Ballast Water, Hong Kong sul riciclaggio. Responsabilità: CLC e Fondo, Bunker, Nairobi, LLMC, Atene. Trasporto: Regole dell'Aja-Visby, in vigore in Italia; Amburgo e Rotterdam no. Lavoro: MLC 2006. Diritto del mare: Montego Bay, con 12, 24 e 200 miglia."}, {"id": "2-10", "part": 2, "n": 10, "title": "Nave a doppio scafo", "q": "Cos'è una nave a doppio scafo?", "a": "Una nave cisterna con due scafi e un'intercapedine di circa 2 metri, così urto o incaglio non fanno uscire il carico. Dopo la Exxon Valdez del 1989: OPA 90 negli Stati Uniti e regola 13F della MARPOL nel 1992; dopo Erika e Prestige l'Unione europea ha accelerato; dal 2010 le petroliere monoscafo non navigano più. Conta per valore, assicurazione, vetting e accesso ai terminal."}, {"id": "2-11", "part": 2, "n": 11, "title": "Soggetti che controllano le navi", "q": "Quali sono i soggetti che controllano le navi?", "a": "Lo Stato di bandiera, cioè le Capitanerie e gli organismi riconosciuti, per i certificati statutari; le società di classificazione IACS, con visita speciale ogni 5 anni; il Port State Control del Paris MoU sulle navi straniere; gli audit ISM, ISPS e MLC; i controlli sanitari e doganali; il vetting privato come SIRE e RightShip; e a bordo il comandante, articolo 296."}, {"id": "2-12", "part": 2, "n": 12, "title": "Stallie", "q": "Mi parli delle stallie.", "a": "Le stallie, laytime, sono il tempo concesso al noleggiatore per caricare e scaricare, compreso nel nolo, nel noleggio a viaggio. Decorrono dalla notice of readiness e si contano in giorni correnti o lavorativi. Scadute, scattano le controstallie, demurrage, un compenso giornaliero forfettario; se si finisce prima, il despatch, di solito metà del demurrage. Nel noleggio a tempo non esistono."}, {"id": "2-13", "part": 2, "n": 13, "title": "Polizza di carico", "q": "Mi parli della polizza di carico.", "a": "La polizza di carico, articoli 457 e seguenti, è rilasciata dal vettore dopo l'imbarco. Tre funzioni: ricevuta delle merci con stato apparente, pulita o con riserve; prova del contratto di trasporto; titolo di credito rappresentativo, nominativa, all'ordine o al portatore, che dà diritto alla riconsegna. Nei trasporti internazionali valgono le Regole dell'Aja-Visby, limite 666,67 diritti speciali di prelievo per collo o 2 per chilo."}, {"id": "2-14", "part": 2, "n": 14, "title": "Contratti", "q": "Quali sono i contratti del settore marittimo?", "a": "Contratti di utilizzazione: locazione, noleggio, trasporto, rimorchio. Nave come bene: costruzione, compravendita, ipoteca, società di armamento. Esercizio e servizi: arruolamento, agenzia marittima, mediazione, spedizione, assicurazione, gestione, soccorso, operazioni portuali. Figure della prassi: contratto di tonnellaggio, slot charter, pool. Nel traffico non di linea ogni contratto è un charter party."}, {"id": "2-15", "part": 2, "n": 15, "title": "Chi è l'armatore", "q": "Chi è l'armatore?", "a": "È chi assume l'esercizio della nave, articolo 265, anche senza esserne proprietario. Fa la dichiarazione di armatore, altrimenti si presume il proprietario, articolo 272; risponde per equipaggio e comandante, articolo 274, e può limitare il debito, articolo 275. Non va confuso con proprietario, noleggiatore, vettore e gestore."}, {"id": "2-16", "part": 2, "n": 16, "title": "Tipi di locazione e tipi di noleggio", "q": "Quali tipi di locazione e quali tipi di noleggio conosce?", "a": "Locazione a scafo nudo, bareboat, o a scafo armato, se l'equipaggio passa al conduttore; con opzione di acquisto o con bareboat registration. Noleggio a tempo, time charter, formulari NYPE e BALTIME; a viaggio, voyage charter, GENCON; poi trip time charter, contratto di tonnellaggio, slot charter. Nel tempo il noleggiatore paga anche combustibile e porti; nel viaggio il nolo è onnicomprensivo."}, {"id": "2-17", "part": 2, "n": 17, "title": "Noleggio a tempo", "q": "Mi parli del noleggio a tempo.", "a": "Il noleggiante compie per il periodo convenuto i viaggi ordinati dal noleggiatore, conservando gestione nautica ed equipaggio. Nolo in rate mensili anticipate, articolo 390; combustibile e spese portuali al noleggiatore, articolo 387; viaggi pericolosi o oltre la scadenza rifiutabili, articolo 388; sforamento, nolo doppio, articolo 389; off-hire, articolo 391; perdita della nave, nolo fino a quel giorno, articolo 392; subnoleggio ammesso, articolo 394; prescrizione un anno."}, {"id": "2-18", "part": 2, "n": 18, "title": "Compravendita di navi usate e clausole", "q": "Mi parli della compravendita di navi usate e delle sue clausole.", "a": "In Italia la vendita è scritta a pena di nullità, articolo 237, e si trascrive nella matricola, articoli 250 e 256. Nella prassi il Memorandum of Agreement su Norwegian Saleform: deposito del 10 per cento; ispezione e class records; bacino o ispezione subacquea; consegna con cancelling date e notices; nave libera da gravami con classe mantenuta; bill of sale e deletion certificate; caparra persa in caso di inadempimento; arbitrato a Londra; provvigione dell'1 per cento."}, {"id": "2-19", "part": 2, "n": 19, "title": "Cosa avviene nel contratto a tempo", "q": "Cosa avviene nel contratto a tempo?", "a": "Consegna con on-hire survey e decorrenza del nolo; impiego con ordini commerciali del noleggiatore e condotta nautica del noleggiante; nolo anticipato, spese di combustibile e porto al noleggiatore; off-hire per inutilizzo, cessazione per perdita, rifiuto dei viaggi pericolosi; subnoleggio; riconsegna con notices, off-hire survey e conguaglio del bunker, nolo doppio se si sfora; contestazioni e arbitrato, prescrizione un anno."}, {"id": "2-21", "part": 2, "n": 21, "title": "Scafo nudo e scafo armato; proprietario italiano e ispezioni", "q": "Quali sono le differenze tra scafo nudo e scafo armato? Mi parli anche del proprietario di nave italiano e delle ispezioni.", "a": "A scafo nudo la nave è consegnata senza equipaggio: il conduttore la arma e diventa armatore. A scafo armato arriva con l'equipaggio: se passa sotto il conduttore è ancora locazione; se il locatore mantiene equipaggio e gestione nautica è un noleggio a tempo. Il proprietario italiano, articolo 143: oltre 12 carati su 24 a italiani o europei. Ispezioni: visite statutarie, classe quinquennale, ISM, ISPS, MLC, Port State Control."}, {"id": "3-1", "part": 3, "n": 1, "title": "Operazioni portuali", "q": "Mi parli delle operazioni portuali.", "a": "Articolo 16 della legge 84 del 1994: carico, scarico, trasbordo, deposito e movimento in genere delle merci in ambito portuale. Le svolgono solo imprese autorizzate dall'Autorità di sistema portuale, con requisiti tecnici e finanziari, cauzione e canone. Il lavoro temporaneo è dell'articolo 17; le concessioni di banchine, articolo 18, fanno il terminalista."}, {"id": "3-2", "part": 3, "n": 2, "title": "Cosa fa l'armatore", "q": "Cosa fa l'armatore?", "a": "Arma la nave con equipaggio e provviste, nomina il comandante, la mantiene in classe e assicurata, la impiega commercialmente e ne sopporta costi e rischi. Fa la dichiarazione di armatore, articolo 265, è la compagnia del codice ISM e risponde dei fatti dell'equipaggio, articolo 274. Può non essere proprietario e può servirsi di un ship manager."}, {"id": "3-3", "part": 3, "n": 3, "title": "Cosa fa un comandante", "q": "Cosa fa un comandante?", "a": "È il capo della spedizione: comanda l'equipaggio; verifica idoneità e stivaggio prima della partenza, articolo 296; dirige la manovra, articolo 298; tiene i libri di bordo e fa la relazione di eventi straordinari; rappresenta l'armatore, articolo 295; tutela il carico e dichiara l'avaria comune; è ufficiale di stato civile e di polizia giudiziaria; presta soccorso, articoli 489 e 490; lascia la nave per ultimo, articolo 303."}, {"id": "3-4", "part": 3, "n": 4, "title": "Servizi portuali", "q": "Mi parli dei servizi portuali.", "a": "Sempre articolo 16 della legge 84: prestazioni specialistiche, complementari e accessorie alle operazioni, come rizzaggio, pesatura, riempimento dei contenitori, pulizia delle stive; li autorizza l'Autorità di sistema portuale. Vanno distinti dai servizi tecnico-nautici dell'articolo 14, pilotaggio, rimorchio, ormeggio e battellaggio, e dai servizi di interesse generale dell'articolo 6."}, {"id": "3-5", "part": 3, "n": 5, "title": "Terminal e impresa portuale: differenze", "q": "Che differenza c'è tra terminal e impresa portuale?", "a": "L'impresa portuale, articolo 16, ha l'autorizzazione e opera in qualsiasi area pubblica del porto in concorrenza. Il terminalista, articolo 18, ha in più la concessione di aree e banchine in esclusiva, con programma di investimenti e traffici, canone concessorio e obbligo di esercizio diretto; risponde anche come depositario delle merci."}, {"id": "3-6", "part": 3, "n": 6, "title": "Polizza di carico", "q": "Mi parli della polizza di carico.", "a": "Documento rilasciato dal vettore dopo l'imbarco, articoli 457 e seguenti: ricevuta delle merci con stato apparente, prova del contratto e titolo rappresentativo che dà diritto alla riconsegna e circola per girata o consegna. Pulita o con riserve, shipped o received; il sea waybill non è titolo. Nei trasporti internazionali vale il regime dell'Aja-Visby."}, {"id": "3-7", "part": 3, "n": 7, "title": "Locazione e noleggio: differenze", "q": "Quali sono le differenze tra locazione e noleggio?", "a": "Locazione, articolo 376: godimento della nave; il conduttore diventa armatore, equipaggio e rischi sono suoi; canone; forma ad probationem, 377; sublocazione vietata, 378; un anno. Noleggio, articolo 384: viaggi con nave determinata; il noleggiante resta armatore con il suo equipaggio; nolo a tempo o a viaggio; forma 385 con contenuto minimo; subnoleggio ammesso, 394; un anno."}, {"id": "3-8", "part": 3, "n": 8, "title": "Armatore e responsabilità dell'armatore", "q": "Mi parli dell'armatore e della responsabilità dell'armatore.", "a": "Per fatto altrui, articolo 274: equipaggio e obbligazioni del comandante. Contrattuale: come vettore, articolo 422, come noleggiante, articolo 386, come datore di lavoro. Extracontrattuale: urto, danni a terzi, relitti, inquinamento canalizzato sul proprietario con la CLC. Limitazione, articolo 275: sotto 300 tonnellate al valore della nave, fra un quinto e due quinti, più il nolo; sopra, LLMC 1976-96. Assicurazione obbligatoria, decreto 111 del 2012."}, {"id": "3-9", "part": 3, "n": 9, "title": "Comandante", "q": "Mi parli del comandante.", "a": "Nominato dall'armatore, iscritto nella gente di mare con titolo STCW. È dipendente dell'armatore, suo rappresentante e titolare di pubbliche funzioni; custode del carico; esegue le istruzioni commerciali del noleggiatore ma conserva la responsabilità nautica, articolo 393. Risponde civilmente, penalmente e disciplinarmente; firma le polizze di carico, dà la notice of readiness, dichiara l'avaria comune."}];
+</script>
+<script>
+const PARTS = { 1: ["Capitaneria di porto", "cap"], 2: ["Componenti mediatori", "med"], 3: ["Diritto della navigazione", "dir"] };
+const DATA = (window.TUTOR_DATA || []).map(q => Object.assign({}, q, { partName: PARTS[q.part][0], cls: PARTS[q.part][1] }));
+const $ = id => document.getElementById(id);
+const synth = window.speechSynthesis || null;
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+if (!SR) $("noSR").hidden = false;
+
+// ---------- persistent settings and log
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+};
+let log = store.get("tutor_log", {});
+$("apikey").value = store.get("anthropic_key", "");
+$("model").value = store.get("model", "claude-haiku-5-5");
+$("rate").value = store.get("rate", 1); $("rateVal").textContent = fmt($("rate").value);
+$("silence").value = store.get("silence", 3); $("silVal").textContent = fmt($("silence").value);
+$("continuous").checked = store.get("continuous", true);
+$("filterPart").value = store.get("filterPart", "all");
+function fmt(v) { return parseFloat(v).toFixed(1).replace(".", ","); }
+$("apikey").addEventListener("change", e => store.set("anthropic_key", e.target.value.trim()));
+$("model").addEventListener("change", e => store.set("model", e.target.value));
+$("rate").addEventListener("input", e => { $("rateVal").textContent = fmt(e.target.value); store.set("rate", parseFloat(e.target.value)); });
+$("silence").addEventListener("input", e => { $("silVal").textContent = fmt(e.target.value); store.set("silence", parseFloat(e.target.value)); });
+$("continuous").addEventListener("change", e => store.set("continuous", e.target.checked));
+$("filterPart").addEventListener("change", e => { store.set("filterPart", e.target.value); asked.clear(); });
+$("onlyRedo").addEventListener("change", () => asked.clear());
+$("btnShowKey").addEventListener("click", () => { const i = $("apikey"); i.type = i.type === "password" ? "text" : "password"; $("btnShowKey").textContent = i.type === "password" ? "Mostra" : "Nascondi"; });
+if (!$("apikey").value) $("settings").open = true;
+
+// ---------- voice of the examiner
+const FEMALE = /google italiano|alice|elsa|federica|paola|isabella|silvia|carla|chiara|bianca|giulia|emma|female|donna/i;
+const MALE = /cosimo|luca|diego|giorgio|male|uomo/i;
+function voices() { return synth ? synth.getVoices() : []; }
+function fillVoices() {
+  const sel = $("voice"); const prev = sel.value || store.get("voice", "");
+  const it = voices().filter(v => /^it/i.test(v.lang)); const list = it.length ? it : voices();
+  sel.innerHTML = "";
+  if (!list.length) { const o = document.createElement("option"); o.value = ""; o.textContent = "Voce predefinita"; sel.appendChild(o); return; }
+  list.forEach(v => { const o = document.createElement("option"); o.value = v.name; o.textContent = v.name + (it.length ? "" : " (" + v.lang + ")"); sel.appendChild(o); });
+  const fem = list.filter(v => FEMALE.test(v.name) && !MALE.test(v.name));
+  const pref = fem[0] || list.find(v => !MALE.test(v.name)) || list[0];
+  sel.value = list.some(v => v.name === prev) ? prev : pref.name;
+  $("voicenote").textContent = it.length ? "" : "Nessuna voce italiana trovata su questo dispositivo: installa la voce italiana nelle impostazioni di sintesi vocale.";
+}
+if (synth) { fillVoices(); synth.onvoiceschanged = fillVoices; }
+$("voice").addEventListener("change", e => store.set("voice", e.target.value));
+
+function chunks(text) {
+  const parts = text.replace(/\s+/g, " ").match(/[^.;:!?]+[.;:!?]?/g) || [text];
+  const out = []; let buf = "";
+  for (const p of parts) { if ((buf + p).length > 170 && buf) { out.push(buf.trim()); buf = p; } else buf += p; }
+  if (buf.trim()) out.push(buf.trim());
+  return out;
+}
+let speakToken = 0;
+function speak(text) {
+  return new Promise(resolve => {
+    if (!synth) { setState("speaking", text); setTimeout(resolve, Math.min(8000, 60 * text.length)); return; }
+    stopListening(); synth.cancel();
+    const my = ++speakToken;
+    const v = voices().find(x => x.name === $("voice").value);
+    const list = chunks(text); let i = 0;
+    setState("speaking", "La commissaria parla");
+    const next = () => {
+      if (my !== speakToken) return resolve();
+      if (i >= list.length) return resolve();
+      const u = new SpeechSynthesisUtterance(list[i++]);
+      u.lang = "it-IT"; if (v) u.voice = v; u.rate = parseFloat($("rate").value);
+      u.onend = next; u.onerror = () => resolve();
+      synth.speak(u);
+    };
+    next();
+  });
+}
+function silence() { speakToken++; if (synth) synth.cancel(); }
+
+// ---------- recognition
+let rec = null, listening = false, listenMode = null, finalText = "", interimText = "", silenceTimer = null, nudgeTimer = null, giveupTimer = null, onFinal = null, nudged = false;
+function renderTranscript() {
+  const t = $("transcript"); t.textContent = "";
+  if (finalText) t.append(finalText);
+  if (interimText) { const s = document.createElement("span"); s.className = "interim"; s.textContent = interimText; t.append(s); }
+}
+function startListening(mode, cb) {
+  if (!SR) return;
+  stopListening();
+  listenMode = mode; onFinal = cb; finalText = ""; interimText = ""; nudged = false; renderTranscript();
+  setState("listening", mode === "answer" ? "Ti ascolto: rispondi come all'orale" : "Ti ascolto: dì «prossima», «ripeti la correzione» o «leggi la risposta giusta»");
+  const r = new SR(); rec = r; r.lang = "it-IT"; r.continuous = true; r.interimResults = true; r.maxAlternatives = 1;
+  r.onresult = e => {
+    interimText = "";
+    for (let i = e.resultIndex; i < e.results.length; i++) { const res = e.results[i]; if (res.isFinal) finalText += res[0].transcript.trim() + " "; else interimText += res[0].transcript; }
+    renderTranscript();
+    const all = (finalText + " " + interimText).trim();
+    if (listenMode === "answer" && /\b(ho finito|fine risposta)\b\.?\s*$/i.test(all)) { finalize(); return; }
+    if (listenMode === "answer" && /^\s*(non lo so|non la so|non me lo ricordo|prossima|avanti|ripeti la domanda|ripeta la domanda|basta così|basta cosi)\s*\.?\s*$/i.test(finalText)) { finalize(); return; }
+    if (listenMode === "command" && finalText.trim()) { finalize(); return; }
+    resetSilence();
+  };
+  r.onerror = e => {
+    if (e.error === "not-allowed" || e.error === "service-not-allowed") { listening = false; setState("idle", "Microfono negato: consenti l'uso del microfono per questo sito (icona del lucchetto nella barra dell'indirizzo) e ricarica."); $("noSR").hidden = false; $("noSR").textContent = "Il browser ha negato il microfono. Clicca sull'icona del lucchetto accanto all'indirizzo, consenti il microfono e ricarica la pagina."; stopExam(); }
+  };
+  r.onend = () => { if (listening && rec === r) { try { r.start(); } catch (e) {} } };
+  try { r.start(); listening = true; } catch (e) { listening = false; }
+  clearTimeout(nudgeTimer); clearTimeout(giveupTimer);
+  if (mode === "answer") {
+    nudgeTimer = setTimeout(async () => { if (listening && !finalText.trim() && !interimText) { nudged = true; const wasMode = listenMode; await speak("Prego, risponda pure. Se non la sa, dica: non lo so."); if (running) startListening(wasMode, onFinal); } }, 15000);
+    giveupTimer = setTimeout(() => { if (listening && !finalText.trim()) finalize(); }, 60000);
+  } else {
+    giveupTimer = setTimeout(() => { if (listening && !finalText.trim()) { stopListening(); setState("idle", "In attesa: premi «Prossima» quando vuoi."); } }, 30000);
+  }
+}
+function resetSilence() {
+  clearTimeout(silenceTimer);
+  const ms = parseFloat($("silence").value) * 1000;
+  silenceTimer = setTimeout(() => { if (listening && (finalText.trim() || interimText.trim())) finalize(); }, ms);
+}
+function stopListening() {
+  listening = false; clearTimeout(silenceTimer); clearTimeout(nudgeTimer); clearTimeout(giveupTimer);
+  if (rec) { const r = rec; rec = null; try { r.onend = null; r.onresult = null; r.abort(); } catch (e) {} }
+}
+function finalize() {
+  const text = (finalText + " " + interimText).replace(/\s+/g, " ").trim();
+  const cb = onFinal; stopListening(); onFinal = null;
+  if (cb) cb(text);
+}
+
+// ---------- exam flow
+let running = false, current = null, asked = new Set(), lastVerdict = null;
+function setState(kind, text) { const s = $("state"); s.className = "state " + kind; $("stateText").textContent = text; }
+function pool() {
+  const part = $("filterPart").value, onlyRedo = $("onlyRedo").checked;
+  return DATA.filter(q => (part === "all" || String(q.part) === part) && (!onlyRedo || (log[q.id] && log[q.id].voto < 6)));
+}
+function pickNext() {
+  const p = pool(); if (!p.length) return null;
+  let fresh = p.filter(q => !asked.has(q.id) && !log[q.id]);
+  if (!fresh.length) fresh = p.filter(q => !asked.has(q.id));
+  if (!fresh.length) { asked.clear(); fresh = p; }
+  return fresh[Math.floor(Math.random() * fresh.length)];
+}
+function showQuestion(q) {
+  const card = $("card"); card.classList.remove("cap", "med", "dir"); card.classList.add(q.cls);
+  $("qnum").textContent = (q.part === 1 ? "C " : q.part === 2 ? "M " : "D ") + q.n;
+  $("qpart").textContent = q.partName; $("qtext").textContent = q.q;
+  $("verdict").hidden = true; $("transcript").textContent = ""; $("afull").textContent = q.a;
+}
+async function startExam() {
+  if (running) return;
+  running = true; asked.clear();
+  $("btnStart").disabled = true; $("btnStop").disabled = false; $("btnStartLabel").textContent = "Esame in corso";
+  await speak("Buongiorno. Cominciamo l'esame. Risponda a voce; quando ha finito faccia una pausa, oppure dica: ho finito.");
+  nextQuestion();
+}
+async function nextQuestion() {
+  if (!running) return;
+  const q = pickNext();
+  if (!q) { await speak("Non ci sono domande con questi filtri. Cambi commissario o tolga il filtro."); stopExam(); return; }
+  current = q; asked.add(q.id); lastVerdict = null; showQuestion(q);
+  $("btnRepeat").disabled = false; $("btnDone").disabled = false; $("btnDunno").disabled = false; $("btnNext").disabled = false;
+  await speak(q.q);
+  if (running) startListening("answer", handleAnswer);
+}
+async function handleAnswer(text) {
+  if (!running || !current) return;
+  const t = text.toLowerCase();
+  if (/^(ripeti|puoi ripetere|può ripetere|ripeta)/.test(t) || /\b(ripeti|ripeta) la domanda\b/.test(t)) { await speak(current.q); if (running) startListening("answer", handleAnswer); return; }
+  if (/^(prossima|avanti|salta|passa)\b/.test(t)) { nextQuestion(); return; }
+  if (/^(basta|stop|fine esame|ferma)/.test(t) || /\bbasta così\b/.test(t)) { await speak("Va bene, ci fermiamo qui. Buono studio."); stopExam(); return; }
+  const dunno = !t || /^(non lo so|non la so|non so|non me lo ricordo|non ricordo|passo)\b/.test(t);
+  const answer = t.replace(/\b(ho finito|fine risposta)\b\.?\s*$/i, "").trim();
+  await evaluate(dunno ? "" : answer, dunno);
+}
+async function evaluate(answer, dunno) {
+  stopListening(); $("verdict").hidden = false; $("verr").hidden = true; $("lists").innerHTML = ""; $("comment").textContent = ""; $("grade").textContent = "–"; $("grade").className = "grade"; $("evalMode").textContent = "";
+  let res;
+  if (dunno) {
+    res = { voto: 3, commento: "Nessun problema, gliela spiego io. " + current.a, mancanze: ["Risposta non data"], errori: [], daCitare: [] };
+    $("evalMode").textContent = "risposta non data";
+  } else {
+    setState("thinking", "La commissaria sta valutando");
+    const key = $("apikey").value.trim();
+    if (key) {
+      try { res = await askClaude(key, current, answer); $("evalMode").textContent = "valutata da Claude"; }
+      catch (e) { $("verr").hidden = false; $("verr").textContent = e.message || String(e); res = localEvaluate(current, answer); $("evalMode").textContent = "correzione semplificata"; }
+    } else { res = localEvaluate(current, answer); $("evalMode").textContent = "correzione semplificata (senza chiave API)"; }
+  }
+  await finish(res, dunno);
+}
+async function finish(res, dunno) {
+  const voto = Math.max(1, Math.min(10, parseInt(res.voto, 10) || 1));
+  const commento = String(res.commento || "").trim() || "Valutazione non disponibile.";
+  const take = (a, n) => Array.isArray(a) ? a.map(String).filter(Boolean).slice(0, n) : [];
+  const mancanze = take(res.mancanze, 4), errori = take(res.errori, 3), cite = take(res.daCitare, 4);
+  $("grade").textContent = voto + "/10"; $("grade").className = "grade " + (voto >= 6 ? "ok" : "redo");
+  $("comment").textContent = commento;
+  const block = (title, items) => { if (!items.length) return; const d = document.createElement("div"); const h = document.createElement("h4"); h.textContent = title; const ul = document.createElement("ul"); items.forEach(t => { const li = document.createElement("li"); li.textContent = t; ul.appendChild(li); }); d.append(h, ul); $("lists").appendChild(d); };
+  block("Cosa mancava", mancanze); block("Errori", errori); block("Da citare all'orale", cite);
+  log[current.id] = { voto, mancanze, dunno: !!dunno, t: Date.now() }; store.set("tutor_log", log); renderLog();
+  lastVerdict = commento;
+  await speak((dunno ? "" : "Voto " + voto + ". ") + commento);
+  if (!running) return;
+  if ($("continuous").checked) { setState("idle", "Prossima domanda tra un momento"); await new Promise(r => setTimeout(r, 1800)); if (running) nextQuestion(); }
+  else { startListening("command", handleCommand); }
+}
+async function handleCommand(text) {
+  const t = text.toLowerCase();
+  if (/ripeti|riascolt/.test(t) && /correzion/.test(t)) { await speak(lastVerdict || ""); if (running) startListening("command", handleCommand); return; }
+  if (/risposta giusta|risposta modello|leggi la risposta/.test(t)) { await speak(current.a); if (running) startListening("command", handleCommand); return; }
+  if (/basta|stop|fine esame|ferma/.test(t)) { await speak("Va bene, ci fermiamo qui. Buono studio."); stopExam(); return; }
+  if (/prossima|avanti|continua|andiamo|altra domanda/.test(t)) { nextQuestion(); return; }
+  if (running) startListening("command", handleCommand);
+}
+function stopExam() {
+  running = false; silence(); stopListening();
+  $("btnStart").disabled = false; $("btnStartLabel").textContent = "Riprendi l'esame"; $("btnStop").disabled = true;
+  $("btnRepeat").disabled = true; $("btnDone").disabled = true; $("btnDunno").disabled = true; $("btnNext").disabled = true;
+  setState("idle", "Esame fermo");
+}
+
+// ---------- evaluation by Claude (Anthropic API, called from this browser with your key)
+const PART_LABEL = { 1: "componente della Capitaneria di porto", 2: "componente mediatore marittimo", 3: "docente di diritto della navigazione" };
+function buildPrompt(q, answer) {
+  return [
+    "Valuta la risposta del candidato alla domanda qui sotto confrontandola con la risposta modello. Sei rigorosa ma incoraggiante. La risposta è trascritta dal parlato: ignora errori di trascrizione, punteggiatura e numeri scritti in lettere; accetta sinonimi e parafrasi. Non pretendere che citi ogni articolo: conta che i concetti siano giusti e completi; segnala però gli articoli e i numeri che è bene citare all'orale. Se il candidato aggiunge elementi corretti che la risposta modello non contiene, considerali un merito. Se dice cose sbagliate, dillo chiaramente.",
+    "", "DOMANDA: " + q.q,
+    "", "RISPOSTA MODELLO: " + q.a,
+    "", "RISPOSTA DEL CANDIDATO: " + answer,
+    "",
+    'Rispondi SOLO con un oggetto JSON, senza altro testo, con questi campi: {"voto": intero da 1 a 10, "commento": "50-90 parole in italiano, rivolte al candidato con il lei, da leggere ad alta voce: prima ciò che ha detto di giusto, poi ciò che manca o è sbagliato, chiudendo con la precisazione più importante; niente elenchi, niente simboli, niente abbreviazioni come art.: scrivi articolo", "mancanze": ["fino a 4 punti brevi che mancavano"], "errori": ["fino a 3 errori, vuoto se nessuno"], "daCitare": ["fino a 4 articoli o numeri da ricordare"]}',
+  ].join("\n");
+}
+async function askClaude(key, q, answer) {
+  const r = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+    body: JSON.stringify({ model: $("model").value, max_tokens: 700,
+      system: "Sei una commissaria dell'esame orale di abilitazione per mediatore marittimo presso la Camera di Commercio di Messina, nel ruolo di " + PART_LABEL[q.part] + ". Rispondi solo con JSON valido.",
+      messages: [{ role: "user", content: buildPrompt(q, answer) }] }),
+  }).catch(() => { throw new Error("Non riesco a raggiungere l'API di Anthropic: controlla la connessione."); });
+  if (!r.ok) {
+    let msg = "Errore dell'API (" + r.status + ")";
+    try { const j = await r.json(); if (j.error && j.error.message) msg += ": " + j.error.message; } catch (e) {}
+    if (r.status === 401) msg = "Chiave API non valida (401): controlla la chiave nelle impostazioni.";
+    if (r.status === 404) msg = "Modello non disponibile per questa chiave (404): scegli l'altro modello nelle impostazioni.";
+    if (r.status === 429) msg = "Troppe richieste o credito esaurito (429): riprova tra poco.";
+    throw new Error(msg + " Uso la correzione semplificata.");
+  }
+  const j = await r.json();
+  const text = (j.content || []).map(c => c.text || "").join("");
+  const m = text.match(/\{[\s\S]*\}/);
+  if (!m) throw new Error("Risposta non leggibile dal modello. Uso la correzione semplificata.");
+  return JSON.parse(m[0]);
+}
+
+// ---------- simplified evaluation without a key: did the answer hit the model answer's points?
+const STOP = new Set("della delle degli dello dell nella nelle nello negli sulla sulle sullo anche oppure quando senza contro sotto sopra entro dopo prima essere viene vengono quindi perché mentre quale quali quello quella questi queste questo questa come cioè sono stata stato stati state hanno avere fatto fare dice detto tutto tutti ancora sempre altro altri altra altre molto poco cosa cose parte parti verso presso tramite secondo soltanto solamente ossia ovvero infatti inoltre allora dunque proprio stesso stessa stessi stesse codice navigazione articolo articoli".split(" "));
+function norm(s) { return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9àèéìòù\s]/g, " "); }
+function localEvaluate(q, answer) {
+  const a = norm(answer), src = norm(q.a);
+  const nums = Array.from(new Set((q.a.match(/\b\d+(?:[.,]\d+)?\b/g) || []).filter(n => n.length < 5)));
+  const words = Array.from(new Set(src.split(/\s+/).filter(w => w.length >= 7 && !STOP.has(w) && !/^\d/.test(w)))).slice(0, 18);
+  const stem = w => w.slice(0, Math.max(5, w.length - 2));
+  const hitW = words.filter(w => a.includes(stem(w))), missW = words.filter(w => !a.includes(stem(w)));
+  const hitN = nums.filter(n => a.includes(n)), missN = nums.filter(n => !a.includes(n));
+  const total = words.length + nums.length, hits = hitW.length + hitN.length;
+  const score = total ? hits / total : 0;
+  const voto = Math.max(3, Math.min(9, Math.round(3 + 7 * score)));
+  const said = hitW.concat(hitN).slice(0, 6).join(", "), missing = missW.concat(missN).slice(0, 6).join(", ");
+  const commento = (said ? "Nella sua risposta ho sentito: " + said + ". " : "Non ho riconosciuto i punti principali della risposta modello. ") + (missing ? "Mancano: " + missing + ". " : "") + "Ascolti la risposta giusta. " + q.a;
+  return { voto, commento, mancanze: missW.concat(missN).slice(0, 4), errori: [], daCitare: nums.slice(0, 4).map(n => "numero " + n) };
+}
+
+// ---------- log
+function renderLog() {
+  const ids = Object.keys(log); const body = $("logBody"); body.innerHTML = "";
+  $("logEmpty").hidden = ids.length > 0; $("logTable").hidden = ids.length === 0;
+  let sum = 0, redo = 0;
+  ids.map(id => [id, log[id]]).sort((a, b) => b[1].t - a[1].t).forEach(([id, r]) => {
+    const q = DATA.find(x => x.id === id); if (!q) return;
+    sum += r.voto; if (r.voto < 6) redo++;
+    const tr = document.createElement("tr");
+    const v = document.createElement("td"); v.className = "v"; v.textContent = r.voto + "/10"; v.style.color = r.voto >= 6 ? "var(--ok)" : "var(--redo)";
+    const d = document.createElement("td"); d.textContent = q.partName.split(" ")[0] + " " + q.n + " · " + q.title;
+    const m = document.createElement("td"); m.textContent = (r.mancanze || []).join("; ");
+    tr.append(v, d, m); body.appendChild(tr);
+  });
+  $("stDone").textContent = ids.length; $("stRedo").textContent = redo;
+  $("stAvg").textContent = ids.length ? (sum / ids.length).toFixed(1).replace(".", ",") : "–";
+}
+
+// ---------- buttons
+$("btnStart").addEventListener("click", startExam);
+$("btnStop").addEventListener("click", stopExam);
+$("btnRepeat").addEventListener("click", async () => { if (current) { await speak(current.q); if (running) startListening("answer", handleAnswer); } });
+$("btnDone").addEventListener("click", () => { if (listening && listenMode === "answer") finalize(); });
+$("btnDunno").addEventListener("click", () => { if (running && current) { stopListening(); evaluate("", true); } });
+$("btnNext").addEventListener("click", () => { if (running) { silence(); nextQuestion(); } });
+$("btnReadV").addEventListener("click", async () => { if (lastVerdict) { const was = listening; await speak(lastVerdict); if (running && was) startListening("command", handleCommand); } });
+$("btnReadModel").addEventListener("click", async () => { if (current) { const was = listening; await speak(current.a); if (running && was) startListening("command", handleCommand); } });
+$("btnReset").addEventListener("click", () => { log = {}; store.set("tutor_log", log); asked.clear(); renderLog(); });
+renderLog();
+</script>
+</body>
+</html>
