@@ -23,6 +23,7 @@
     --cap: #7fb0ea; --caps: #1d3350; --med: #e2bc5f; --meds: #45361a; --dir: #6ccbd3; --dirs: #163b40; color-scheme: dark; }
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { margin: 0; }
 body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.45;
   padding: max(14px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 48px max(16px, env(safe-area-inset-left)); font-variant-numeric: tabular-nums; }
@@ -100,6 +101,16 @@ details.full summary { cursor: pointer; font-family: var(--display); font-weight
 .log .empty { color: var(--muted); font-size: 14px; margin: 0; }
 .log .tw { overflow-x: auto; }
 kbd { font-family: var(--display); font-size: 11px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; }
+.teacher { border-top: 1px dashed var(--line); padding-top: 12px; display: grid; gap: 10px; }
+.teacher h3 { font-family: var(--display); font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0; }
+.askrow { display: flex; gap: 8px; }
+.askrow input { flex: 1; font-size: 15px; }
+.dialog { display: grid; gap: 8px; max-height: 320px; overflow-y: auto; }
+.bubble { border-radius: 10px; padding: 9px 12px; font-size: 15.5px; line-height: 1.45; }
+.bubble b { font-family: var(--display); font-size: 11.5px; letter-spacing: .05em; text-transform: uppercase; display: block; margin-bottom: 2px; }
+.bubble.me { background: var(--soft); margin-left: 24px; }
+.bubble.teacher { background: var(--pcs, var(--soft)); border-left: 3px solid var(--pc, var(--accent)); }
+.teacher .hint { font-size: 13.5px; color: var(--muted); margin: 0; }
 </style>
 </head>
 <body>
@@ -141,7 +152,7 @@ kbd { font-family: var(--display); font-size: 11px; border: 1px solid var(--line
         <input type="range" id="rate" min="0.7" max="1.3" step="0.05" value="1"></label>
       <label>Silenzio che chiude la risposta: <span id="silVal" style="text-transform:none;font-weight:500">3</span> s
         <input type="range" id="silence" min="2" max="8" step="0.5" value="3"></label>
-      <label class="check"><input type="checkbox" id="continuous" checked><span>Dopo la correzione passa da sola alla domanda successiva</span></label>
+      <label class="check"><input type="checkbox" id="continuous" checked><span>Dopo la correzione, se non fai domande per 7 secondi, passa da sola alla domanda successiva</span></label>
       <label class="check"><input type="checkbox" id="onlyRedo"><span>Solo le domande da ripassare (voto sotto il 6)</span></label>
       <p class="note" id="voicenote"></p>
     </div>
@@ -160,9 +171,17 @@ kbd { font-family: var(--display); font-size: 11px; border: 1px solid var(--line
       <button id="btnDone" disabled>Ho finito</button>
       <button id="btnDunno" disabled>Non lo so</button>
       <button id="btnNext" disabled>Prossima</button>
+      <button id="btnAsk" disabled>Fai una domanda</button>
       <button id="btnStop" disabled>Ferma l'esame</button>
     </div>
-    <p class="cmds">Comandi a voce, a fine frase: <b>«ho finito»</b> chiude la risposta subito · <b>«ripeti la domanda»</b> · <b>«non lo so»</b> · <b>«prossima»</b> · <b>«basta così»</b> ferma l'esame.</p>
+    <p class="cmds">Comandi a voce: <b>«ho finito»</b> chiude la risposta · <b>«ripeti la domanda»</b> · <b>«non lo so»</b> · <b>«prossima»</b> · <b>«basta così»</b>. Dopo la correzione la commissaria chiede «Ha domande?»: parla pure (es. <b>«mi aiuti a dirla meglio»</b>, <b>«mi spieghi la differenza…»</b>, <b>«voglio rispondere di nuovo»</b>) oppure dì «prossima». Puoi chiedere aiuto anche mentre rispondi, iniziando con «aiutami…» o «mi spieghi…».</p>
+
+    <div class="teacher" id="teacher">
+      <h3>Dialogo con l'insegnante</h3>
+      <div class="askrow"><input type="text" id="askText" placeholder="Scrivi una domanda (o usa «Fai una domanda» a voce): semplificami la risposta, spiegami…" autocomplete="off"><button id="btnAskSend">Chiedi</button></div>
+      <div class="dialog" id="dialog" hidden></div>
+      <p class="hint">L'insegnante conosce la domanda in corso, la tua risposta e la correzione: può semplificare, riformulare una risposta da dire all'orale, spiegare con esempi, farti riprovare. Serve la chiave API nelle impostazioni.</p>
+    </div>
 
     <div class="verdict" id="verdict" hidden>
       <h3>Correzione <span class="grade" id="grade">–</span><span id="evalMode" style="font-weight:500;text-transform:none;letter-spacing:0"></span></h3>
@@ -244,8 +263,9 @@ function chunks(text) {
   if (buf.trim()) out.push(buf.trim());
   return out;
 }
-let speakToken = 0;
+let speakToken = 0, lastSpoken = "";
 function speak(text) {
+  lastSpoken = text;
   return new Promise(resolve => {
     if (!synth) { setState("speaking", text); setTimeout(resolve, Math.min(8000, 60 * text.length)); return; }
     stopListening(); synth.cancel();
@@ -267,58 +287,80 @@ function speak(text) {
 function silence() { speakToken++; if (synth) synth.cancel(); }
 
 // ---------- recognition
-let rec = null, listening = false, listenMode = null, finalText = "", interimText = "", silenceTimer = null, nudgeTimer = null, giveupTimer = null, onFinal = null, nudged = false;
+// Chrome for Android re-sends the whole result list at every event (and repeats segments), so the
+// transcript is rebuilt from the event each time instead of being accumulated; text recognised
+// before an automatic restart of the recogniser is kept in `committed`.
+const LISTEN_LABEL = {
+  answer: "Ti ascolto: rispondi come all'orale (o chiedi aiuto all'insegnante)",
+  followup: "Hai domande? Parla pure, oppure dì «prossima»",
+  question: "Ti ascolto: fai la tua domanda all'insegnante",
+};
+const CMD_RE = /^\s*(non lo so|non la so|non me lo ricordo|prossima|avanti|ripeti la domanda|ripeta la domanda|basta così|basta cosi)\s*\.?\s*$/i;
+let rec = null, listening = false, listenMode = null, committed = "", sessionFinal = "", interimText = "", silenceTimer = null, nudgeTimer = null, giveupTimer = null, onFinal = null;
+function joined() { return (committed + " " + sessionFinal).replace(/\s+/g, " ").trim(); }
+function fullText() { return (joined() + " " + interimText).replace(/\s+/g, " ").trim(); }
 function renderTranscript() {
   const t = $("transcript"); t.textContent = "";
-  if (finalText) t.append(finalText);
-  if (interimText) { const s = document.createElement("span"); s.className = "interim"; s.textContent = interimText; t.append(s); }
+  const fin = joined();
+  if (fin) t.append(fin);
+  if (interimText.trim()) { const s = document.createElement("span"); s.className = "interim"; s.textContent = (fin ? " " : "") + interimText.trim(); t.append(s); }
 }
 function startListening(mode, cb) {
   if (!SR) return;
   stopListening();
-  listenMode = mode; onFinal = cb; finalText = ""; interimText = ""; nudged = false; renderTranscript();
-  setState("listening", mode === "answer" ? "Ti ascolto: rispondi come all'orale" : "Ti ascolto: dì «prossima», «ripeti la correzione» o «leggi la risposta giusta»");
+  listenMode = mode; onFinal = cb; committed = ""; sessionFinal = ""; interimText = ""; renderTranscript();
+  setState("listening", LISTEN_LABEL[mode] || "Ti ascolto");
+  spawnRecognizer();
+  clearTimeout(nudgeTimer); clearTimeout(giveupTimer);
+  if (mode === "answer") {
+    nudgeTimer = setTimeout(async () => { if (listening && !fullText()) { const wasMode = listenMode, cb2 = onFinal; await speak("Prego, risponda pure. Se non la sa, dica: non lo so. Se vuole un aiuto, chieda pure."); if (running) startListening(wasMode, cb2); } }, 15000);
+    giveupTimer = setTimeout(() => { if (listening && !fullText()) finalize(); }, 60000);
+  } else if (mode === "followup") {
+    giveupTimer = setTimeout(() => { if (listening && !fullText()) finalize(); }, $("continuous").checked ? 7000 : 30000);
+  } else {
+    giveupTimer = setTimeout(() => { if (listening && !fullText()) finalize(); }, 20000);
+  }
+}
+function spawnRecognizer() {
   const r = new SR(); rec = r; r.lang = "it-IT"; r.continuous = true; r.interimResults = true; r.maxAlternatives = 1;
   r.onresult = e => {
-    interimText = "";
-    for (let i = e.resultIndex; i < e.results.length; i++) { const res = e.results[i]; if (res.isFinal) finalText += res[0].transcript.trim() + " "; else interimText += res[0].transcript; }
-    renderTranscript();
-    const all = (finalText + " " + interimText).trim();
+    let fin = "", inter = "", prev = null;
+    for (let i = 0; i < e.results.length; i++) {
+      const res = e.results[i]; const tr = ((res[0] && res[0].transcript) || "").trim(); if (!tr) continue;
+      if (tr === prev) continue; prev = tr;
+      if (res.isFinal) fin += tr + " "; else inter += tr + " ";
+    }
+    sessionFinal = fin; interimText = inter; renderTranscript();
+    const all = fullText(), fin_all = joined();
     if (listenMode === "answer" && /\b(ho finito|fine risposta)\b\.?\s*$/i.test(all)) { finalize(); return; }
-    if (listenMode === "answer" && /^\s*(non lo so|non la so|non me lo ricordo|prossima|avanti|ripeti la domanda|ripeta la domanda|basta così|basta cosi)\s*\.?\s*$/i.test(finalText)) { finalize(); return; }
-    if (listenMode === "command" && finalText.trim()) { finalize(); return; }
+    if (listenMode === "answer" && CMD_RE.test(fin_all)) { finalize(); return; }
     resetSilence();
   };
   r.onerror = e => {
-    if (e.error === "not-allowed" || e.error === "service-not-allowed") { listening = false; setState("idle", "Microfono negato: consenti l'uso del microfono per questo sito (icona del lucchetto nella barra dell'indirizzo) e ricarica."); $("noSR").hidden = false; $("noSR").textContent = "Il browser ha negato il microfono. Clicca sull'icona del lucchetto accanto all'indirizzo, consenti il microfono e ricarica la pagina."; stopExam(); }
+    if (e.error === "not-allowed" || e.error === "service-not-allowed") { listening = false; setState("idle", "Microfono negato: consenti l'uso del microfono per questo sito (icona del lucchetto nella barra dell'indirizzo) e ricarica."); $("noSR").hidden = false; $("noSR").textContent = "Il browser ha negato il microfono. Tocca l'icona del lucchetto accanto all'indirizzo, consenti il microfono e ricarica la pagina."; stopExam(); }
   };
-  r.onend = () => { if (listening && rec === r) { try { r.start(); } catch (e) {} } };
+  r.onend = () => {
+    if (listening && rec === r) { committed = joined(); sessionFinal = ""; interimText = ""; try { r.start(); } catch (e) {} }
+  };
   try { r.start(); listening = true; } catch (e) { listening = false; }
-  clearTimeout(nudgeTimer); clearTimeout(giveupTimer);
-  if (mode === "answer") {
-    nudgeTimer = setTimeout(async () => { if (listening && !finalText.trim() && !interimText) { nudged = true; const wasMode = listenMode; await speak("Prego, risponda pure. Se non la sa, dica: non lo so."); if (running) startListening(wasMode, onFinal); } }, 15000);
-    giveupTimer = setTimeout(() => { if (listening && !finalText.trim()) finalize(); }, 60000);
-  } else {
-    giveupTimer = setTimeout(() => { if (listening && !finalText.trim()) { stopListening(); setState("idle", "In attesa: premi «Prossima» quando vuoi."); } }, 30000);
-  }
 }
 function resetSilence() {
   clearTimeout(silenceTimer);
-  const ms = parseFloat($("silence").value) * 1000;
-  silenceTimer = setTimeout(() => { if (listening && (finalText.trim() || interimText.trim())) finalize(); }, ms);
+  const ms = (listenMode === "answer" ? parseFloat($("silence").value) : Math.min(2.5, parseFloat($("silence").value))) * 1000;
+  silenceTimer = setTimeout(() => { if (listening && fullText()) finalize(); }, ms);
 }
 function stopListening() {
   listening = false; clearTimeout(silenceTimer); clearTimeout(nudgeTimer); clearTimeout(giveupTimer);
   if (rec) { const r = rec; rec = null; try { r.onend = null; r.onresult = null; r.abort(); } catch (e) {} }
 }
 function finalize() {
-  const text = (finalText + " " + interimText).replace(/\s+/g, " ").trim();
+  const text = fullText();
   const cb = onFinal; stopListening(); onFinal = null;
   if (cb) cb(text);
 }
 
 // ---------- exam flow
-let running = false, current = null, asked = new Set(), lastVerdict = null;
+let running = false, current = null, asked = new Set(), lastVerdict = null, lastAnswer = "", phase = "idle", dialog = [];
 function setState(kind, text) { const s = $("state"); s.className = "state " + kind; $("stateText").textContent = text; }
 function pool() {
   const part = $("filterPart").value, onlyRedo = $("onlyRedo").checked;
@@ -336,35 +378,42 @@ function showQuestion(q) {
   $("qnum").textContent = (q.part === 1 ? "C " : q.part === 2 ? "M " : "D ") + q.n;
   $("qpart").textContent = q.partName; $("qtext").textContent = q.q;
   $("verdict").hidden = true; $("transcript").textContent = ""; $("afull").textContent = q.a;
+  dialog = []; renderDialog(); lastVerdict = null; lastAnswer = "";
 }
 async function startExam() {
   if (running) return;
   running = true; asked.clear();
   $("btnStart").disabled = true; $("btnStop").disabled = false; $("btnStartLabel").textContent = "Esame in corso";
-  await speak("Buongiorno. Cominciamo l'esame. Risponda a voce; quando ha finito faccia una pausa, oppure dica: ho finito.");
+  await speak("Buongiorno. Cominciamo l'esame. Risponda a voce; quando ha finito faccia una pausa, oppure dica: ho finito. Se ha bisogno di aiuto, me lo chieda pure.");
   nextQuestion();
 }
 async function nextQuestion() {
   if (!running) return;
   const q = pickNext();
   if (!q) { await speak("Non ci sono domande con questi filtri. Cambi commissario o tolga il filtro."); stopExam(); return; }
-  current = q; asked.add(q.id); lastVerdict = null; showQuestion(q);
-  $("btnRepeat").disabled = false; $("btnDone").disabled = false; $("btnDunno").disabled = false; $("btnNext").disabled = false;
+  current = q; asked.add(q.id); showQuestion(q);
+  $("btnRepeat").disabled = false; $("btnDone").disabled = false; $("btnDunno").disabled = false; $("btnNext").disabled = false; $("btnAsk").disabled = false;
   await speak(q.q);
-  if (running) startListening("answer", handleAnswer);
+  listenAnswer();
 }
+function listenAnswer() { phase = "answer"; if (running) startListening("answer", handleAnswer); }
+function listenFollowup() { phase = "followup"; if (running) startListening("followup", handleFollowup); }
+const ASK_RE = /^(aiut|mi aiut|un aiuto|non (ho )?capi|spiegam|mi spieg|come (posso|si|dovrei|devo)|semplific|suggerim|maestra|professoressa|insegnante|ho una domanda|posso (chiedere|fare una domanda)|vorrei (chiedere|sapere|capire)|mi dica|cosa (vuol dire|significa)|che cos'?è|cos'?è)/i;
 async function handleAnswer(text) {
   if (!running || !current) return;
   const t = text.toLowerCase();
-  if (/^(ripeti|puoi ripetere|può ripetere|ripeta)/.test(t) || /\b(ripeti|ripeta) la domanda\b/.test(t)) { await speak(current.q); if (running) startListening("answer", handleAnswer); return; }
+  if (/^(ripeti|puoi ripetere|può ripetere|ripeta)/.test(t) || /\b(ripeti|ripeta) la domanda\b/.test(t)) { await speak(current.q); listenAnswer(); return; }
   if (/^(prossima|avanti|salta|passa)\b/.test(t)) { nextQuestion(); return; }
   if (/^(basta|stop|fine esame|ferma)/.test(t) || /\bbasta così\b/.test(t)) { await speak("Va bene, ci fermiamo qui. Buono studio."); stopExam(); return; }
+  if (ASK_RE.test(t)) { await askTeacher(text, "answer"); return; }
   const dunno = !t || /^(non lo so|non la so|non so|non me lo ricordo|non ricordo|passo)\b/.test(t);
   const answer = t.replace(/\b(ho finito|fine risposta)\b\.?\s*$/i, "").trim();
+  lastAnswer = dunno ? "" : answer;
   await evaluate(dunno ? "" : answer, dunno);
 }
 async function evaluate(answer, dunno) {
-  stopListening(); $("verdict").hidden = false; $("verr").hidden = true; $("lists").innerHTML = ""; $("comment").textContent = ""; $("grade").textContent = "–"; $("grade").className = "grade"; $("evalMode").textContent = "";
+  stopListening(); phase = "evaluating";
+  $("verdict").hidden = false; $("verr").hidden = true; $("lists").innerHTML = ""; $("comment").textContent = ""; $("grade").textContent = "–"; $("grade").className = "grade"; $("evalMode").textContent = "";
   let res;
   if (dunno) {
     res = { voto: 3, commento: "Nessun problema, gliela spiego io. " + current.a, mancanze: ["Risposta non data"], errori: [], daCitare: [] };
@@ -390,28 +439,85 @@ async function finish(res, dunno) {
   block("Cosa mancava", mancanze); block("Errori", errori); block("Da citare all'orale", cite);
   log[current.id] = { voto, mancanze, dunno: !!dunno, t: Date.now() }; store.set("tutor_log", log); renderLog();
   lastVerdict = commento;
-  await speak((dunno ? "" : "Voto " + voto + ". ") + commento);
+  await speak((dunno ? "" : "Voto " + voto + ". ") + commento + " Ha domande?");
   if (!running) return;
-  if ($("continuous").checked) { setState("idle", "Prossima domanda tra un momento"); await new Promise(r => setTimeout(r, 1800)); if (running) nextQuestion(); }
-  else { startListening("command", handleCommand); }
+  listenFollowup();
 }
-async function handleCommand(text) {
-  const t = text.toLowerCase();
-  if (/ripeti|riascolt/.test(t) && /correzion/.test(t)) { await speak(lastVerdict || ""); if (running) startListening("command", handleCommand); return; }
-  if (/risposta giusta|risposta modello|leggi la risposta/.test(t)) { await speak(current.a); if (running) startListening("command", handleCommand); return; }
-  if (/basta|stop|fine esame|ferma/.test(t)) { await speak("Va bene, ci fermiamo qui. Buono studio."); stopExam(); return; }
-  if (/prossima|avanti|continua|andiamo|altra domanda/.test(t)) { nextQuestion(); return; }
-  if (running) startListening("command", handleCommand);
+async function handleFollowup(text) {
+  if (!running || !current) return;
+  const t = text.toLowerCase().trim();
+  if (!t) { if ($("continuous").checked) nextQuestion(); else { phase = "idle"; setState("idle", "In attesa: premi «Prossima» o «Fai una domanda»."); } return; }
+  if (/^(prossima|avanti|continua|andiamo|altra domanda|passiamo|ok prossima|va bene prossima|no grazie|nessuna domanda|no)\b/.test(t) && t.length < 40) { nextQuestion(); return; }
+  if (/^(basta|stop|fine esame|ferma)/.test(t) || /\bbasta così\b/.test(t)) { await speak("Va bene, ci fermiamo qui. Buono studio."); stopExam(); return; }
+  if (/(ripeti|riascolt|rileggi).*(correzion|voto|giudizio)/.test(t)) { await speak(lastVerdict || ""); listenFollowup(); return; }
+  if (/risposta (giusta|modello|corretta|completa)|leggi la risposta|dimmi la risposta/.test(t)) { await speak(current.a); listenFollowup(); return; }
+  if (/^(ripeti|ripeta|puoi ripetere|può ripetere)( pure| per favore)?\.?$/.test(t)) { await speak(lastSpoken || current.q); listenFollowup(); return; }
+  if (/riprov|rispondo di nuovo|voglio rispondere|rispondere ancora|ritent|riprendo la risposta|posso rispondere/.test(t)) { await speak("Va bene, risponda di nuovo. " + current.q); listenAnswer(); return; }
+  await askTeacher(text, "followup");
 }
 function stopExam() {
-  running = false; silence(); stopListening();
+  running = false; phase = "idle"; silence(); stopListening();
   $("btnStart").disabled = false; $("btnStartLabel").textContent = "Riprendi l'esame"; $("btnStop").disabled = true;
-  $("btnRepeat").disabled = true; $("btnDone").disabled = true; $("btnDunno").disabled = true; $("btnNext").disabled = true;
+  $("btnRepeat").disabled = true; $("btnDone").disabled = true; $("btnDunno").disabled = true; $("btnNext").disabled = true; $("btnAsk").disabled = !current;
   setState("idle", "Esame fermo");
 }
 
-// ---------- evaluation by Claude (Anthropic API, called from this browser with your key)
+// ---------- dialogue with the teacher (Claude)
+function renderDialog() {
+  const d = $("dialog"); d.innerHTML = ""; d.hidden = dialog.length === 0;
+  dialog.forEach(m => { const b = document.createElement("div"); b.className = "bubble " + (m.role === "tu" ? "me" : "teacher"); const w = document.createElement("b"); w.textContent = m.role === "tu" ? "Tu" : "Insegnante"; b.append(w, document.createTextNode(" " + m.text)); d.appendChild(b); });
+  d.scrollTop = d.scrollHeight;
+}
+function addDialog(role, text) { dialog.push({ role, text }); renderDialog(); }
+async function askTeacher(question, returnTo) {
+  if (!current) { setState("idle", "Prima inizia l'esame: l'insegnante risponde sulla domanda in corso."); return; }
+  stopListening(); phase = "teacher";
+  addDialog("tu", question);
+  const key = $("apikey").value.trim();
+  if (!key) {
+    const msg = "Per dialogare con l'insegnante serve la chiave API nelle impostazioni. Intanto le rileggo la risposta modello. " + current.a;
+    addDialog("insegnante", msg); await speak(msg);
+  } else {
+    setState("thinking", "L'insegnante sta pensando");
+    try { const reply = await teacherReply(key, question); addDialog("insegnante", reply); await speak(reply); }
+    catch (e) { const msg = (e.message || String(e)); addDialog("insegnante", "Errore: " + msg); await speak("Non riesco a contattare Claude. " + msg); }
+  }
+  if (!running) { phase = "idle"; setState("idle", "Esame fermo"); return; }
+  if (returnTo === "answer") { await speak("Prego, adesso risponda lei."); listenAnswer(); } else listenFollowup();
+}
 const PART_LABEL = { 1: "componente della Capitaneria di porto", 2: "componente mediatore marittimo", 3: "docente di diritto della navigazione" };
+const TEACHER_SYSTEM = "Sei un'insegnante privata che prepara un candidato all'esame orale di abilitazione per mediatore marittimo presso la Camera di Commercio di Messina (sezione ordinaria): diritto della navigazione, contratti di utilizzazione della nave, Capitaneria di porto, legge 478 del 1968 e D.P.R. 66 del 1973, porti e legge 84 del 1994. Parli in italiano, con il lei, con tono cordiale, concreto e incoraggiante. Le tue risposte vengono lette ad alta voce: niente elenchi puntati, niente simboli o parentesi, niente abbreviazioni (scrivi articolo, non art.). Lunghezza normale 40-120 parole. Se il candidato chiede di semplificare, riformulare o dire meglio una risposta, dettagli una risposta pronta da esporre all'orale in 4-6 frasi, poi un consiglio breve su come esporla. Se chiede una spiegazione, spiega con un esempio pratico del mondo dello shipping. Se chiede qualcosa fuori dalla domanda in corso ma attinente alla materia, rispondi comunque. Se non sei sicura di un dato normativo, dillo con chiarezza.";
+async function teacherReply(key, question) {
+  const ctx = [
+    "DOMANDA D'ESAME IN CORSO: " + current.q,
+    "RISPOSTA MODELLO: " + current.a,
+    lastAnswer ? "RISPOSTA DATA DAL CANDIDATO (trascritta dal parlato): " + lastAnswer : "Il candidato non ha ancora risposto alla domanda.",
+    lastVerdict ? "CORREZIONE GIÀ DATA DALLA COMMISSIONE: " + lastVerdict : "",
+    dialog.length > 1 ? "DIALOGO FINORA:\n" + dialog.slice(0, -1).slice(-8).map(m => (m.role === "tu" ? "Candidato: " : "Insegnante: ") + m.text).join("\n") : "",
+    "RICHIESTA DEL CANDIDATO (trascritta dal parlato): " + question,
+    "Rispondi direttamente al candidato, solo con il testo da leggere ad alta voce.",
+  ].filter(Boolean).join("\n\n");
+  const r = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+    body: JSON.stringify({ model: $("model").value, max_tokens: 500, system: TEACHER_SYSTEM, messages: [{ role: "user", content: ctx }] }),
+  }).catch(() => { throw new Error("Non riesco a raggiungere l'API di Anthropic: controlla la connessione."); });
+  if (!r.ok) throw new Error(apiError(r.status, await r.json().catch(() => null)));
+  const j = await r.json();
+  const text = (j.content || []).map(c => c.text || "").join("").trim();
+  if (!text) throw new Error("Risposta vuota dal modello.");
+  return text;
+}
+function apiError(status, j) {
+  let msg = "Errore dell'API (" + status + ")";
+  if (j && j.error && j.error.message) msg += ": " + j.error.message;
+  if (status === 401) msg = "Chiave API non valida (401): controlla la chiave nelle impostazioni.";
+  if (status === 404) msg = "Modello non disponibile per questa chiave (404): scegli l'altro modello nelle impostazioni.";
+  if (status === 429) msg = "Troppe richieste o credito esaurito (429): riprova tra poco.";
+  return msg;
+}
+
+// ---------- evaluation by Claude (Anthropic API, called from this browser with your key)
 function buildPrompt(q, answer) {
   return [
     "Valuta la risposta del candidato alla domanda qui sotto confrontandola con la risposta modello. Sei rigorosa ma incoraggiante. La risposta è trascritta dal parlato: ignora errori di trascrizione, punteggiatura e numeri scritti in lettere; accetta sinonimi e parafrasi. Non pretendere che citi ogni articolo: conta che i concetti siano giusti e completi; segnala però gli articoli e i numeri che è bene citare all'orale. Se il candidato aggiunge elementi corretti che la risposta modello non contiene, considerali un merito. Se dice cose sbagliate, dillo chiaramente.",
@@ -430,14 +536,7 @@ async function askClaude(key, q, answer) {
       system: "Sei una commissaria dell'esame orale di abilitazione per mediatore marittimo presso la Camera di Commercio di Messina, nel ruolo di " + PART_LABEL[q.part] + ". Rispondi solo con JSON valido.",
       messages: [{ role: "user", content: buildPrompt(q, answer) }] }),
   }).catch(() => { throw new Error("Non riesco a raggiungere l'API di Anthropic: controlla la connessione."); });
-  if (!r.ok) {
-    let msg = "Errore dell'API (" + r.status + ")";
-    try { const j = await r.json(); if (j.error && j.error.message) msg += ": " + j.error.message; } catch (e) {}
-    if (r.status === 401) msg = "Chiave API non valida (401): controlla la chiave nelle impostazioni.";
-    if (r.status === 404) msg = "Modello non disponibile per questa chiave (404): scegli l'altro modello nelle impostazioni.";
-    if (r.status === 429) msg = "Troppe richieste o credito esaurito (429): riprova tra poco.";
-    throw new Error(msg + " Uso la correzione semplificata.");
-  }
+  if (!r.ok) throw new Error(apiError(r.status, await r.json().catch(() => null)) + " Uso la correzione semplificata.");
   const j = await r.json();
   const text = (j.content || []).map(c => c.text || "").join("");
   const m = text.match(/\{[\s\S]*\}/);
@@ -484,13 +583,21 @@ function renderLog() {
 // ---------- buttons
 $("btnStart").addEventListener("click", startExam);
 $("btnStop").addEventListener("click", stopExam);
-$("btnRepeat").addEventListener("click", async () => { if (current) { await speak(current.q); if (running) startListening("answer", handleAnswer); } });
+$("btnRepeat").addEventListener("click", async () => { if (current) { await speak(current.q); listenAnswer(); } });
 $("btnDone").addEventListener("click", () => { if (listening && listenMode === "answer") finalize(); });
-$("btnDunno").addEventListener("click", () => { if (running && current) { stopListening(); evaluate("", true); } });
+$("btnDunno").addEventListener("click", () => { if (running && current) { stopListening(); lastAnswer = ""; evaluate("", true); } });
 $("btnNext").addEventListener("click", () => { if (running) { silence(); nextQuestion(); } });
-$("btnReadV").addEventListener("click", async () => { if (lastVerdict) { const was = listening; await speak(lastVerdict); if (running && was) startListening("command", handleCommand); } });
-$("btnReadModel").addEventListener("click", async () => { if (current) { const was = listening; await speak(current.a); if (running && was) startListening("command", handleCommand); } });
+$("btnAsk").addEventListener("click", () => {
+  if (!current) return;
+  const back = phase === "answer" ? "answer" : "followup";
+  silence(); startListening("question", t => { if (t) askTeacher(t, back); else if (running) (back === "answer" ? listenAnswer() : listenFollowup()); });
+});
+$("btnAskSend").addEventListener("click", () => { const q = $("askText").value.trim(); if (!q || !current) return; $("askText").value = ""; const back = phase === "answer" ? "answer" : "followup"; silence(); askTeacher(q, back); });
+$("askText").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); $("btnAskSend").click(); } });
+$("btnReadV").addEventListener("click", async () => { if (lastVerdict) { const was = listening; await speak(lastVerdict); if (running && was) listenFollowup(); } });
+$("btnReadModel").addEventListener("click", async () => { if (current) { const was = listening; await speak(current.a); if (running && was) listenFollowup(); } });
 $("btnReset").addEventListener("click", () => { log = {}; store.set("tutor_log", log); asked.clear(); renderLog(); });
+$("btnAsk").disabled = true;
 renderLog();
 </script>
 </body>
