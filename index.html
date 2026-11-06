@@ -122,7 +122,7 @@ kbd { font-family: var(--display); font-size: 11px; border: 1px solid var(--line
       <h1>Esame orale · Tutor vocale</h1>
       <p class="lead">La commissaria ti fa la domanda, ascolta la tua risposta dal microfono e ti corregge a voce. Poi la prossima. Tutto senza toccare nulla.</p>
     </div>
-    <div class="stats"><span><b id="stDone">0</b> risposte</span><span>media <b id="stAvg">–</b></span><span><b id="stRedo">0</b> da ripassare</span><span id="ver" title="versione della pagina">v8</span></div>
+    <div class="stats"><span><b id="stDone">0</b> risposte</span><span>media <b id="stAvg">–</b></span><span><b id="stRedo">0</b> da ripassare</span><span id="ver" title="versione della pagina">v9</span></div>
   </div>
 
   <div class="warn" id="ttsWarn" hidden></div>
@@ -159,6 +159,7 @@ kbd { font-family: var(--display); font-size: 11px; border: 1px solid var(--line
         <input type="range" id="silence" min="2" max="12" step="0.5" value="3"></label>
       <label class="check"><input type="checkbox" id="continuous" checked><span>Dopo la correzione, se non fai domande per 7 secondi, passa da sola alla domanda successiva</span></label>
       <label class="check"><input type="checkbox" id="onlyRedo"><span>Solo le domande da ripassare (voto sotto il 6)</span></label>
+      <label class="check"><input type="checkbox" id="manualEnd"><span>Chiudi la risposta solo con «ho finito» o con il pulsante (mai per silenzio)</span></label>
       <p class="note" id="voicenote"></p>
       <p class="note" id="diag"></p>
       <details class="note" style="grid-column:1/-1"><summary>Dettagli tecnici del riconoscimento (per l'assistenza)</summary><pre id="evlog" style="white-space:pre-wrap;font-size:11px;margin:4px 0 0"></pre></details>
@@ -221,7 +222,7 @@ const $ = id => document.getElementById(id);
 const synth = window.speechSynthesis || null;
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
 if (!SR) $("noSR").hidden = false;
-const VERSION = "8";
+const VERSION = "9";
 const IS_ANDROID = /android/i.test(navigator.userAgent);
 const diag = { restarts: 0, events: 0, lastError: "", lastRestart: "", log: [] };
 function logEvent(line) { diag.log.push(line); if (diag.log.length > 14) diag.log.shift(); const el = $("evlog"); if (el) el.textContent = diag.log.join("\n"); }
@@ -252,6 +253,8 @@ $("silence").addEventListener("input", e => { $("silVal").textContent = fmt(e.ta
 $("continuous").addEventListener("change", e => store.set("continuous", e.target.checked));
 $("filterPart").addEventListener("change", e => { store.set("filterPart", e.target.value); asked.clear(); });
 $("onlyRedo").addEventListener("change", () => asked.clear());
+$("manualEnd").checked = store.get("manualEnd", false);
+$("manualEnd").addEventListener("change", e => store.set("manualEnd", e.target.checked));
 $("btnShowKey").addEventListener("click", () => { const i = $("apikey"); i.type = i.type === "password" ? "text" : "password"; $("btnShowKey").textContent = i.type === "password" ? "Mostra" : "Nascondi"; });
 if (!$("apikey").value) $("settings").open = true;
 
@@ -334,7 +337,8 @@ const LISTEN_LABEL = {
   question: "Ti ascolto: fai la tua domanda all'insegnante",
 };
 const CMD_RE = /^\s*(non lo so|non la so|non me lo ricordo|prossima|avanti|ripeti la domanda|ripeta la domanda|basta così|basta cosi)\s*\.?\s*$/i;
-let rec = null, listening = false, listenMode = null, committed = "", sessionFinal = "", interimText = "", silenceTimer = null, nudgeTimer = null, giveupTimer = null, onFinal = null, sessionHadSpeech = false, restartAfterSpeech = false;
+let rec = null, listening = false, listenMode = null, committed = "", sessionFinal = "", interimText = "", onFinal = null;
+let lastHeardAt = 0, listenStartedAt = 0, sessionHadSpeech = false, restartAfterSpeech = false, nudged = false, checker = null, restartTimer = null, restartFailures = 0;
 function joined() { return (committed + " " + sessionFinal).replace(/\s+/g, " ").trim(); }
 function fullText() { return (joined() + " " + interimText).replace(/\s+/g, " ").trim(); }
 function renderTranscript() {
@@ -343,27 +347,22 @@ function renderTranscript() {
   if (fin) t.append(fin);
   if (interimText.trim()) { const s = document.createElement("span"); s.className = "interim"; s.textContent = (fin ? " " : "") + interimText.trim(); t.append(s); }
 }
+function silenceLimitMs() { const v = parseFloat($("silence").value); const base = isNaN(v) ? 5 : v; return (listenMode === "answer" ? base : Math.min(2.5, base)) * 1000; }
 function startListening(mode, cb) {
   if (!SR) return;
   stopListening();
-  listenMode = mode; onFinal = cb; committed = ""; sessionFinal = ""; interimText = ""; sessionHadSpeech = false; restartAfterSpeech = false; renderTranscript();
+  listenMode = mode; onFinal = cb; committed = ""; sessionFinal = ""; interimText = ""; renderTranscript();
+  listenStartedAt = Date.now(); lastHeardAt = 0; sessionHadSpeech = false; restartAfterSpeech = false; nudged = false; restartFailures = 0;
   setState("listening", LISTEN_LABEL[mode] || "Ti ascolto");
+  listening = true;
   spawnRecognizer();
-  clearTimeout(nudgeTimer); clearTimeout(giveupTimer);
-  if (mode === "answer") {
-    nudgeTimer = setTimeout(async () => { if (listening && !fullText()) { const wasMode = listenMode, cb2 = onFinal; await speak("Prego, risponda pure. Se non la sa, dica: non lo so. Se vuole un aiuto, chieda pure."); if (running) startListening(wasMode, cb2); } }, 15000);
-    giveupTimer = setTimeout(() => { if (listening && !fullText()) finalize(); }, 60000);
-  } else if (mode === "followup") {
-    giveupTimer = setTimeout(() => { if (listening && !fullText()) finalize(); }, $("continuous").checked ? 7000 : 30000);
-  } else {
-    giveupTimer = setTimeout(() => { if (listening && !fullText()) finalize(); }, 20000);
-  }
+  checker = setInterval(tick, 400);
 }
 function spawnRecognizer() {
   const r = new SR(); rec = r; r.lang = "it-IT"; r.continuous = !IS_ANDROID; r.interimResults = true; r.maxAlternatives = 1;
   r.onresult = e => {
+    if (rec !== r) return;
     try { logEvent("ris idx=" + e.resultIndex + " n=" + e.results.length + " " + Array.from(e.results).map(x => (x.isFinal ? "F«" : "i«") + ((x[0] && x[0].transcript) || "").trim().slice(-28) + "»").join(" ")); } catch (err) {}
-    sessionHadSpeech = true;
     let fin = "", inter = "", prev = null;
     for (let i = 0; i < e.results.length; i++) {
       const res = e.results[i]; const tr = ((res[0] && res[0].transcript) || "").trim(); if (!tr) continue;
@@ -371,31 +370,49 @@ function spawnRecognizer() {
       if (res.isFinal) fin += tr + " "; else inter += tr + " ";
     }
     sessionFinal = fin; interimText = inter; renderTranscript(); diag.events++;
+    if (fin.trim() || inter.trim()) { sessionHadSpeech = true; lastHeardAt = Date.now(); }
     const all = fullText(), fin_all = joined();
-    if (listenMode === "answer" && /\b(ho finito|fine risposta)\b\.?\s*$/i.test(all)) { finalize(); return; }
-    if (listenMode === "answer" && CMD_RE.test(fin_all)) { finalize(); return; }
-    resetSilence();
+    if (listenMode === "answer" && /\b(ho finito|fine risposta)\b\.?\s*$/i.test(all)) { logEvent("chiusura: «ho finito»"); finalize(); return; }
+    if (listenMode === "answer" && CMD_RE.test(fin_all)) { logEvent("chiusura: comando"); finalize(); return; }
+    if (listenMode !== "answer" && fin_all && !inter.trim()) { lastHeardAt = Date.now(); }
   };
   r.onerror = e => {
     diag.lastError = e.error || "sconosciuto"; renderDiag(); logEvent("errore " + diag.lastError);
-    if (e.error === "not-allowed" || e.error === "service-not-allowed") { listening = false; setState("idle", "Microfono negato: consenti l'uso del microfono per questo sito (icona del lucchetto nella barra dell'indirizzo) e ricarica."); $("noSR").hidden = false; $("noSR").textContent = "Il browser ha negato il microfono. Tocca l'icona del lucchetto accanto all'indirizzo, consenti il microfono e ricarica la pagina."; stopExam(); }
+    if (e.error === "not-allowed" || e.error === "service-not-allowed") { stopListening(); setState("idle", "Microfono negato: consenti l'uso del microfono per questo sito (icona del lucchetto nella barra dell'indirizzo) e ricarica."); $("noSR").hidden = false; $("noSR").textContent = "Il browser ha negato il microfono. Tocca l'icona del lucchetto accanto all'indirizzo, consenti il microfono e ricarica la pagina."; stopExam(); }
   };
-  r.onstart = () => { logEvent("sessione avviata"); if (restartAfterSpeech) { restartAfterSpeech = false; resetSilence(); } };
+  r.onstart = () => { if (rec !== r) return; restartFailures = 0; logEvent("sessione avviata"); if (restartAfterSpeech) { restartAfterSpeech = false; lastHeardAt = Date.now(); } };
   r.onend = () => {
-    logEvent("fine sessione" + (listening && rec === r ? " → riavvio" : ""));
+    if (rec !== r) return;
+    logEvent("fine sessione" + (listening ? " → riavvio" : ""));
     restartAfterSpeech = sessionHadSpeech; sessionHadSpeech = false;
-    if (listening && rec === r) { committed = joined(); sessionFinal = ""; interimText = ""; diag.restarts++; renderDiag(); try { r.start(); } catch (e) { diag.lastError = "riavvio fallito: " + (e.message || e); renderDiag(); } }
+    committed = joined(); sessionFinal = ""; interimText = "";
+    if (restartAfterSpeech) lastHeardAt = Date.now();
+    if (listening) { diag.restarts++; renderDiag(); clearTimeout(restartTimer); restartTimer = setTimeout(() => { if (listening && rec === r) spawnRecognizer(); }, IS_ANDROID ? 150 : 30); }
   };
-  try { r.start(); listening = true; } catch (e) { listening = false; }
+  try { r.start(); } catch (e) {
+    restartFailures++; diag.lastError = "avvio fallito: " + (e.message || e); renderDiag(); logEvent(diag.lastError);
+    if (listening && restartFailures < 6) { clearTimeout(restartTimer); restartTimer = setTimeout(() => { if (listening && rec === r) spawnRecognizer(); }, 700); }
+  }
 }
-function resetSilence() {
-  clearTimeout(silenceTimer);
-  const ms = (listenMode === "answer" ? parseFloat($("silence").value) : Math.min(2.5, parseFloat($("silence").value))) * 1000;
-  silenceTimer = setTimeout(() => { if (listening && fullText()) finalize(); }, ms);
+function tick() {
+  if (!listening) return;
+  const now = Date.now(), text = fullText(), limit = silenceLimitMs(), sinceStart = now - listenStartedAt, sinceHeard = lastHeardAt ? now - lastHeardAt : 0;
+  if (listenMode === "answer") {
+    if ($("manualEnd").checked) { setState("listening", text ? "Ti ascolto. Quando hai finito dì «ho finito» o premi il pulsante." : LISTEN_LABEL.answer); }
+    else if (text && lastHeardAt && sinceHeard >= limit && sinceStart >= 4000) { logEvent("chiusura: silenzio di " + Math.round(sinceHeard / 1000) + " s"); finalize(); return; }
+    else if (text && lastHeardAt && sinceHeard >= 1500) { setState("listening", "Se hai finito resta in silenzio: chiudo tra " + Math.max(1, Math.ceil((limit - sinceHeard) / 1000)) + " s. Se vuoi continuare, parla pure."); }
+    else setState("listening", LISTEN_LABEL.answer);
+    if (!text && !nudged && sinceStart >= 15000) { nudged = true; const cb = onFinal; (async () => { await speak("Prego, risponda pure. Se non la sa, dica: non lo so. Se vuole un aiuto, chieda pure."); if (running) startListening("answer", cb); })(); return; }
+    if (!text && sinceStart >= 60000) { logEvent("chiusura: nessuna risposta in 60 s"); finalize(); return; }
+  } else {
+    if (text && lastHeardAt && sinceHeard >= limit) { logEvent("chiusura: fine frase"); finalize(); return; }
+    const wait = listenMode === "followup" ? ($("continuous").checked ? 7000 : 30000) : 20000;
+    if (!text && sinceStart >= wait) { finalize(); return; }
+  }
 }
 function stopListening() {
-  listening = false; clearTimeout(silenceTimer); clearTimeout(nudgeTimer); clearTimeout(giveupTimer);
-  if (rec) { const r = rec; rec = null; try { r.onend = null; r.onresult = null; r.abort(); } catch (e) {} }
+  listening = false; clearInterval(checker); checker = null; clearTimeout(restartTimer); restartTimer = null;
+  if (rec) { const r = rec; rec = null; try { r.onend = null; r.onresult = null; r.onstart = null; r.abort(); } catch (e) {} }
 }
 function finalize() {
   const text = fullText();
