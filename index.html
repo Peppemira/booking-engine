@@ -126,7 +126,7 @@ kbd { font-family: var(--display); font-size: 11px; border: 1px solid var(--line
       <h1 id="h1">Esame orale · Tutor vocale</h1>
       <p class="lead">La commissaria ti fa la domanda, ascolta la tua risposta dal microfono e ti corregge a voce. Poi la prossima. Tutto senza toccare nulla.</p>
     </div>
-    <div class="stats"><span><b id="stDone">0</b> risposte</span><span>media <b id="stAvg">–</b></span><span><b id="stRedo">0</b> da ripassare</span><span id="ver" title="versione della pagina">v11</span></div>
+    <div class="stats"><span><b id="stDone">0</b> risposte</span><span>media <b id="stAvg">–</b></span><span><b id="stRedo">0</b> da ripassare</span><span id="ver" title="versione della pagina">v12</span></div>
   </div>
 
   <div class="warn" id="ttsWarn" hidden></div>
@@ -178,10 +178,11 @@ kbd { font-family: var(--display); font-size: 11px; border: 1px solid var(--line
       <button id="btnDone" disabled>Ho finito</button>
       <button id="btnDunno" disabled>Non lo so</button>
       <button id="btnNext" disabled>Prossima</button>
+      <button id="btnHow" disabled>Come si risponde?</button>
       <button id="btnAsk" disabled>Fai una domanda</button>
       <button id="btnStop" disabled>Ferma l'esame</button>
     </div>
-    <p class="cmds">Comandi a voce: <b>«ho finito»</b> chiude la risposta · <b>«ripeti la domanda»</b> · <b>«non lo so»</b> · <b>«prossima»</b> · <b>«basta così»</b>. Dopo la correzione la commissaria chiede «Ha domande?»: parla pure (es. <b>«mi aiuti a dirla meglio»</b>, <b>«mi spieghi la differenza…»</b>, <b>«voglio rispondere di nuovo»</b>) oppure dì «prossima». Puoi chiedere aiuto anche mentre rispondi, iniziando con «aiutami…» o «mi spieghi…».</p>
+    <p class="cmds">Comandi a voce: <b>«ho finito»</b> chiude la risposta · <b>«ripeti la domanda»</b> · <b>«non lo so»</b> · <b>«prossima»</b> · <b>«basta così»</b>. Dopo la correzione la commissaria chiede «Ha domande?»: parla pure (es. <b>«come si risponde?»</b>, <b>«mi aiuti a dirla meglio»</b>, <b>«mi spieghi la differenza…»</b>, <b>«voglio rispondere di nuovo»</b>) oppure dì «prossima». Puoi chiedere aiuto anche mentre rispondi, iniziando con «aiutami…» o «mi spieghi…».</p>
 
     <div class="teacher" id="teacher">
       <h3>Dialogo con l'insegnante</h3>
@@ -244,7 +245,7 @@ const $ = id => document.getElementById(id);
 const synth = window.speechSynthesis || null;
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
 if (!SR) $("noSR").hidden = false;
-const VERSION = "11";
+const VERSION = "12";
 const IS_ANDROID = /android/i.test(navigator.userAgent);
 const diag = { restarts: 0, events: 0, lastError: "", lastRestart: "", log: [] };
 function logEvent(line) { diag.log.push(line); if (diag.log.length > 14) diag.log.shift(); const el = $("evlog"); if (el) el.textContent = diag.log.join("\n"); }
@@ -480,7 +481,7 @@ async function nextQuestion() {
   const q = pickNext();
   if (!q) { await speak("Non ci sono domande con questi filtri. Cambi commissario o tolga il filtro."); stopExam(); return; }
   current = q; asked.add(q.id); showQuestion(q);
-  $("btnRepeat").disabled = false; $("btnDone").disabled = false; $("btnDunno").disabled = false; $("btnNext").disabled = false; $("btnAsk").disabled = false;
+  $("btnRepeat").disabled = false; $("btnDone").disabled = false; $("btnDunno").disabled = false; $("btnNext").disabled = false; $("btnAsk").disabled = false; $("btnHow").disabled = false;
   await speak(q.q);
   listenAnswer();
 }
@@ -546,7 +547,7 @@ async function handleFollowup(text) {
 function stopExam() {
   running = false; phase = "idle"; silence(); stopListening();
   $("btnStart").disabled = false; $("btnStartLabel").textContent = "Riprendi l'esame"; $("btnStop").disabled = true;
-  $("btnRepeat").disabled = true; $("btnDone").disabled = true; $("btnDunno").disabled = true; $("btnNext").disabled = true; $("btnAsk").disabled = !current;
+  $("btnRepeat").disabled = true; $("btnDone").disabled = true; $("btnDunno").disabled = true; $("btnNext").disabled = true; $("btnAsk").disabled = !current; $("btnHow").disabled = !current;
   setState("idle", "Esame fermo");
 }
 
@@ -560,7 +561,7 @@ function addDialog(role, text) { dialog.push({ role, text }); renderDialog(); }
 async function askTeacher(question, returnTo) {
   if (!current) { setState("idle", "Prima inizia l'esame: l'insegnante risponde sulla domanda in corso."); return; }
   stopListening(); phase = "teacher";
-  addDialog("tu", question);
+  addDialog("tu", question === (typeof HOW_TEXT !== "undefined" ? HOW_TEXT : null) ? "Come si risponde a questa domanda all'esame?" : question);
   const key = $("apikey").value.trim();
   if (!key) {
     const msg = "Per dialogare con l'insegnante serve la chiave API nelle impostazioni. Intanto le rileggo la risposta modello. " + current.a;
@@ -704,7 +705,13 @@ $("btnTestKey").addEventListener("click", async () => {
 $("btnReadV").addEventListener("click", async () => { if (lastVerdict) { const was = listening; await speak(lastVerdict); if (running && was) listenFollowup(); } });
 $("btnReadModel").addEventListener("click", async () => { if (current) { const was = listening; await speak(current.a); if (running && was) listenFollowup(); } });
 $("btnReset").addEventListener("click", () => { log = {}; store.set(EXAM.logKey, log); asked.clear(); renderLog(); });
-$("btnAsk").disabled = true;
+$("btnAsk").disabled = true; $("btnHow").disabled = true;
+const HOW_TEXT = "Come si risponde esattamente a questa domanda all'esame? Dettami la risposta completa da esporre alla commissione, nell'ordine giusto, usando solo i contenuti della risposta modello, poi dammi un consiglio breve su come presentarla.";
+$("btnHow").addEventListener("click", () => {
+  if (!current) return;
+  const back = phase === "answer" ? "answer" : "followup";
+  silence(); stopListening(); askTeacher(HOW_TEXT, back);
+});
 renderLog();
 </script>
 </body>
