@@ -126,7 +126,7 @@ kbd { font-family: var(--display); font-size: 11px; border: 1px solid var(--line
       <h1 id="h1">Esame orale · Tutor vocale</h1>
       <p class="lead">La commissaria ti fa la domanda, ascolta la tua risposta dal microfono e ti corregge a voce. Poi la prossima. Tutto senza toccare nulla.</p>
     </div>
-    <div class="stats"><span><b id="stDone">0</b> risposte</span><span>media <b id="stAvg">–</b></span><span><b id="stRedo">0</b> da ripassare</span><span id="ver" title="versione della pagina">v12</span></div>
+    <div class="stats"><span><b id="stDone">0</b> risposte</span><span>media <b id="stAvg">–</b></span><span><b id="stRedo">0</b> da ripassare</span><span id="ver" title="versione della pagina">v13</span></div>
   </div>
 
   <div class="warn" id="ttsWarn" hidden></div>
@@ -160,6 +160,7 @@ kbd { font-family: var(--display); font-size: 11px; border: 1px solid var(--line
       <label class="check"><input type="checkbox" id="onlyRedo"><span>Solo le domande da ripassare (voto sotto il 6)</span></label>
       <label class="check"><input type="checkbox" id="manualEnd"><span>Chiudi la risposta solo con «ho finito» o con il pulsante (mai per silenzio)</span></label>
       <p class="note" id="voicenote"></p>
+      <p class="note">Le voci con ★ sono quelle «naturali». Per la voce più fluida: sul PC apri il tutor con <b>Microsoft Edge</b> e scegli «Microsoft Isabella» o «Elsa Online (Natural)»; su Android installa la voce italiana di qualità alta in <b>Impostazioni → Sistema → Lingue → Output sintesi vocale → Google → Installa dati vocali → Italiano</b>; su iPhone scarica la voce «Alice (Avanzata)» in <b>Impostazioni → Accessibilità → Contenuto letto ad alta voce → Voci → Italiano</b>.</p>
       <p class="note" id="diag"></p>
       <details class="note" style="grid-column:1/-1"><summary>Dettagli tecnici del riconoscimento (per l'assistenza)</summary><pre id="evlog" style="white-space:pre-wrap;font-size:11px;margin:4px 0 0"></pre></details>
     </div>
@@ -245,7 +246,7 @@ const $ = id => document.getElementById(id);
 const synth = window.speechSynthesis || null;
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
 if (!SR) $("noSR").hidden = false;
-const VERSION = "12";
+const VERSION = "13";
 const IS_ANDROID = /android/i.test(navigator.userAgent);
 const diag = { restarts: 0, events: 0, lastError: "", lastRestart: "", log: [] };
 function logEvent(line) { diag.log.push(line); if (diag.log.length > 14) diag.log.shift(); const el = $("evlog"); if (el) el.textContent = diag.log.join("\n"); }
@@ -288,26 +289,30 @@ if (!$("apikey").value) $("settings").open = true;
 
 // ---------- voice of the examiner
 const FEMALE = /google italiano|alice|elsa|federica|paola|isabella|silvia|carla|chiara|bianca|giulia|emma|female|donna/i;
-const MALE = /cosimo|luca|diego|giorgio|male|uomo/i;
+const MALE = /cosimo|luca|diego|giorgio|benigno|calimero|male|uomo/i;
+const NATURAL = /natural|neural|online|enhanced|premium|wavenet|plus|siri/i;
+function quality(v) { return (NATURAL.test(v.name) ? 2 : 0) + (/google/i.test(v.name) ? 1 : 0); }
 function voices() { return synth ? synth.getVoices() : []; }
 function fillVoices() {
   const sel = $("voice"); const prev = sel.value || store.get("voice", "");
   const it = voices().filter(v => /^it/i.test(v.lang)); const list = it.length ? it : voices();
   sel.innerHTML = "";
   if (!list.length) { const o = document.createElement("option"); o.value = ""; o.textContent = "Voce predefinita"; sel.appendChild(o); return; }
-  list.forEach(v => { const o = document.createElement("option"); o.value = v.name; o.textContent = v.name + (it.length ? "" : " (" + v.lang + ")"); sel.appendChild(o); });
+  list.sort((a, b) => quality(b) - quality(a));
+  list.forEach(v => { const o = document.createElement("option"); o.value = v.name; o.textContent = (quality(v) >= 2 ? "★ " : "") + v.name + (it.length ? "" : " (" + v.lang + ")"); sel.appendChild(o); });
   const fem = list.filter(v => FEMALE.test(v.name) && !MALE.test(v.name));
-  const pref = fem[0] || list.find(v => !MALE.test(v.name)) || list[0];
+  const pref = fem.find(v => quality(v) >= 2) || fem[0] || list.find(v => !MALE.test(v.name)) || list[0];
   sel.value = list.some(v => v.name === prev) ? prev : pref.name;
   $("voicenote").textContent = it.length ? "" : "Nessuna voce italiana trovata su questo dispositivo: installa la voce italiana nelle impostazioni di sintesi vocale.";
 }
 if (synth) { fillVoices(); synth.onvoiceschanged = fillVoices; }
 $("voice").addEventListener("change", e => { store.set("voice", e.target.value); brokenVoice = ""; ttsFailures = 0; $("ttsWarn").hidden = true; });
 
-function chunks(text) {
-  const parts = text.replace(/\s+/g, " ").match(/[^.;:!?]+[.;:!?]?/g) || [text];
+function chunks(text, max) {
+  max = max || 220;
+  const parts = text.replace(/\s+/g, " ").match(/[^.!?]+[.!?]?/g) || [text];
   const out = []; let buf = "";
-  for (const p of parts) { if ((buf + p).length > 170 && buf) { out.push(buf.trim()); buf = p; } else buf += p; }
+  for (const p of parts) { if ((buf + p).length > max && buf) { out.push(buf.trim()); buf = p; } else buf += p; }
   if (buf.trim()) out.push(buf.trim());
   return out;
 }
@@ -338,7 +343,7 @@ async function speak(text) {
   let v = (brokenVoice && brokenVoice === $("voice").value) ? null : (voices().find(x => x.name === $("voice").value) || null);
   tts.voice = v ? v.name : "predefinita";
   setState("speaking", "La commissaria parla");
-  for (const chunk of chunks(text)) {
+  for (const chunk of chunks(text, (v && v.localService) || IS_ANDROID ? 600 : 220)) {
     if (my !== speakToken) return;
     let how = await speakChunk(chunk, v);
     if ((how === "timeout" || how === "error") && my === speakToken) {
