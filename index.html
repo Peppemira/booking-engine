@@ -126,7 +126,7 @@ kbd { font-family: var(--display); font-size: 11px; border: 1px solid var(--line
       <h1 id="h1">Esame orale · Tutor vocale</h1>
       <p class="lead">La commissaria ti fa la domanda, ascolta la tua risposta dal microfono e ti corregge a voce. Poi la prossima. Tutto senza toccare nulla.</p>
     </div>
-    <div class="stats"><span><b id="stDone">0</b> risposte</span><span>media <b id="stAvg">–</b></span><span><b id="stRedo">0</b> da ripassare</span><span id="ver" title="versione della pagina">v13</span></div>
+    <div class="stats"><span><b id="stDone">0</b> risposte</span><span>media <b id="stAvg">–</b></span><span><b id="stRedo">0</b> da ripassare</span><span id="ver" title="versione della pagina">v14</span></div>
   </div>
 
   <div class="warn" id="ttsWarn" hidden></div>
@@ -238,7 +238,8 @@ const EXAMS = {
     example: "navigazione da diporto",
   },
 };
-const EXAM_ID = (() => { const u = new URLSearchParams(location.search).get("esame"); if (u && EXAMS[u]) return u; try { const v = JSON.parse(localStorage.getItem("exam") || "null"); if (v && EXAMS[v]) return v; } catch (e) {} return "mediatore"; })();
+const STUDENT = !!window.STUDENT_MODE;
+const EXAM_ID = (() => { if (window.LOCK_EXAM && EXAMS[window.LOCK_EXAM]) return window.LOCK_EXAM; const u = new URLSearchParams(location.search).get("esame"); if (u && EXAMS[u]) return u; try { const v = JSON.parse(localStorage.getItem("exam") || "null"); if (v && EXAMS[v]) return v; } catch (e) {} return "mediatore"; })();
 const EXAM = EXAMS[EXAM_ID];
 const PARTS = EXAM.parts;
 const DATA = EXAM.data().map(q => Object.assign({}, q, { partName: PARTS[q.part][0], cls: PARTS[q.part][1] }));
@@ -246,7 +247,7 @@ const $ = id => document.getElementById(id);
 const synth = window.speechSynthesis || null;
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
 if (!SR) $("noSR").hidden = false;
-const VERSION = "13";
+const VERSION = "14";
 const IS_ANDROID = /android/i.test(navigator.userAgent);
 const diag = { restarts: 0, events: 0, lastError: "", lastRestart: "", log: [] };
 function logEvent(line) { diag.log.push(line); if (diag.log.length > 14) diag.log.shift(); const el = $("evlog"); if (el) el.textContent = diag.log.join("\n"); }
@@ -262,7 +263,7 @@ const store = {
   get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
 };
-store.set("exam", EXAM_ID);
+if (!STUDENT) store.set("exam", EXAM_ID);
 document.querySelectorAll("#exams button").forEach(b => { b.setAttribute("aria-pressed", String(b.dataset.exam === EXAM_ID)); b.addEventListener("click", () => { if (b.dataset.exam === EXAM_ID) return; store.set("exam", b.dataset.exam); location.href = location.pathname + "?esame=" + b.dataset.exam; }); });
 $("h1").textContent = "Esame orale · " + EXAM.name; document.title = "Esame orale · " + EXAM.name;
 $("filterLabel").firstChild.textContent = EXAM.filterLabel + " ";
@@ -285,7 +286,13 @@ $("onlyRedo").addEventListener("change", () => asked.clear());
 $("manualEnd").checked = store.get("manualEnd", false);
 $("manualEnd").addEventListener("change", e => store.set("manualEnd", e.target.checked));
 $("btnShowKey").addEventListener("click", () => { const i = $("apikey"); i.type = i.type === "password" ? "text" : "password"; $("btnShowKey").textContent = i.type === "password" ? "Mostra" : "Nascondi"; });
-if (!$("apikey").value) $("settings").open = true;
+if (!$("apikey").value && !STUDENT) $("settings").open = true;
+if (STUDENT) {
+  $("exams").hidden = true; $("settings").hidden = true;
+  if (!$("apikey").value) { $("btnAsk").hidden = true; $("teacher").hidden = true; }
+  $("h1").textContent = "Esame orale · Patente nautica entro 12 miglia";
+  const lead = document.querySelector(".lead"); if (lead) lead.textContent = "Premi «Inizia l'esame»: l'esaminatrice ti fa una domanda, rispondi a voce come all'orale e ricevi subito la correzione. Usa Chrome e consenti il microfono.";
+}
 
 // ---------- voice of the examiner
 const FEMALE = /google italiano|alice|elsa|federica|paola|isabella|silvia|carla|chiara|bianca|giulia|emma|female|donna/i;
