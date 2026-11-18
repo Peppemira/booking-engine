@@ -126,7 +126,7 @@ kbd { font-family: var(--display); font-size: 11px; border: 1px solid var(--line
       <h1 id="h1">Esame orale · Tutor vocale</h1>
       <p class="lead">La commissaria ti fa la domanda, ascolta la tua risposta dal microfono e ti corregge a voce. Poi la prossima. Tutto senza toccare nulla.</p>
     </div>
-    <div class="stats"><span><b id="stDone">0</b> risposte</span><span>media <b id="stAvg">–</b></span><span><b id="stRedo">0</b> da ripassare</span><span id="ver" title="versione della pagina">v14</span></div>
+    <div class="stats"><span><b id="stDone">0</b> risposte</span><span>media <b id="stAvg">–</b></span><span><b id="stRedo">0</b> da ripassare</span><span id="ver" title="versione della pagina">v15</span></div>
   </div>
 
   <div class="warn" id="ttsWarn" hidden></div>
@@ -270,6 +270,7 @@ $("filterLabel").firstChild.textContent = EXAM.filterLabel + " ";
 (() => { const sel = $("filterPart"); const all = document.createElement("option"); all.value = "all"; all.textContent = "Tutti gli argomenti"; sel.appendChild(all); Object.keys(PARTS).forEach(k => { const o = document.createElement("option"); o.value = k; o.textContent = PARTS[k][0] + " (" + DATA.filter(q => String(q.part) === k).length + ")"; sel.appendChild(o); }); })();
 let log = store.get(EXAM.logKey, {});
 $("apikey").value = store.get("anthropic_key", "");
+if (STUDENT && window.PROXY_URL) $("apikey").value = "proxy"; // students use the school service, never a stored key
 $("model").value = store.get("model", "claude-haiku-5-5");
 $("rate").value = store.get("rate", 1); $("rateVal").textContent = fmt($("rate").value);
 $("silence").value = store.get("silence", IS_ANDROID ? 5 : 3); $("silVal").textContent = fmt($("silence").value);
@@ -612,7 +613,23 @@ function apiError(status, j) {
 // Shared call to the Messages API. Claude 5.5 models think before answering by default and the
 // thinking tokens count toward max_tokens, so the limit is generous and the effort is kept low;
 // text is selected by block type.
+// Students: the school's service on Supabase holds the key and applies daily limits.
+function studentId() {
+  let id = store.get("tutor_sid", "");
+  if (!/^[a-z0-9-]{8,64}$/i.test(id)) { id = (crypto.randomUUID ? crypto.randomUUID() : (Date.now().toString(36) + "-" + Math.random().toString(36).slice(2))); store.set("tutor_sid", id); }
+  return id;
+}
+async function callProxy(system, content, maxTokens) {
+  const r = await fetch(window.PROXY_URL, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ sid: studentId(), system, content, max_tokens: maxTokens }) })
+    .catch(() => { throw new Error("Non riesco a raggiungere il servizio della scuola: controlla la connessione."); });
+  const j = await r.json().catch(() => null);
+  if (!r.ok) throw new Error((j && j.error && j.error.message) || ("Servizio della scuola non disponibile (" + r.status + ")."));
+  const text = ((j && j.content) || []).filter(c => c && c.type === "text").map(c => c.text || "").join("").trim();
+  if (!text) throw new Error("Risposta vuota dal servizio della scuola: riprova.");
+  return text;
+}
 async function callClaude(key, system, content, maxTokens) {
+  if (key === "proxy") return callProxy(system, content, maxTokens);
   const body = { model: $("model").value, max_tokens: maxTokens, system, messages: [{ role: "user", content }], output_config: { effort: "low" } };
   let r = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
