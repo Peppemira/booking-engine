@@ -10,6 +10,22 @@ const { sendBookingNotification } = require("../telegra");
 const { resolveCandidateId } = require("../server/candidateHelpers");
 const { addCandidatesToBookingList } = require("../server/portalHelpers");
 const { randomUUID } = require("crypto");
+const billing = require("../services/billing/billingService");
+
+/** Conta il PagoPA per le commissioni della piattaforma senza mai bloccare la risposta. */
+async function contaPagoPAPerCommissioni(req, identificativo) {
+  try {
+    const esito = await billing.registraPagoPA({
+      autoscuolaId: req.autoscuolaId,
+      identificativo,
+      praticaRef: identificativo,
+    });
+    return esito;
+  } catch (e) {
+    console.warn("[Billing] conteggio PagoPA:", e.message);
+    return null;
+  }
+}
 
 function isUuid(value) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
@@ -250,6 +266,32 @@ async function paymentAction(req, res) {
     return res.status(400).json({ success: false, error: "Azione pagamento non valida" });
   }
 
+  // Commissioni piattaforma: controllo preventivo prima di un nuovo PagoPA
+  // (sempre consentito finché BILLING_ENABLED non è attivo).
+  if (action === "pagopa") {
+    let check = { consentito: true };
+    try {
+      check = await billing.controlloPreventivo(req.autoscuolaId);
+    } catch (e) {
+      console.warn("[Billing] controllo preventivo:", e.message);
+    }
+    if (!check.consentito) {
+      await addImportHistory({
+        type: "payment-action",
+        status: "error",
+        criteria: { id, action, actor },
+        errors: 1,
+        message: check.motivo,
+      });
+      return res.status(402).json({
+        success: false,
+        error: check.motivo,
+        codice: check.codice,
+        linkPagamento: check.linkPagamento || null,
+      });
+    }
+  }
+
   const nextPaymentStatusByAction = {
     decurtazione: "paid",
     pagopa: "pending",
@@ -294,12 +336,15 @@ async function paymentAction(req, res) {
       message: `Pagamento aggiornato (${action}) su fallback waitlist`,
     });
 
+    const commissione = action === "pagopa" ? await contaPagoPAPerCommissioni(req, `waitlist:${id}`) : null;
+
     return res.json({
       success: true,
       mode: "waitlist-fallback",
       paymentStatus: nextPaymentStatusByAction[action],
       esito: nextEsitoByAction[action],
       row: Array.isArray(updatedRows) ? updatedRows[0] : null,
+      commissione,
     });
   }
 
@@ -347,11 +392,14 @@ async function paymentAction(req, res) {
     message: `Pagamento aggiornato (${action}) su prenotazione`,
   });
 
+  const commissione = action === "pagopa" ? await contaPagoPAPerCommissioni(req, `prenotazione:${id}`) : null;
+
   return res.json({
     success: true,
     paymentStatus: updated?.payment_status || nextPaymentStatusByAction[action],
     esito: updated?.esito || nextEsitoByAction[action],
     booking: updated,
+    commissione,
   });
 }
 

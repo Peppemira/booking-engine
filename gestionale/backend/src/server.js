@@ -73,6 +73,14 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization", "Cache-Control"],
   })
 );
+// Webhook Stripe delle commissioni PagoPA: serve il body grezzo per la firma,
+// quindi va registrato prima del parser JSON. Non richiede token (firma Stripe).
+app.post(
+  "/api/billing/webhook",
+  express.raw({ type: "application/json", limit: "1mb" }),
+  require("./routes/billingRoutes").stripeWebhookHandler
+);
+
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(attachAuthContext);
@@ -156,6 +164,10 @@ app.post("/api/portal/backfill-conseguimenti", async (req, res) => {
     });
   }
 });
+
+if (String(process.env.BILLING_ENABLED || "false").toLowerCase() === "true" && process.env.NODE_ENV !== "test") {
+  require("./services/billing/billingJobs").startBillingJobs();
+}
 
 if (String(process.env.RADAR_AUTO_START || "false").toLowerCase() === "true") {
   const { startScheduler } = require("./services/scheduler");

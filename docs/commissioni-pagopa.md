@@ -96,3 +96,63 @@ Dove si inserisce ogni modulo nel repository attuale:
 - **Notifiche**: esiste `src/services/notificheService.js` → usarlo per email/WhatsApp dei solleciti.
 - **Test**: `node --test` in `gestionale/backend/tests` → aggiungere `billing.test.js`.
 - **Dipendenza da aggiungere**: `stripe` in `gestionale/backend/package.json`.
+
+## 12. Implementazione (ramo `feature/commissioni-pagopa`)
+
+Cosa è stato realizzato:
+
+- **Database** (già applicato su Supabase, progetto "prenota automativo"): `gestionale/backend/sql/2026-11-26_billing_commissioni_pagopa.sql`. Solo aggiunte: dati fiscali e stato billing su `autoscuole`, tabelle `pagopa_eventi`, `fatture_piattaforma`, `stripe_webhook_eventi`.
+- **Backend** `gestionale/backend/src/services/billing/`:
+  - `billingService.js`: conteggio idempotente, invio al meter Stripe, attivazione, abbonamento settimanale, webhook, fatture, solleciti, blocco/sblocco, funzioni admin.
+  - `sdiProvider.js`: fattura elettronica (`SDI_PROVIDER=manuale` oppure `fattureincloud`).
+  - `avvisi.js`: email (provider già configurato) e WhatsApp opzionale.
+  - `billingJobs.js`: reinvio eventi ogni 10 minuti, controllo blocchi ogni ora.
+- **Route** `/api/billing/*` (`src/routes/billingRoutes.js`) e webhook `POST /api/billing/webhook` (in `src/server.js`, prima del parser JSON).
+- **Aggancio**: in `prenotazioniController.paymentAction`, azione `pagopa` → controllo preventivo (HTTP 402 se bloccata) e conteggio del PagoPA (`prenotazione:<id>`).
+- **Frontend**: pagina `/fatturazione` (contatori, metodo di pagamento, fatture, dati fiscali) con scheda "Amministrazione piattaforma" per BLUEFOX.
+- **Test**: `npm run test:billing` (ciclo completo simulato, 14 test).
+
+Finché `BILLING_ENABLED` non è `true` il gestionale si comporta esattamente come prima.
+
+### Messa in funzione
+
+1. Crea l'account Stripe e prendi la chiave di **test** (`sk_test_...`).
+2. Nel backend: `STRIPE_SECRET_KEY=sk_test_... npm run billing:setup-stripe` → copia le variabili stampate.
+3. Su Stripe crea il webhook verso `https://<backend>/api/billing/webhook` con gli eventi `checkout.session.completed`, `invoice.finalized`, `invoice.paid`, `invoice.payment_failed`, `invoice.voided`, `customer.subscription.deleted`; copia la chiave di firma.
+4. In Stripe → Impostazioni → Fatturazione: attiva gli Smart Retries (es. 3 tentativi in 7 giorni) e il Customer Portal (aggiornamento metodo di pagamento).
+5. Variabili d'ambiente del backend (Railway):
+
+```
+BILLING_ENABLED=true
+BILLING_TARIFFA_EURO=1.00
+BILLING_ALIQUOTA_IVA=22
+BILLING_GIORNI_TOLLERANZA=7
+BILLING_RICHIEDI_ATTIVAZIONE=true
+BILLING_FATTURA_MOMENTO=dopo_incasso      # oppure prima_incasso (decide il commercialista)
+BILLING_ADMIN_EMAILS=bluefox.srl@gmail.com
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_PRICE_ID=price_...
+STRIPE_TAX_RATE_ID=txr_...
+STRIPE_METER_EVENT_NAME=pagopa_usati
+FRONTEND_PUBLIC_BASE=https://<frontend>
+SDI_PROVIDER=manuale                      # oppure fattureincloud
+# Solo con Fatture in Cloud:
+FIC_ACCESS_TOKEN=...
+FIC_COMPANY_ID=...
+FIC_VAT_ID=...                            # id dell'aliquota 22% su Fatture in Cloud
+FIC_PAYMENT_METHOD=MP08
+# WhatsApp opzionale (POST {number,text} con header apikey):
+WHATSAPP_SEND_URL=...
+WHATSAPP_API_KEY=...
+```
+
+6. Prova completa in modalità test con le carte di prova Stripe: `4242 4242 4242 4242` (va a buon fine) e `4000 0000 0000 0341` (si salva ma l'addebito fallisce, per provare solleciti e blocco). Usa i "test clock" di Stripe per far passare le settimane.
+7. Solo dopo: chiavi live (`sk_live_...`), webhook live e `SDI_PROVIDER` definitivo.
+
+### Punti ancora aperti
+
+- Momento di emissione della fattura e trattamento IVA: da confermare con il commercialista.
+- Fatture in Cloud: verificare il payload in sandbox prima della produzione.
+- Il PagoPA viene contato quando l'operatore sceglie l'azione "pagopa" sulla prenotazione. Se in futuro il pagamento IUV verrà letto dal Portale, chiamare `POST /api/billing/pagopa-eventi` con l'IUV come identificativo.
+- Lo storno su Stripe funziona entro 24 ore; oltre serve una nota di credito.

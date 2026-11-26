@@ -20,6 +20,7 @@ const NAV_ITEMS = [
   { href: "/guide", key: "guide", label: "Guide", icon: "🚗" },
   { href: "/corsi", key: "corsi", label: "Corsi", icon: "📚" },
   { href: "/pagamenti", key: "pagamenti", label: "Pagamenti", icon: "💰" },
+  { href: "/fatturazione", key: "fatturazione", label: "Fatturazione PagoPA", icon: "🧾" },
   { href: "/documenti", key: "documenti", label: "Documenti", icon: "📁" },
   { href: "/statistiche", key: "statistiche", label: "Statistiche", icon: "📈" },
   { href: "/servizi-online", key: "servizi-online", label: "Servizi on line", icon: "🌐" },

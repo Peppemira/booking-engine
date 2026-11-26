@@ -262,4 +262,5 @@ module.exports = {
   notificheService,
   TEMPLATES,
   TABLE_NOTIFICHE: TABLE,
+  sendEmail,
 };
