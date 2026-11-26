@@ -13,7 +13,9 @@
     "sync:archivio:autoscuole": "node src/syncArchivioAutoscuole.js",
     "sync:archivio:autoscuole:dry": "node src/syncArchivioAutoscuole.js --dry-run",
     "backfill:codice-autoscuola": "node src/backfillCandidateCodiceAutoscuola.js --apply",
-    "backfill:codice-autoscuola:dry": "node src/backfillCandidateCodiceAutoscuola.js"
+    "backfill:codice-autoscuola:dry": "node src/backfillCandidateCodiceAutoscuola.js",
+    "test:billing": "node --test tests/billing.test.js",
+    "billing:setup-stripe": "node scripts/billing-setup-stripe.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.7",
@@ -31,6 +33,7 @@
     "node-cron": "^4.2.1",
     "pg": "^8.19.0",
     "puppeteer": "^24.37.5",
+    "stripe": "^17.7.0",
     "tough-cookie": "^6.0.0"
   }
 }
